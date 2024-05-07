@@ -1,0 +1,12 @@
+{
+    "DB_HOST": "localhost",
+    "DB_DATABASE": "database_name",
+    "DB_USER": "username",
+    "DB_PASS": "password",
+    "SQL_PORT": 3006,
+    "EXPRESS_PORT": 3000,
+    "SYNC_DATABASE": true,
+    "accessToken": "your-gradient-ai-access-token",
+    "workspaceId": "your-gradient-ai-workspace-id",
+    "secretKey": "your_secret_key"
+}
