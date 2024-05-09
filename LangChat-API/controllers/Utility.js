@@ -13,7 +13,7 @@ const language = db.participants;
  * @param INTEGER user's ID 
  * @returns An array of conversation IDs
  */
-async function GetUsersConversations(user_id){
+module.exports.GetUsersConversations = async (user_id) => {
     const participantIds = await Participant.findAll({
         where: {
             user_id: userId
@@ -32,7 +32,7 @@ async function GetUsersConversations(user_id){
  * @param INTEGER conversation_id 
  * @returns An array of Message objects
  */
-async function GetConversationMessages(conversation_id){
+module.exports.GetConversationMessages = async (conversation_id) => {
     const messages = await Message.findAll({
         where: {
             conversation_id: conversation_id
