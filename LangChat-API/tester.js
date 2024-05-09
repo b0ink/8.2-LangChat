@@ -9,7 +9,7 @@ const Participant = db.participants;
 const language = db.participants;
 
 const Utility = require('./controllers/Utility')
-async function test(){
+async function testMostRecentMessage(){
     const msg = await Utility.GetMostRecentConversationMessage(1);
 
     const messageData = msg.toJSON();
@@ -20,4 +20,19 @@ async function test(){
     // console.log(msg);
 }
 
-test();
+// testMostRecentMessage();
+
+
+
+async function getAllConversationMessages(){
+    const messages = await Utility.GetConversationMessages(1);
+
+    for(let msg of messages){
+        const messageData = msg.toJSON();
+        console.log(JSON.stringify(messageData, null, 2));
+
+    }
+    
+}
+
+getAllConversationMessages();

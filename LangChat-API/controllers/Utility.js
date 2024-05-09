@@ -36,7 +36,12 @@ module.exports.GetConversationMessages = async (conversation_id) => {
     const messages = await Message.findAll({
         where: {
             conversation_id: conversation_id
-        }
+        },
+        include: [{
+            model: User,
+            as: 'user', 
+            attributes: ['username']
+        }]
     });
 
 
