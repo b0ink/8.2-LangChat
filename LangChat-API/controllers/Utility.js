@@ -16,7 +16,7 @@ const language = db.participants;
 module.exports.GetUsersConversations = async (user_id) => {
     const participantIds = await Participant.findAll({
         where: {
-            user_id: userId
+            user_id: user_id
         },
         attributes: ['conversation_id']
     });
