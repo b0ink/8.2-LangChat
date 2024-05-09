@@ -54,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
                             }
                             LastMessage lastMessage = convo.getLastMessage();
                             if(lastMessage != null){
+                                // TODO; check local cache for lastMessage.getID() and the translation
                                 System.out.println("Last message: " + lastMessage.getMessage());
                             }else{
                                 System.out.println("NULL LAST MESAGES");
