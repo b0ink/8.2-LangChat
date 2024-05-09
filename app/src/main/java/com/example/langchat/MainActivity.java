@@ -8,7 +8,21 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+
+
+import java.util.ArrayList;
+import java.util.List;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+import com.example.langchat.API.RetrofitClient;
+import com.example.langchat.API.models.ConversationResponse;
+import com.example.langchat.API.models.Participant;
+
 public class MainActivity extends AppCompatActivity {
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,5 +34,34 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+            ArrayList<ConversationResponse> conversations = new ArrayList<>();
+
+                Call<List<ConversationResponse>> call = RetrofitClient.getInstance()
+                        .getAPI().getUsersConversations(1);
+
+                call.enqueue(new Callback<List<ConversationResponse>>() {
+                    @Override
+                    public void onResponse(Call<List<ConversationResponse>> call, Response<List<ConversationResponse>> response) {
+                        if(!response.isSuccessful()){
+                            return;
+                        }
+                        conversations.addAll(response.body());
+
+
+                        for(ConversationResponse convo : conversations){
+                            System.out.println("---- CONVO -----");
+                            for(Participant user : convo.getParticipants()){
+                                System.out.println("Participants: " + user.getUser().getUsername());
+                            }
+                            System.out.println("Last message: " + convo.getLastMessage().getMessage());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<ConversationResponse>> call, Throwable throwable) {
+
+                    }
+                });
     }
 }
