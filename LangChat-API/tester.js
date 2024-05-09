@@ -25,7 +25,11 @@ async function testMostRecentMessage(){
 
 
 async function getAllConversationMessages(){
-    const messages = await Utility.GetConversationMessages(1);
+
+    const conversationIds = await Utility.GetUsersConversations(1);
+    console.log(conversationIds)
+    
+    const messages = await Utility.GetConversationMessages(conversationIds[0]);
 
     for(let msg of messages){
         const messageData = msg.toJSON();
