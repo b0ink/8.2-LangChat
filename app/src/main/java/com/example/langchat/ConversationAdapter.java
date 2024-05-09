@@ -8,6 +8,7 @@ import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -55,6 +56,8 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
         private TextView tvUsername;
         private TextView tvLastMessageTime;
         private TextView tvRecentMessage;
+        private ImageView imgProfilePicture;
+
         ArrayList<String> selectedInterests;
 
         public ConversationViewHolder(@NonNull View itemView, ArrayList<String> selectedInterests) {
@@ -62,6 +65,7 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
             tvUsername = itemView.findViewById(R.id.tvUsername);
             tvLastMessageTime = itemView.findViewById(R.id.tvLastMessageTime);
             tvRecentMessage = itemView.findViewById(R.id.tvRecentMessage);
+            imgProfilePicture = itemView.findViewById(R.id.imgProfilePicture);
 
             this.selectedInterests = selectedInterests;
         }
@@ -80,12 +84,19 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
                     username = String.join(", ", usernames);
                 }else{
                     int otherUserCount = usernames.size()-2;
-                    username = usernames.get(0) + ", " + usernames.get(1) + " +" + otherUserCount + " others";
+                    username = usernames.get(0) + ", " + usernames.get(1) + " +" + otherUserCount + " more";
                 }
+                imgProfilePicture.setBackgroundResource(R.drawable.pfp_group_placeholder);
             }
 
+
             tvUsername.setText(username);
-            tvRecentMessage.setText(conversation.getLastMessage().getMessage());
+            LastMessage lastMsg = conversation.getLastMessage();
+            if(lastMsg == null){
+                tvRecentMessage.setText("Tap to send a message...");
+            }else{
+                tvRecentMessage.setText(lastMsg.getMessage());
+            }
         }
 
     }
