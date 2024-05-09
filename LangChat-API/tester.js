@@ -28,7 +28,7 @@ async function getAllConversationMessages(){
 
     const conversationIds = await Utility.GetUsersConversations(1);
     console.log(conversationIds)
-    
+
     const messages = await Utility.GetConversationMessages(conversationIds[0]);
 
     for(let msg of messages){
@@ -39,4 +39,14 @@ async function getAllConversationMessages(){
     
 }
 
-getAllConversationMessages();
+// getAllConversationMessages();
+
+
+
+async function sendMessageToConversation(sender_id, conversation_id, message){
+
+    const newMessage = await Utility.SendMessage(sender_id, conversation_id, message)
+    console.log(newMessage)
+}
+
+// sendMessageToConversation(1, 1, "Hello world...");

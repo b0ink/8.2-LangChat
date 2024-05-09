@@ -77,3 +77,29 @@ module.exports.GetMostRecentConversationMessage = async (conversation_id) => {
 
     return message;
 }
+
+
+module.exports.SendMessage = async (sender_id, conversation_id, message) => {
+    const user = await User.findByPk(sender_id);
+
+    if(!user){
+        console.log(`Sender id:${sender_id} does not exist`);
+        return;
+    }
+
+    const conversationIds = await this.GetUsersConversations(user.id);
+    if(!conversationIds.includes(conversation_id)){
+        console.log(conversationIds, conversation_id);
+        console.log(`SendMessage: Sender is not a part of this conversation`)
+        return ;
+    }
+
+    const newMesssage = await Message.create({
+        conversation_id,
+        sender_id,
+        message
+    });
+    
+    console.log(newMesssage.toJSON());
+    return newMesssage;
+}
