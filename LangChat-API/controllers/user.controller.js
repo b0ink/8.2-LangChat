@@ -133,5 +133,14 @@ exports.findConversations = async (req, res) => {
         });
     }
 
+    Conversations.sort((a, b) => {
+        // Convert createdAt strings to Date objects for comparison
+        const dateA = new Date(a.lastMessage.createdAt);
+        const dateB = new Date(b.lastMessage.createdAt);
+    
+        // Compare dates in descending order
+        return dateB - dateA;
+    });
+
     return res.json(Conversations);
 };
