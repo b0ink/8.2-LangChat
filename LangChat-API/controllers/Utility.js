@@ -51,3 +51,24 @@ module.exports.GetConversationMessages = async (conversation_id) => {
 
     return messages;
 }
+
+/**
+ * 
+ * @param INTEGER conversation_id 
+ * @returns Message object
+ */
+module.exports.GetMostRecentConversationMessage = async (conversation_id) => {
+    const message = await Message.findOne({
+        where: {
+            conversation_id: conversation_id
+        },
+        order: [['createdAt', 'DESC']],
+        include: [{
+            model: User,
+            as: 'user', 
+            attributes: ['username']
+        }]
+    });
+
+    return message;
+}
