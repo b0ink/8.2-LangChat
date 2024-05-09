@@ -25,6 +25,26 @@ module.exports.GetUsersConversations = async (user_id) => {
     return conversationIds;
 };
 
+
+
+module.exports.GetConversationParticipants = async (conversation_id) => {
+    const participants = await Participant.findAll({
+        where: {
+            conversation_id:conversation_id,
+        },
+        include: [
+            {
+                model: User,
+                as: "user",
+                attributes: ["username"],
+            },
+        ],
+    });
+
+    console.log('participants', participants, conversation_id)
+    return participants;
+};
+
 /**
  *
  * @param INTEGER conversation_id

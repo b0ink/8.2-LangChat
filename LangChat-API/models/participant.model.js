@@ -23,8 +23,8 @@ module.exports = (sequelize, Sequelize) => {
         },
     });
 
-    Participant.belongsTo(sequelize.models.conversation, { foreignKey: "conversation_id" });
-    Participant.belongsTo(sequelize.models.user, { foreignKey: "user_id" });
+    Participant.belongsTo(sequelize.models.conversation, { foreignKey: "conversation_id", as:"conversation" });
+    Participant.belongsTo(sequelize.models.user, { foreignKey: "user_id", as:"user" });
 
     return Participant;
 };

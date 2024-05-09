@@ -50,3 +50,36 @@ async function sendMessageToConversation(sender_id, conversation_id, message){
 }
 
 // sendMessageToConversation(1, 1, "Hello world...");
+
+
+async function getConversations(){
+
+    const userId = 1;
+    const conversationIds = await Utility.GetUsersConversations(userId);
+
+    //TODOL GetUsersConversations should return this data natively
+    let conversations = [];
+
+    console.log('cponvo ids', conversationIds);
+
+    for(let conversation_id of conversationIds){
+        console.log(conversation_id)
+        const participants = await Utility.GetConversationParticipants(conversation_id);
+
+        const msg = await Utility.GetMostRecentConversationMessage(1);
+
+
+        conversations.push({
+            // participants: [...participants.filter(p=>p.user.username!=="bob")],
+            participants: [...participants],
+            lastMessage: msg
+        })
+
+        
+    }
+
+    console.log(JSON.stringify(conversations, null, 2))
+
+}
+
+getConversations();
