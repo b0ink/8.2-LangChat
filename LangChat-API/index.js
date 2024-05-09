@@ -16,6 +16,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 require("./routes/user.routes")(app, API_VERSION);
+require("./routes/conversation.routes")(app, API_VERSION);
 
 async function testLanguage(text, language){
     // const query = `[INST]
