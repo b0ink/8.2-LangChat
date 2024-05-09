@@ -1,5 +1,6 @@
 package com.example.langchat;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Adapter;
 
@@ -35,6 +36,14 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
+        if(true){
+            Intent intent = new Intent(this, MessageActivity.class);
+            startActivity(intent);
+            finish();
+            return;
+        }
+
+
         ArrayList<ConversationResponse> conversations = new ArrayList<>();
 
         RecyclerView recycler = findViewById(R.id.recyclerView);
@@ -59,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
                     for (Participant user : convo.getParticipants()) {
                         System.out.println("Participants: " + user.getUser().getUsername());
                     }
-                    LastMessage lastMessage = convo.getLastMessage();
+                    Message lastMessage = convo.getLastMessage();
                     if (lastMessage != null) {
                         // TODO; check local cache for lastMessage.getID() and the translation
                         System.out.println("Last message: " + lastMessage.getMessage());

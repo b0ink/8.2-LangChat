@@ -13,7 +13,7 @@ data class Participant(
     val user: User
 )
 
-data class LastMessage(
+data class Message(
     val id: Int,
     val conversation_id: Int,
     val sender_id: Int,
@@ -25,6 +25,6 @@ data class LastMessage(
 
 data class ConversationResponse(
     val participants: List<Participant>,
-    val lastMessage: LastMessage
+    val lastMessage: Message
 )
 

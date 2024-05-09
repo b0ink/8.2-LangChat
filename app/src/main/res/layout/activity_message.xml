@@ -5,6 +5,55 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MessageActivitiy">
+    android:background="@drawable/background_gradient"
+    tools:context=".MessageActivity">
 
+  <RelativeLayout
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:padding="15dp">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/llMessageInputLayout"
+        android:paddingBottom="25dp"
+        app:reverseLayout="true"
+        tools:itemCount="4"
+        tools:listitem="@layout/fragment_message" />
+
+    <LinearLayout
+        android:id="@+id/llMessageInputLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="15dp"
+        android:orientation="horizontal">
+
+      <EditText
+          android:id="@+id/etMessage"
+          android:layout_width="match_parent"
+          android:layout_height="50dp"
+          android:layout_marginRight="15dp"
+          android:layout_weight="1"
+          android:background="@drawable/edit_text_background"
+          android:ems="10"
+          android:fontFamily="@font/inter"
+          android:hint="Enter message..."
+          android:inputType="textFilter|textMultiLine"
+          android:paddingLeft="15dp"
+          android:textSize="16sp" />
+
+      <ImageButton
+          android:id="@+id/btnSend"
+          android:layout_width="50dp"
+          android:layout_height="50dp"
+          android:layout_gravity="center_vertical"
+          android:backgroundTint="#00FFFFFF"
+          android:scaleType="center"
+          app:srcCompat="@drawable/send_icon" />
+    </LinearLayout>
+
+  </RelativeLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

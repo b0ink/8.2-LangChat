@@ -2,4 +2,23 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+<!--    <color name="background_gradient_start">#1099ff</color>-->
+<!--    <color name="background_gradient_end">#3ed8ff</color>-->
+
+    <color name="background_gradient_start">#6fe8cd</color>
+    <color name="background_gradient_end">#f76198</color>
+
+<!--    <color name="chat_user_bubble_background">#14E88C</color>-->
+    <color name="chat_user_bubble_background">#80FFFFFF</color>
+    <color name="chat_user_bubble_text">#000000</color>
+
+<!--    <color name="chat_ai_bubble_background">#FFCCCCCC</color>-->
+    <color name="chat_ai_bubble_background">#80FFFFFF</color>
+    <color name="chat_ai_bubble_text">#000000</color>
+
+    <color name="button_background_primary">#f76198</color>
+<!--    <color name="button_background_primary">#f76198</color>-->
+    <color name="button_text_primary">#FFFFFF</color>
+
 </resources>

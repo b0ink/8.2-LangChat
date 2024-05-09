@@ -2,6 +2,7 @@ package com.example.langchat.API;
 
 import com.example.langchat.API.models.ResponsePost;
 import com.example.langchat.ConversationResponse;
+import com.example.langchat.Message;
 
 import retrofit2.Call;
 import retrofit2.http.Field;
@@ -36,6 +37,13 @@ public interface API {
             @Field("password") String password,
             @Field("confirmPassword") String confirmPassword,
             @Field("mobile") String mobile
+    );
+
+    // Create new user
+    @FormUrlEncoded
+    @POST("conversation/messages")
+    Call<List<Message>> getMessages(
+            @Field("conversation_id") int conversation_id
     );
 
 }

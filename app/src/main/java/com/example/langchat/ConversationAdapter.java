@@ -91,7 +91,7 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
 
 
             tvUsername.setText(username);
-            LastMessage lastMsg = conversation.getLastMessage();
+            Message lastMsg = conversation.getLastMessage();
             if(lastMsg == null){
                 tvRecentMessage.setText("Tap to send a message...");
             }else{
