@@ -75,6 +75,7 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
             List<Participant> participantList = conversation.getParticipants();
             if(participantList.size() == 1){
                 username = participantList.get(0).getUser().getUsername();
+                imgProfilePicture.setBackgroundResource(R.drawable.pfp_placeholder);
             }else{
                 ArrayList<String> usernames = new ArrayList<>();
                 for(Participant p : participantList){

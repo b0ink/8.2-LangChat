@@ -2,6 +2,8 @@ package com.example.langchat;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.StrictMode;
+import android.util.Log;
 import android.widget.Adapter;
 
 import androidx.activity.EdgeToEdge;
@@ -13,8 +15,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -22,8 +26,17 @@ import retrofit2.Response;
 
 import com.example.langchat.API.RetrofitClient;
 
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
+import com.rabbitmq.client.DeliverCallback;
+
+import org.json.JSONObject;
+
 public class MainActivity extends AppCompatActivity {
 
+    private ArrayList<ConversationResponse> conversations;
+    private ConversationAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,24 +48,87 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
 
-        if(true){
+        // Run the message receiving logic on a background thread
+        new Thread(() -> {
+            try {
+                ConnectionFactory factory = new ConnectionFactory();
+                factory.setHost("10.0.2.2");
+                factory.setPort(5672);
+                Connection connection = factory.newConnection();
+                Channel channel = connection.createChannel();
+
+                channel.queueDeclare("my_messages", false, false, false, null);
+                Log.d("ADF", "Waiting for messages. To exit press CTRL+C");
+
+                DeliverCallback deliverCallback = (consumerTag, delivery) -> {
+                    String message = new String(delivery.getBody(), "UTF-8");
+                    Log.d("ADF", "Received message: " + message);
+                    try{
+                        JSONObject object = new JSONObject(message);
+                        String newMessage = object.getString("message");
+                        int convId = object.getInt("conversation_id");
+                        int sender_id = object.getInt("sender_id");
+
+                        runOnUiThread(() -> {
+//                            retrieveConversations(1);
+
+                            int index = 0;
+                            for (ConversationResponse convo : conversations) {
+                                System.out.println("checking" + convo.getId() + " with " + convId);
+                                //TODO: if no conversation exists, create a new one
+                                if (convo.getId() == convId) {
+                                    ConversationResponse item = conversations.remove(index);
+                                    conversations.add(0, item);
+//                                    adapter.notifyItemChanged(index);
+//                                    conversations.add(0, convo);
+//                                    conversations.remove(index);
+                                    adapter.notifyItemMoved(index, 0);
+                                    item.getLastMessage().setMessage(newMessage);
+                                    adapter.notifyItemChanged(0);
+
+//                                    conversations.
+                                    break;
+                                }
+                                index++;
+                            }
+                        });
+
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+
+                };
+                channel.basicConsume("my_messages", true, deliverCallback, consumerTag -> {
+                });
+            } catch (IOException | TimeoutException e) {
+                e.printStackTrace();
+            }
+        }).start();
+
+
+        if(false){
             Intent intent = new Intent(this, MessageActivity.class);
             startActivity(intent);
             finish();
             return;
         }
 
-
-        ArrayList<ConversationResponse> conversations = new ArrayList<>();
+        conversations = new ArrayList<>();
 
         RecyclerView recycler = findViewById(R.id.recyclerView);
         recycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        ConversationAdapter adapter = new ConversationAdapter(this, conversations);
+        adapter = new ConversationAdapter(this, conversations);
         recycler.setAdapter(adapter);
 
+        retrieveConversations(1);
+    }
+
+    private void retrieveConversations(int userId){
         Call<List<ConversationResponse>> call = RetrofitClient.getInstance()
-                .getAPI().getUsersConversations(1);
+                .getAPI().getUsersConversations(userId);
 
         call.enqueue(new Callback<List<ConversationResponse>>() {
             @Override
@@ -60,6 +136,7 @@ public class MainActivity extends AppCompatActivity {
                 if (!response.isSuccessful()) {
                     return;
                 }
+                conversations.clear();
                 conversations.addAll(response.body());
                 adapter.notifyDataSetChanged();
 

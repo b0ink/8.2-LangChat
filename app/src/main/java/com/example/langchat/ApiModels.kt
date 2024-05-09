@@ -17,13 +17,14 @@ data class Message(
     val id: Int,
     val conversation_id: Int,
     val sender_id: Int,
-    val message: String,
+    var message: String,
     val createdAt: String,
     val updatedAt: String,
     val user: User
 )
 
 data class ConversationResponse(
+    val id: Int,
     val participants: List<Participant>,
     val lastMessage: Message
 )
