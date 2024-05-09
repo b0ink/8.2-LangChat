@@ -86,7 +86,8 @@ exports.findOne = async (req, res) => {
 exports.findConversations = async (req, res) => {
     // const user = req.user;
     const user = {
-        id: 1
+        id: 1,
+        username: "bob"
     };
 
     const conversationIds = await Utility.GetUsersConversations(user.id);
@@ -122,11 +123,13 @@ exports.findConversations = async (req, res) => {
     for(let conv_id of conversationIds){
         const participants = await Utility.GetConversationParticipants(conv_id);
         const lastMessage = await Utility.GetMostRecentConversationMessage(conv_id);
-
+        
         Conversations.push({
             id: conv_id,
-            participants: [...participants],
-            last_message:lastMessage
+            // Dont include requesting user as the participant
+            // Will be used to display the "name" of the conversation (more than 1 participant will be a group chat)
+            participants: [...participants.filter(p=>p.user.username!==user.username)],
+            lastMessage:lastMessage
         });
     }
 

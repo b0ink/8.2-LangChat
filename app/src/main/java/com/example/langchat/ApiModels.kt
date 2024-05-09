@@ -19,7 +19,7 @@ data class LastMessage(
     val user: User
 )
 
-public data class ConversationResponse(
+data class ConversationResponse(
     val participants: List<Participant>,
     val lastMessage: LastMessage
 )
