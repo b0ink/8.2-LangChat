@@ -1,4 +1,8 @@
-package com.example.langchat.API.models
+package com.example.langchat
+
+data class User(
+    val username: String
+)
 
 data class Participant(
     val id: Int,
@@ -24,6 +28,3 @@ data class ConversationResponse(
     val lastMessage: LastMessage
 )
 
-data class User(
-    val username: String
-)

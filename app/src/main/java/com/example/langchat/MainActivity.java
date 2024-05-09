@@ -17,8 +17,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import com.example.langchat.API.RetrofitClient;
-import com.example.langchat.API.models.ConversationResponse;
-import com.example.langchat.API.models.Participant;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -54,7 +52,12 @@ public class MainActivity extends AppCompatActivity {
                             for(Participant user : convo.getParticipants()){
                                 System.out.println("Participants: " + user.getUser().getUsername());
                             }
-                            System.out.println("Last message: " + convo.getLastMessage().getMessage());
+                            LastMessage lastMessage = convo.getLastMessage();
+                            if(lastMessage != null){
+                                System.out.println("Last message: " + lastMessage.getMessage());
+                            }else{
+                                System.out.println("NULL LAST MESAGES");
+                            }
                         }
                     }
 
