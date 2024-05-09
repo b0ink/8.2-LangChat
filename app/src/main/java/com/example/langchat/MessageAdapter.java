@@ -69,6 +69,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
             tvMessageText.setText(chatMessage.getMessage());
             System.out.println("username: " + chatMessage.getUser().getUsername());
 
+            //TODO: check if authed user matches this username
             if(chatMessage.getUser().getUsername().equals("bob")){
                 llMessageContainer.setGravity(Gravity.RIGHT);
                 tvMessageText.setBackgroundResource(R.drawable.text_view_background_user);
