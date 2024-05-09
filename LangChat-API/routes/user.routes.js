@@ -8,5 +8,8 @@ module.exports = (app, API_VERSION) => {
 
     router.post("/login", users.findOne);
 
+    //TODO: under authentication
+    router.post("/conversations", users.findConversations);
+
     app.use(`/api/${API_VERSION}/users`, router);
 };

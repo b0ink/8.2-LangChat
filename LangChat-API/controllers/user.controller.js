@@ -84,7 +84,11 @@ exports.findOne = async (req, res) => {
 };
 
 exports.findConversations = async (req, res) => {
-    const user = req.user;
+    // const user = req.user;
+    const user = {
+        id: 1
+    };
+
     const conversationIds = await Utility.GetUsersConversations(user.id);
 
     //TODO: to display "unread" messages, store a local time the last time a conversation was opened
@@ -116,13 +120,15 @@ exports.findConversations = async (req, res) => {
     let Conversations = [];
 
     for(let conv_id of conversationIds){
-        const message = await Utility.GetMostRecentConversationMessage(conv_id);
-        //TODO: get author's username and append into message object
+        const participants = await Utility.GetConversationParticipants(conv_id);
+        const lastMessage = await Utility.GetMostRecentConversationMessage(conv_id);
+
         Conversations.push({
             id: conv_id,
-            last_message:message
+            participants: [...participants],
+            last_message:lastMessage
         });
     }
 
-    return Conversations;
+    return res.json(Conversations);
 };
