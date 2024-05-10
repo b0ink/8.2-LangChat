@@ -50,6 +50,7 @@ public interface API {
     @FormUrlEncoded
     @POST("conversation/send-message")
     Call<Message> sendMessage(
+            @Field("sender_id") int sender_id, // temporary
             @Field("conversation_id") int conversation_id,
             @Field("message") String message
     );

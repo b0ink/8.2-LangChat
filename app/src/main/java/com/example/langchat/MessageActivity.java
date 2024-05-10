@@ -147,7 +147,7 @@ public class MessageActivity extends AppCompatActivity {
 
             etMessage.setText("");
             Call<Message> newMsgCall = RetrofitClient.getInstance()
-                    .getAPI().sendMessage(conversationId, message);
+                    .getAPI().sendMessage(1, conversationId, message);
 
             newMsgCall.enqueue(new Callback<Message>() {
                 @Override
