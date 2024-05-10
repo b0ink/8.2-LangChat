@@ -46,4 +46,12 @@ public interface API {
             @Field("conversation_id") int conversation_id
     );
 
+    // Create new user
+    @FormUrlEncoded
+    @POST("conversation/send-message")
+    Call<Message> sendMessage(
+            @Field("conversation_id") int conversation_id,
+            @Field("message") String message
+    );
+
 }
