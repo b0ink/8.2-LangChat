@@ -1,3 +1,6 @@
+// const amqp = require("amqplib/callback_api");
+const amqp = require("amqplib");
+
 const db = require("../models/index");
 
 const User = db.users;
@@ -25,12 +28,10 @@ module.exports.GetUsersConversations = async (user_id) => {
     return conversationIds;
 };
 
-
-
 module.exports.GetConversationParticipants = async (conversation_id) => {
     const participants = await Participant.findAll({
         where: {
-            conversation_id:conversation_id,
+            conversation_id: conversation_id,
         },
         include: [
             {
@@ -41,7 +42,7 @@ module.exports.GetConversationParticipants = async (conversation_id) => {
         ],
     });
 
-    console.log('participants', participants, conversation_id)
+    console.log("participants", participants, conversation_id);
     return participants;
 };
 
@@ -104,14 +105,14 @@ module.exports.SendMessage = async (sender_id, conversation_id, message) => {
 
     if (!user) {
         console.log(`Sender id:${sender_id} does not exist`);
-        return;
+        throw new Error("Sender id is invalid");
     }
 
     const conversationIds = await this.GetUsersConversations(user.id);
     if (!conversationIds.includes(conversation_id)) {
         console.log(conversationIds, conversation_id);
         console.log(`SendMessage: Sender is not a part of this conversation`);
-        return;
+        throw new Error("Sender is not part of this converation");
     }
 
     const newMesssage = await Message.create({
@@ -120,6 +121,40 @@ module.exports.SendMessage = async (sender_id, conversation_id, message) => {
         message,
     });
 
-    console.log(newMesssage.toJSON());
-    return newMesssage;
+    const messageData = {
+        id: newMesssage.id,
+        conversation_id,
+        sender_id,
+        message,
+        createdAt: newMesssage.createdAt,
+        updatedAt: newMesssage.updatedAt,
+        user: {
+            username: user.username
+        }
+    }
+    console.log(messageData)
+    // console.log(messageData.toJSON());
+    return messageData;
+};
+
+module.exports.NotifyNewMessage = (queue, payload) => {
+    return new Promise((resolve, reject) => {
+        amqp.connect("amqp://localhost")
+            .then((conn) => {
+                return conn.createChannel();
+            })
+            .then((channel) => {
+                channel.assertExchange(queue, "fanout", {
+                    durable: false,
+                });
+                channel.sendToQueue(queue, Buffer.from(JSON.stringify(payload)));
+
+                console.log(" [x] Sent %s", payload);
+                resolve(`Send ${payload} to ${queue}`);
+            })
+            .catch((error) => {
+                console.log('erropr', error);
+                reject(new Error(error));
+            });
+    });
 };

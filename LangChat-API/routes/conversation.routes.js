@@ -9,5 +9,7 @@ module.exports = (app, API_VERSION) => {
     //TODO: under authentication
     router.post("/messages", conversation.findMessages);
 
+    router.post("/send-message", conversation.sendMessage);
+
     app.use(`/api/${API_VERSION}/conversation`, router);
 };
