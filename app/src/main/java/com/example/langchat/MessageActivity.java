@@ -65,6 +65,7 @@ public class MessageActivity extends AppCompatActivity {
                 }
                 messages.addAll(response.body());
                 adapter.notifyDataSetChanged();
+                recycler.scrollToPosition(messages.size()-1);
 
             }
 
