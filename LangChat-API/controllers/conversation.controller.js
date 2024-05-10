@@ -31,10 +31,12 @@ exports.sendMessage = async (req, res) => {
     //TODO body validation
     const conversation_id = parseInt(req.body.conversation_id);
     const message = req.body.message;
-    const user = {
-        id: 1,
-        username: "bob",
-    };
+    // const user = {
+    //     id: 1,
+    //     username: "bob",
+    // };
+
+    const user = await db.users.findByPk(req.body.sender_id);
 
     // TODO: should be unique to the (in this case) participants of active converation
     // TODO: so a custom key defined by userid+conversationId?
@@ -44,7 +46,9 @@ exports.sendMessage = async (req, res) => {
 
     try {
         const newMessage = await Utility.SendMessage(user.id, conversation_id, message);
-        const response =  await Utility.NotifyNewMessage(queue_name, newMessage);
+        let translatedMesage = {...newMessage};
+        translatedMesage.message = await Utility.TranslateMessage(translatedMesage.message, "spanish");
+        const response =  await Utility.NotifyNewMessage(queue_name, translatedMesage);
         console.log(response);
         return res.json(newMessage);
     } catch (error) {
