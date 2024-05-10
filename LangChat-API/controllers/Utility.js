@@ -206,7 +206,7 @@ module.exports.TranslateMessage = async (text, language) => {
         gradientAccessKey: accessToken,
         workspaceId,
         // modelSlug: "mixtral-8x7b-instruct",
-        modelSlug: "llama2-70b-chat",
+        modelSlug: "llama3-70b-chat",
         // modelSlug: "bloom-560m",
         inferenceParameters: {
             maxGeneratedTokenCount: 500,
