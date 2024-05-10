@@ -74,6 +74,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
                 llMessageContainer.setGravity(Gravity.RIGHT);
                 tvMessageText.setBackgroundResource(R.drawable.text_view_background_user);
             }else{
+                llMessageContainer.setGravity(Gravity.LEFT);
                 tvMessageText.setBackgroundResource(R.drawable.text_view_background_ai);
             }
         }
