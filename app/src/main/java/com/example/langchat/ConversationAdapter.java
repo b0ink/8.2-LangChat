@@ -1,7 +1,9 @@
 package com.example.langchat;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.text.Layout;
@@ -28,9 +30,11 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
     public ArrayList<ConversationResponse> conversations;
     private ArrayList<String> selectedInterests = new ArrayList<>();
 
+    private Context context;
 
     public ConversationAdapter(Context context, ArrayList<ConversationResponse> conversations) {
         this.conversations = conversations;
+        this.context = context;
     }
 
 
@@ -38,7 +42,7 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
     @Override
     public ConversationViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.fragment_conversation, parent, false);
-        return new ConversationViewHolder(view, selectedInterests);
+        return new ConversationViewHolder(context, view, selectedInterests);
     }
 
     @Override
@@ -58,15 +62,20 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
         private TextView tvRecentMessage;
         private ImageView imgProfilePicture;
 
+        private RelativeLayout rlConversationContainer;
+
         ArrayList<String> selectedInterests;
 
-        public ConversationViewHolder(@NonNull View itemView, ArrayList<String> selectedInterests) {
+        private Context context;
+
+        public ConversationViewHolder(Context context, @NonNull View itemView, ArrayList<String> selectedInterests) {
             super(itemView);
             tvUsername = itemView.findViewById(R.id.tvUsername);
             tvLastMessageTime = itemView.findViewById(R.id.tvLastMessageTime);
             tvRecentMessage = itemView.findViewById(R.id.tvRecentMessage);
             imgProfilePicture = itemView.findViewById(R.id.imgProfilePicture);
-
+            rlConversationContainer = itemView.findViewById(R.id.rlConversationContainer);
+            this.context = context;
             this.selectedInterests = selectedInterests;
         }
 
@@ -98,6 +107,13 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
             }else{
                 tvRecentMessage.setText(lastMsg.getMessage());
             }
+
+            rlConversationContainer.setOnClickListener(view ->{
+                Intent intent = new Intent(context, MessageActivity.class);
+                intent.putExtra(MessageActivity.EXTRA_CONVERSATION_ID, conversation.getId());
+                context.startActivity(intent);
+                ((Activity)context).finish();
+            });
         }
 
     }

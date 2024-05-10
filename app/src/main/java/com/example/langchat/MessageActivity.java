@@ -1,5 +1,6 @@
 package com.example.langchat;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.activity.EdgeToEdge;
@@ -21,6 +22,8 @@ import retrofit2.Response;
 
 public class MessageActivity extends AppCompatActivity {
 
+    public static final String EXTRA_CONVERSATION_ID = "extra_conversation_id";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,7 +35,18 @@ public class MessageActivity extends AppCompatActivity {
             return insets;
         });
 
-        int conversationId = 1;
+
+        Intent intent = getIntent();
+        if(intent == null || !intent.hasExtra(EXTRA_CONVERSATION_ID)){
+            Intent homeActivity = new Intent(this, MainActivity.class);
+            startActivity(homeActivity);
+            finish();
+            return;
+        }
+
+
+        int conversationId = intent.getIntExtra(EXTRA_CONVERSATION_ID, -1);
+
         ArrayList<Message> messages = new ArrayList<>();
 
         RecyclerView recycler = findViewById(R.id.recyclerView);

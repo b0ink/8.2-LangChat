@@ -9,6 +9,7 @@
     app:cardElevation="0dp">
 
     <RelativeLayout
+        android:id="@+id/rlConversationContainer"
         android:layout_width="match_parent"
         android:layout_height="100dp"
         android:padding="15dp">
