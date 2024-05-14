@@ -38,6 +38,8 @@ public class MessageActivity extends AppCompatActivity {
     private EditText etMessage;
     private ImageButton btnSend;
 
+    private LocalDatabaseHelper databaseHelper;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,6 +62,8 @@ public class MessageActivity extends AppCompatActivity {
             finish();
             return;
         }
+
+        databaseHelper = LocalDatabaseHelper.getInstance(this);
 
 
         int conversationId = intent.getIntExtra(EXTRA_CONVERSATION_ID, -1);
@@ -89,6 +93,13 @@ public class MessageActivity extends AppCompatActivity {
                         // dont translate messages from self
                         continue;
                     }
+                    String translatedMessage = databaseHelper.retrieveTranslatedMessage(msg.getId(), "german");
+                    if(translatedMessage != null){
+                        msg.setMessage(translatedMessage);
+                        adapter.notifyItemChanged(messages.indexOf(msg));
+                        continue;
+                    }
+
                     // -> if local translation not found:
                     Call<Message> callTranslation = RetrofitClient.getInstance()
                             .getAPI().translateMessage(1, msg.getId(), "german");
@@ -102,6 +113,7 @@ public class MessageActivity extends AppCompatActivity {
                             if(response.body() == null || response.body().getMessage() == null){
                                 return;
                             }
+                            databaseHelper.saveTranslation(msg.getId(), "german", response.body().getMessage());
                             System.out.println(response.body());
                             msg.setMessage(response.body().getMessage());
                             adapter.notifyItemChanged(messages.indexOf(msg));
