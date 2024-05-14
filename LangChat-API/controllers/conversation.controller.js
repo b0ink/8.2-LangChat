@@ -59,6 +59,7 @@ exports.sendMessage = async (req, res) => {
 
 
 exports.translateMessage = async (req, res) => {
+
     //TODO body validation
     const messageId = req.body.messageId;
     const usersLanguage = req.body.usersLanguage;
@@ -73,6 +74,7 @@ exports.translateMessage = async (req, res) => {
         return res.status(401);
     }
 
+    //TODO: provide context to llama by retrieving the last 10 messages in the conversation and embed in prompt
     const conversations = await Utility.GetUsersConversations(user.id);
     if(!conversations.includes(message.conversation_id)){
         return res.stats(401);
