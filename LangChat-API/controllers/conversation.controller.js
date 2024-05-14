@@ -56,3 +56,38 @@ exports.sendMessage = async (req, res) => {
         return res.status(500);
     }
 };
+
+
+exports.translateMessage = async (req, res) => {
+    //TODO body validation
+    const messageId = req.body.messageId;
+    const usersLanguage = req.body.usersLanguage;
+
+    const message = await db.messages.findByPk(messageId);
+    if(message == null){
+        return res.status(404);
+    }
+
+    const user = await db.users.findByPk(req.body.sender_id);
+    if(user == null){
+        return res.status(401);
+    }
+
+    const conversations = await Utility.GetUsersConversations(user.id);
+    if(!conversations.includes(message.conversation_id)){
+        return res.stats(401);
+    }
+
+    //TODO: validate usersLangage
+    const translation = await Utility.TranslateMessage(message.message, usersLanguage);
+
+    const translatedMessage = {
+        ...message
+    };
+    translatedMessage.message = translation;
+
+    return res.status(200).json(translatedMessage);
+
+    console.log(typeof(conversation_id));
+
+};

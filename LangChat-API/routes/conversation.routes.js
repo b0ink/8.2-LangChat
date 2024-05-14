@@ -11,5 +11,7 @@ module.exports = (app, API_VERSION) => {
 
     router.post("/send-message", conversation.sendMessage);
 
+    router.post("/translate", conversation.translateMessage);
+
     app.use(`/api/${API_VERSION}/conversation`, router);
 };
