@@ -60,6 +60,7 @@ module.exports.GetConversationMessages = async (conversation_id) => {
         where: {
             conversation_id: conversation_id,
         },
+        limit: 50,
         include: [
             {
                 model: User,

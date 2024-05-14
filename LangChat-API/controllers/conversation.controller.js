@@ -77,16 +77,27 @@ exports.translateMessage = async (req, res) => {
     //TODO: provide context to llama by retrieving the last 10 messages in the conversation and embed in prompt
     const conversations = await Utility.GetUsersConversations(user.id);
     if(!conversations.includes(message.conversation_id)){
-        return res.stats(401);
+        return res.status(401);
     }
 
     //TODO: validate usersLangage
     const translation = await Utility.TranslateMessage(message.message, usersLanguage);
 
-    const translatedMessage = {
-        ...message
-    };
+
+      const translatedMessage = {
+        id: message.id,
+        conversation_id: message.conversation_id,
+        sender_id: message.sender_id,
+        message: translation,
+        createdAt: message.createdAt,
+        updatedAt: message.updatedAt,
+        user: {
+            username: user.username
+        }
+    }
     translatedMessage.message = translation;
+    console.log('translatedMessage')
+    console.log(translatedMessage)
 
     return res.status(200).json(translatedMessage);
 
