@@ -55,4 +55,13 @@ public interface API {
             @Field("message") String message
     );
 
+
+    @FormUrlEncoded
+    @POST("conversation/translate")
+    Call<Message> translateMessage(
+            @Field("sender_id") int sender_id, // temporary
+            @Field("messageId") int messageId,
+            @Field("usersLanguage") String usersLanguage
+    );
+
 }

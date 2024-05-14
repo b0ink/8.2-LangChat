@@ -84,6 +84,37 @@ public class MessageActivity extends AppCompatActivity {
                 adapter.notifyDataSetChanged();
                 recycler.scrollToPosition(messages.size()-1);
 
+                for(Message msg : messages){
+                    if(msg.getSender_id() == 1){
+                        // dont translate messages from self
+                        continue;
+                    }
+                    // -> if local translation not found:
+                    Call<Message> callTranslation = RetrofitClient.getInstance()
+                            .getAPI().translateMessage(1, msg.getId(), "german");
+
+                    callTranslation.enqueue(new Callback<Message>() {
+                        @Override
+                        public void onResponse(Call<Message> callTranslation, Response<Message> response) {
+                            if (!response.isSuccessful()) {
+                                return;
+                            }
+                            if(response.body() == null || response.body().getMessage() == null){
+                                return;
+                            }
+                            System.out.println(response.body());
+                            msg.setMessage(response.body().getMessage());
+                            adapter.notifyItemChanged(messages.indexOf(msg));
+
+                        }
+
+                        @Override
+                        public void onFailure(Call<Message> callTranslation, Throwable throwable) {
+
+                        }
+                    });
+                }
+
             }
 
             @Override
@@ -125,6 +156,7 @@ public class MessageActivity extends AppCompatActivity {
                             messages.add(newMsg);
                             adapter.notifyItemInserted(messages.indexOf(newMsg));
                             recycler.scrollToPosition(messages.indexOf(newMsg)); // TODO: unless user has scrolled far enough above the start to prevent going back to the start
+
                         });
 
                     }catch (Exception e){
@@ -155,6 +187,7 @@ public class MessageActivity extends AppCompatActivity {
                     if(!response.isSuccessful()){
                         return;
                     }
+                    //TODO: insert the new message in an "undelivered" state, then rabbitMQ will update the state as delivered
 //                    messages.add(response.body());
 //                    adapter.notifyItemInserted(messages.size()-1);
 
