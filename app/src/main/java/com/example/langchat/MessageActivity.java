@@ -39,6 +39,10 @@ public class MessageActivity extends AppCompatActivity {
     private ImageButton btnSend;
 
     private LocalDatabaseHelper databaseHelper;
+    public ArrayList<Message> messages;
+    public MessageAdapter adapter;
+    public RecyclerView recycler;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +60,7 @@ public class MessageActivity extends AppCompatActivity {
 
 
         Intent intent = getIntent();
-        if(intent == null || !intent.hasExtra(EXTRA_CONVERSATION_ID)){
+        if (intent == null || !intent.hasExtra(EXTRA_CONVERSATION_ID)) {
             Intent homeActivity = new Intent(this, MainActivity.class);
             startActivity(homeActivity);
             finish();
@@ -68,72 +72,14 @@ public class MessageActivity extends AppCompatActivity {
 
         int conversationId = intent.getIntExtra(EXTRA_CONVERSATION_ID, -1);
 
-        ArrayList<Message> messages = new ArrayList<>();
+        messages = new ArrayList<>();
 
-        RecyclerView recycler = findViewById(R.id.recyclerView);
+        recycler = findViewById(R.id.recyclerView);
         recycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        MessageAdapter adapter = new MessageAdapter(this, messages);
+        adapter = new MessageAdapter(this, messages);
         recycler.setAdapter(adapter);
 
-        Call<List<Message>> call = RetrofitClient.getInstance()
-                .getAPI().getMessages(conversationId);
-
-        call.enqueue(new Callback<List<Message>>() {
-            @Override
-            public void onResponse(Call<List<Message>> call, Response<List<Message>> response) {
-                if (!response.isSuccessful()) {
-                    return;
-                }
-                messages.addAll(response.body());
-                adapter.notifyDataSetChanged();
-                recycler.scrollToPosition(messages.size()-1);
-
-                for(Message msg : messages){
-                    if(msg.getSender_id() == 1){
-                        // dont translate messages from self
-                        continue;
-                    }
-                    String translatedMessage = databaseHelper.retrieveTranslatedMessage(msg.getId(), "german");
-                    if(translatedMessage != null){
-                        msg.setMessage(translatedMessage);
-                        adapter.notifyItemChanged(messages.indexOf(msg));
-                        continue;
-                    }
-
-                    // -> if local translation not found:
-                    Call<Message> callTranslation = RetrofitClient.getInstance()
-                            .getAPI().translateMessage(1, msg.getId(), "german");
-
-                    callTranslation.enqueue(new Callback<Message>() {
-                        @Override
-                        public void onResponse(Call<Message> callTranslation, Response<Message> response) {
-                            if (!response.isSuccessful()) {
-                                return;
-                            }
-                            if(response.body() == null || response.body().getMessage() == null){
-                                return;
-                            }
-                            databaseHelper.saveTranslation(msg.getId(), "german", response.body().getMessage());
-                            System.out.println(response.body());
-                            msg.setMessage(response.body().getMessage());
-                            adapter.notifyItemChanged(messages.indexOf(msg));
-
-                        }
-
-                        @Override
-                        public void onFailure(Call<Message> callTranslation, Throwable throwable) {
-
-                        }
-                    });
-                }
-
-            }
-
-            @Override
-            public void onFailure(Call<List<Message>> call, Throwable throwable) {
-
-            }
-        });
+        getAllMessages(conversationId);
 
 
         // TODO: instead, re-query the database for new messages that we dont yet have instead of manually inserting a new message item
@@ -145,13 +91,13 @@ public class MessageActivity extends AppCompatActivity {
                 Connection connection = factory.newConnection();
                 Channel channel = connection.createChannel();
 
-                channel.queueDeclare("messages_"+conversationId, false, false, false, null);
+                channel.queueDeclare("messages_" + conversationId, false, false, false, null);
                 Log.d("ADF", "Waiting for messages. To exit press CTRL+C");
 
                 DeliverCallback deliverCallback = (consumerTag, delivery) -> {
                     String message = new String(delivery.getBody(), "UTF-8");
                     Log.d("ADF", "Received message: " + message);
-                    try{
+                    try {
                         JSONObject object = new JSONObject(message);
                         String newMessage = object.getString("message");
                         int convId = object.getInt("conversation_id");
@@ -171,49 +117,121 @@ public class MessageActivity extends AppCompatActivity {
 
                         });
 
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
 
                 };
-                channel.basicConsume("messages_"+conversationId, true, deliverCallback, consumerTag -> {
+                channel.basicConsume("messages_" + conversationId, true, deliverCallback, consumerTag -> {
                 });
             } catch (IOException | TimeoutException e) {
                 e.printStackTrace();
             }
         }).start();
 
-        btnSend.setOnClickListener(view ->{
+        btnSend.setOnClickListener(view -> {
             String message = etMessage.getText().toString();
-            if(message.isEmpty()){
+            if (message.isEmpty()) {
                 return;
             }
 
             etMessage.setText("");
-            Call<Message> newMsgCall = RetrofitClient.getInstance()
-                    .getAPI().sendMessage(1, conversationId, message);
+            sendNewMessage(conversationId, message);
+        });
 
-            newMsgCall.enqueue(new Callback<Message>() {
-                @Override
-                public void onResponse(Call<Message> newMsgCall, Response<Message> response) {
-                    if(!response.isSuccessful()){
-                        return;
+    }
+
+    private void getAllMessages(int conversationId) {
+        Call<List<Message>> call = RetrofitClient.getInstance()
+                .getAPI().getMessages(conversationId);
+
+        call.enqueue(new Callback<List<Message>>() {
+            @Override
+            public void onResponse(Call<List<Message>> call, Response<List<Message>> response) {
+                if (!response.isSuccessful()) {
+                    return;
+                }
+                messages.addAll(response.body());
+                adapter.notifyDataSetChanged();
+                recycler.scrollToPosition(messages.size() - 1);
+
+                for (Message msg : messages) {
+                    if (msg.getSender_id() == 1) {
+                        // dont translate messages from self
+                        continue;
                     }
-                    //TODO: insert the new message in an "undelivered" state, then rabbitMQ will update the state as delivered
+                    String translatedMessage = databaseHelper.retrieveTranslatedMessage(msg.getId(), "german");
+                    if (translatedMessage != null) {
+                        msg.setMessage(translatedMessage);
+                        adapter.notifyItemChanged(messages.indexOf(msg));
+                        continue;
+                    }
+
+                    translateMessage(msg);
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<List<Message>> call, Throwable throwable) {
+
+            }
+        });
+    }
+
+    private void translateMessage(Message msg) {
+        // -> if local translation not found:
+        final String preferredLanguage = "german"; // TODO: to be replaced with user's preference for this specific conversation
+        final int senderId = 1; // TODO: to be replaced with logged in user
+
+        Call<Message> callTranslation = RetrofitClient.getInstance()
+                .getAPI().translateMessage(senderId, msg.getId(), "german");
+
+        callTranslation.enqueue(new Callback<Message>() {
+            @Override
+            public void onResponse(Call<Message> callTranslation, Response<Message> response) {
+                if (!response.isSuccessful()) {
+                    return;
+                }
+                if (response.body() == null || response.body().getMessage() == null) {
+                    return;
+                }
+                databaseHelper.saveTranslation(msg.getId(), preferredLanguage, response.body().getMessage());
+                System.out.println(response.body());
+                msg.setMessage(response.body().getMessage());
+                adapter.notifyItemChanged(messages.indexOf(msg));
+
+            }
+
+            @Override
+            public void onFailure(Call<Message> callTranslation, Throwable throwable) {
+
+            }
+        });
+    }
+
+    private void sendNewMessage(int conversationId, String message) {
+        final int senderId = 1; // TODO: to be replaced with actual logged in user
+
+        Call<Message> newMsgCall = RetrofitClient.getInstance()
+                .getAPI().sendMessage(senderId, conversationId, message);
+
+        newMsgCall.enqueue(new Callback<Message>() {
+            @Override
+            public void onResponse(Call<Message> newMsgCall, Response<Message> response) {
+                if (!response.isSuccessful()) {
+                    return;
+                }
+                //TODO: insert the new message in an "undelivered" state, then rabbitMQ will update the state as delivered
 //                    messages.add(response.body());
 //                    adapter.notifyItemInserted(messages.size()-1);
 
-                }
+            }
 
-                @Override
-                public void onFailure(Call<Message> newMsgCall, Throwable throwable) {
+            @Override
+            public void onFailure(Call<Message> newMsgCall, Throwable throwable) {
 
-                }
-            });
-
-
-
+            }
         });
-
     }
 }
