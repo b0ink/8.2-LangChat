@@ -57,7 +57,7 @@ async function TranslationService(user, conversationId, newMessage){
     const queue_name = `messages_${conversationId}`;
 
     const conversationParticipants = await Utility.GetConversationParticipants(conversationId);
-    for(let participant in conversationParticipants){
+    for(let participant of conversationParticipants){
         if(participant.user_id === user.id){
             // Original author will only see their original message
             continue;
