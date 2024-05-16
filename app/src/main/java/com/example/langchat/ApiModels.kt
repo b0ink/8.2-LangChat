@@ -13,6 +13,13 @@ data class Participant(
     val user: User
 )
 
+data class Translation(
+    val id: Int,
+    val message_id: Int,
+    val language: String,
+    val message: Message
+)
+
 data class Message(
     val id: Int,
     val conversation_id: Int,
