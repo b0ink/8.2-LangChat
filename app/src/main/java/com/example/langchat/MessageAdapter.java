@@ -19,6 +19,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 
+import com.example.langchat.API.AuthManager;
+
 import java.util.ArrayList;
 
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageViewHolder> {
@@ -58,10 +60,13 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
         private TextView tvMessageText;
         private LinearLayout llMessageContainer;
 
+        private AuthManager authManager;
+
         public MessageViewHolder(Context context, @NonNull View itemView) {
             super(itemView);
             tvMessageText = itemView.findViewById(R.id.tvMessageText);
             llMessageContainer = itemView.findViewById(R.id.llMessageContainer);
+            authManager = new AuthManager(context);
             this.context = context;
         }
 
@@ -70,7 +75,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
             System.out.println("username: " + chatMessage.getUser().getUsername());
 
             //TODO: check if authed user matches this username
-            if(chatMessage.getUser().getUsername().equals("bob")){
+            if(chatMessage.getUser().getUsername().equals(authManager.getJwtProperty("username"))){
                 llMessageContainer.setGravity(Gravity.RIGHT);
                 tvMessageText.setBackgroundResource(R.drawable.text_view_background_user);
             }else{

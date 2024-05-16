@@ -159,20 +159,21 @@ public class MessageActivity extends AppCompatActivity {
                 adapter.notifyDataSetChanged();
                 recycler.scrollToPosition(messages.size() - 1);
 
-                for (Message msg : messages) {
-                    if (msg.getSender_id() == 1) {
-                        // dont translate messages from self
-                        continue;
-                    }
-                    String translatedMessage = databaseHelper.retrieveTranslatedMessage(msg.getId(), "german");
-                    if (translatedMessage != null) {
-                        msg.setMessage(translatedMessage);
-                        adapter.notifyItemChanged(messages.indexOf(msg));
-                        continue;
-                    }
 
-                    translateMessage(msg);
-                }
+//                for (Message msg : messages) {
+//                    if (msg.getSender_id() == 1) {
+//                        // dont translate messages from self
+//                        continue;
+//                    }
+//                    String translatedMessage = databaseHelper.retrieveTranslatedMessage(msg.getId(), "german");
+//                    if (translatedMessage != null) {
+//                        msg.setMessage(translatedMessage);
+//                        adapter.notifyItemChanged(messages.indexOf(msg));
+//                        continue;
+//                    }
+//
+//                    translateMessage(msg);
+//                }
 
             }
 
@@ -215,8 +216,6 @@ public class MessageActivity extends AppCompatActivity {
     }
 
     private void sendNewMessage(int conversationId, String message) {
-        final int senderId = 1; // TODO: to be replaced with actual logged in user
-
         Call<Message> newMsgCall = RetrofitClient.getInstance()
                 .getAPI().sendMessage(authManager.getToken(), conversationId, message);
 
@@ -227,8 +226,8 @@ public class MessageActivity extends AppCompatActivity {
                     return;
                 }
                 //TODO: insert the new message in an "undelivered" state, then rabbitMQ will update the state as delivered
-//                    messages.add(response.body());
-//                    adapter.notifyItemInserted(messages.size()-1);
+                messages.add(response.body());
+                adapter.notifyItemInserted(messages.size() - 1);
 
             }
 
