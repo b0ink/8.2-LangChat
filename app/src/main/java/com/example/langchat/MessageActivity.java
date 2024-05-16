@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -63,7 +64,8 @@ public class MessageActivity extends AppCompatActivity {
 
 
         Intent intent = getIntent();
-        if (intent == null || !intent.hasExtra(EXTRA_CONVERSATION_ID)) {
+        int conversationId = intent.getIntExtra(EXTRA_CONVERSATION_ID, -1);
+        if (intent == null || !intent.hasExtra(EXTRA_CONVERSATION_ID) || conversationId == -1) {
             Intent homeActivity = new Intent(this, MainActivity.class);
             startActivity(homeActivity);
             finish();
@@ -74,7 +76,6 @@ public class MessageActivity extends AppCompatActivity {
         databaseHelper = LocalDatabaseHelper.getInstance(this);
 
 
-        int conversationId = intent.getIntExtra(EXTRA_CONVERSATION_ID, -1);
 
         messages = new ArrayList<>();
 
@@ -94,8 +95,9 @@ public class MessageActivity extends AppCompatActivity {
                 factory.setPort(5672);
                 Connection connection = factory.newConnection();
                 Channel channel = connection.createChannel();
-
-                channel.queueDeclare("messages_" + conversationId, false, false, false, null);
+                String QueueName = "messages_" + conversationId +"_"+authManager.getJwtProperty("id");
+                System.out.println("Queeue name: "+QueueName);
+                channel.queueDeclare(QueueName, false, false, false, null);
                 Log.d("ADF", "Waiting for messages. To exit press CTRL+C");
 
                 DeliverCallback deliverCallback = (consumerTag, delivery) -> {
@@ -122,6 +124,7 @@ public class MessageActivity extends AppCompatActivity {
 
                         // New message has been detected, pull new messages
                         runOnUiThread(()->{
+                            Toast.makeText(this, "DEBUG: Incoming new message", Toast.LENGTH_SHORT).show();
                             getAllMessages(conversationId);
                         });
 
@@ -130,7 +133,7 @@ public class MessageActivity extends AppCompatActivity {
                     }
 
                 };
-                channel.basicConsume("messages_" + conversationId, true, deliverCallback, consumerTag -> {
+                channel.basicConsume(QueueName, true, deliverCallback, consumerTag -> {
                 });
             } catch (IOException | TimeoutException e) {
                 e.printStackTrace();

@@ -170,7 +170,7 @@ module.exports.NotifyNewMessage = (queue, payload) => {
                 // channel.sendToQueue(queue, Buffer.from(JSON.stringify(payload)));
                 channel.sendToQueue(queue, Buffer.from("Success"));
 
-                console.log(" [x] Sent %s", payload);
+                console.log(" [x] Sent succes to ", queue);
                 resolve(`Send ${payload} to ${queue}`);
             })
             .catch((error) => {

@@ -70,12 +70,14 @@ async function TranslationService(user, conversationId, newMessage){
             language: usersLanguage,
             message: translatedMessage
         });
+
+        const response = await Utility.NotifyNewMessage(`messages_${conversationId}_${participant.user_id}`);
+
     }
 
 
     // let translatedMesage = {...newMessage};
     // translatedMesage.message = await Utility.TranslateMessage(translatedMesage.message, "spanish");
-    const response = await Utility.NotifyNewMessage(queue_name);
 }
 
 
