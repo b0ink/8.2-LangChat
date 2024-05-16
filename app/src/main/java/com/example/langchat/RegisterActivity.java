@@ -35,7 +35,6 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText etConfirmEmail;
     private EditText etPassword;
     private EditText etConfirmPassword;
-    private EditText etMobile;
 
     private Button btnRegister;
     private Button btnLogin;
@@ -56,7 +55,6 @@ public class RegisterActivity extends AppCompatActivity {
         etConfirmEmail = findViewById(R.id.etConfirmEmail);
         etPassword = findViewById(R.id.etPassword);
         etConfirmPassword = findViewById(R.id.etConfirmPassword);
-        etMobile = findViewById(R.id.etMobile);
 
         btnRegister = findViewById(R.id.btnRegister);
 
@@ -74,9 +72,8 @@ public class RegisterActivity extends AppCompatActivity {
             String confirmEmail = etConfirmEmail.getText().toString().trim();
             String password = etPassword.getText().toString().trim();
             String confirmPassword = etConfirmPassword.getText().toString().trim();
-            String mobile = etMobile.getText().toString().trim();
 
-            if (username.isEmpty() || email.isEmpty() || confirmEmail.isEmpty() || password.isEmpty() || confirmPassword.isEmpty() || mobile.isEmpty()) {
+            if (username.isEmpty() || email.isEmpty() || confirmEmail.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
                 Toast.makeText(RegisterActivity.this, "Please fill out all fields.", Toast.LENGTH_LONG).show();
                 return;
             }
@@ -93,7 +90,7 @@ public class RegisterActivity extends AppCompatActivity {
 
             Call<ResponsePost> call = RetrofitClient.getInstance()
                     .getAPI()
-                    .createUser(username, email, confirmEmail, password, confirmPassword, mobile);
+                    .createUser(username, email, confirmEmail, password, confirmPassword);
 
             call.enqueue(new Callback<ResponsePost>() {
                 @Override

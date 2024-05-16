@@ -35,8 +35,7 @@ public interface API {
             @Field("email") String email,
             @Field("confirmEmail") String confirmEmail,
             @Field("password") String password,
-            @Field("confirmPassword") String confirmPassword,
-            @Field("mobile") String mobile
+            @Field("confirmPassword") String confirmPassword
     );
 
     // Create new user
