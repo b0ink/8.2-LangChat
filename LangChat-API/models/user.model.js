@@ -20,7 +20,11 @@ module.exports = (sequelize, Sequelize) => {
             password: {
                 type: DataTypes.STRING(256),
                 allowNull: false,
-            }
+            },
+            defaultPreferredLanguage: {
+                type: DataTypes.STRING(32),
+                allowNull: false,
+            },
         },
         {
             timestamps: false,

@@ -21,6 +21,12 @@ module.exports = (sequelize, Sequelize) => {
                 key: "id",
             },
         },
+        // Overrides user's base preferred language per conversation
+        preferredLanguage: {
+            type: DataTypes.STRING(32),
+            allowNull: true,
+            defaultValue: null
+        }
     });
 
     Participant.belongsTo(sequelize.models.conversation, { foreignKey: "conversation_id", as:"conversation" });
