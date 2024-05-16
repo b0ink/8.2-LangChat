@@ -11,13 +11,11 @@ import retrofit2.http.POST;
 
 
 import java.util.List;
+import retrofit2.http.Header;
+import retrofit2.http.GET;
+import retrofit2.http.Path;
 
 public interface API {
-    @FormUrlEncoded
-    @POST("users/conversations")
-    Call<List<ConversationResponse>> getUsersConversations(
-            @Field("user_id") int user_id
-    );
 
     // Login user
     @FormUrlEncoded
@@ -38,27 +36,46 @@ public interface API {
             @Field("confirmPassword") String confirmPassword
     );
 
-    // Create new user
-    @FormUrlEncoded
-    @POST("conversation/messages")
+//    @FormUrlEncoded
+//    @POST("conversation/messages")
+//    Call<List<Message>> getMessages(
+//            @Header("Authorization") String token,
+//            @Field("conversation_id") int conversation_id
+//    );
+
+
+    // TODO: format to @GET("conversation/{conversationId}/messages") instead?
+
+    // Get messages for conversation
+    @GET("conversation/{conversationId}/messages")
     Call<List<Message>> getMessages(
-            @Field("conversation_id") int conversation_id
+            @Header("Authorization") String token,
+            @Path("conversationId") int conversationId
     );
 
-    // Create new user
+
+    // Get users conversations
+    @GET("users/conversations")
+    Call<List<ConversationResponse>> getUsersConversations(
+            @Header("Authorization") String token
+    );
+
+    // Send message to converesation
     @FormUrlEncoded
-    @POST("conversation/send-message")
+    @POST("conversation/{conversationId}/send-message")
     Call<Message> sendMessage(
-            @Field("sender_id") int sender_id, // temporary
-            @Field("conversation_id") int conversation_id,
+            @Header("Authorization") String token,
+//            @Field("sender_id") int sender_id, // temporary
+            @Path("conversationId") int conversationId,
             @Field("message") String message
     );
 
 
+    // Translate a message
     @FormUrlEncoded
     @POST("conversation/translate")
     Call<Message> translateMessage(
-            @Field("sender_id") int sender_id, // temporary
+            @Header("Authorization") String token,
             @Field("messageId") int messageId,
             @Field("usersLanguage") String usersLanguage
     );

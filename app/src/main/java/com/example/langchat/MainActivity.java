@@ -138,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void retrieveConversations(int userId) {
         Call<List<ConversationResponse>> call = RetrofitClient.getInstance()
-                .getAPI().getUsersConversations(userId);
+                .getAPI().getUsersConversations(authManager.getToken());
 
         call.enqueue(new Callback<List<ConversationResponse>>() {
             @Override

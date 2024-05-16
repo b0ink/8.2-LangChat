@@ -14,6 +14,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.langchat.API.AuthManager;
 import com.example.langchat.API.RetrofitClient;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -43,6 +44,8 @@ public class MessageActivity extends AppCompatActivity {
     public MessageAdapter adapter;
     public RecyclerView recycler;
 
+    private AuthManager authManager;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +70,7 @@ public class MessageActivity extends AppCompatActivity {
             return;
         }
 
+        authManager = new AuthManager(this);
         databaseHelper = LocalDatabaseHelper.getInstance(this);
 
 
@@ -143,7 +147,7 @@ public class MessageActivity extends AppCompatActivity {
 
     private void getAllMessages(int conversationId) {
         Call<List<Message>> call = RetrofitClient.getInstance()
-                .getAPI().getMessages(conversationId);
+                .getAPI().getMessages(authManager.getToken(), conversationId);
 
         call.enqueue(new Callback<List<Message>>() {
             @Override
@@ -185,7 +189,7 @@ public class MessageActivity extends AppCompatActivity {
         final int senderId = 1; // TODO: to be replaced with logged in user
 
         Call<Message> callTranslation = RetrofitClient.getInstance()
-                .getAPI().translateMessage(senderId, msg.getId(), "german");
+                .getAPI().translateMessage(authManager.getToken(), msg.getId(), "german");
 
         callTranslation.enqueue(new Callback<Message>() {
             @Override
@@ -214,7 +218,7 @@ public class MessageActivity extends AppCompatActivity {
         final int senderId = 1; // TODO: to be replaced with actual logged in user
 
         Call<Message> newMsgCall = RetrofitClient.getInstance()
-                .getAPI().sendMessage(senderId, conversationId, message);
+                .getAPI().sendMessage(authManager.getToken(), conversationId, message);
 
         newMsgCall.enqueue(new Callback<Message>() {
             @Override
