@@ -38,32 +38,12 @@ exports.sendMessage = async (req, res) => {
 
     // TODO: should be unique to the (in this case) participants of active converation
     // TODO: so a custom key defined by userid+conversationId?
-    const queue_name = `messages_${conversationId}`;
     console.log('beggingin send message', conversationId, message, user)
 
     try {
         const newMessage = await Utility.SendMessage(user.id, conversationId, message);
-        const conversationParticipants = await Utility.GetConversationParticipants(conversationId);
-        const translations = [];
-        for(let participant in conversationParticipants){
-            if(participant.user_id === user.id){
-                // Original author will only see their original message
-                continue;
-            }
-
-            const usersLanguage = participant.preferredLanguage;
-            const translatedMessage = await Utility.TranslateMessage(newMessage.message, usersLanguage);
-            const translation = await Translation.create({
-                message_id: newMessage.id,
-                language: usersLanguage,
-                message: translatedMessage
-            });
-                    // let translatedMesage = {...newMessage};
-                    // translatedMesage.message = 
-        }
-        // let translatedMesage = {...newMessage};
-        // translatedMesage.message = await Utility.TranslateMessage(translatedMesage.message, "spanish");
-        const response = await Utility.NotifyNewMessage(queue_name);
+        
+        TranslationService(user, conversationId, newMessage);
 
         return res.json(newMessage);
     } catch (error) {
@@ -71,6 +51,32 @@ exports.sendMessage = async (req, res) => {
         return res.status(500);
     }
 };
+
+// reponse of sendMessage is used to insert the new bubble client-side, but client should not wait for server-side translations ifrst
+async function TranslationService(user, conversationId, newMessage){
+    const queue_name = `messages_${conversationId}`;
+
+    const conversationParticipants = await Utility.GetConversationParticipants(conversationId);
+    for(let participant in conversationParticipants){
+        if(participant.user_id === user.id){
+            // Original author will only see their original message
+            continue;
+        }
+
+        const usersLanguage = participant.preferredLanguage;
+        const translatedMessage = await Utility.TranslateMessage(newMessage.message, usersLanguage);
+        const translation = await Translation.create({
+            message_id: newMessage.id,
+            language: usersLanguage,
+            message: translatedMessage
+        });
+    }
+
+
+    // let translatedMesage = {...newMessage};
+    // translatedMesage.message = await Utility.TranslateMessage(translatedMesage.message, "spanish");
+    const response = await Utility.NotifyNewMessage(queue_name);
+}
 
 
 exports.translateMessage = async (req, res) => {
