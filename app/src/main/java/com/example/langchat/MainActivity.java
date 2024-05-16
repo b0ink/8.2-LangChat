@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.StrictMode;
 import android.util.Log;
 import android.widget.Adapter;
+import android.widget.Button;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -40,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
     private ConversationAdapter adapter;
 
     private AuthManager authManager;
-
+    private Button btnLogout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,7 +61,13 @@ public class MainActivity extends AppCompatActivity {
             finish();
             return;
         }
-
+        btnLogout = findViewById(R.id.btnLogout);
+        btnLogout.setOnClickListener(view ->{
+            authManager.logout();
+            startActivity(new Intent(this, LoginActivity.class));
+            finish();
+            return;
+        });
 
         // Run the message receiving logic on a background thread
         new Thread(() -> {

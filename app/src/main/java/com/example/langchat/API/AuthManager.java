@@ -68,7 +68,7 @@ public class AuthManager {
     public void logout() {
         resetToken();
         // TEMP DEBUG: clears any saved interests, forcing new ones to be selected on next login
-        saveInterests(new ArrayList<>());
+//        saveInterests(new ArrayList<>());
     }
 
     public Boolean isTokenValid() {
