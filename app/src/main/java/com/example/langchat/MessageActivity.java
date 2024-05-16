@@ -102,23 +102,27 @@ public class MessageActivity extends AppCompatActivity {
                     String message = new String(delivery.getBody(), "UTF-8");
                     Log.d("ADF", "Received message: " + message);
                     try {
-                        JSONObject object = new JSONObject(message);
-                        String newMessage = object.getString("message");
-                        int convId = object.getInt("conversation_id");
-                        int sender_id = object.getInt("sender_id");
-                        int msgId = object.getInt("id");
-                        JSONObject user = object.getJSONObject("user");
-                        String username = user.getString("username");
+//                        JSONObject object = new JSONObject(message);
+//                        String newMessage = object.getString("message");
+//                        int convId = object.getInt("conversation_id");
+//                        int sender_id = object.getInt("sender_id");
+//                        int msgId = object.getInt("id");
+//                        JSONObject user = object.getJSONObject("user");
+//                        String username = user.getString("username");
+//
+//                        String createdAt = object.getString("createdAt");
+//                        String updatedAt = object.getString("updatedAt");
+//
+//                        runOnUiThread(() -> {
+//                            Message newMsg = new Message(msgId, convId, sender_id, newMessage, createdAt, updatedAt, new User(username));
+//                            messages.add(newMsg);
+//                            adapter.notifyItemInserted(messages.indexOf(newMsg));
+//                            recycler.scrollToPosition(messages.indexOf(newMsg)); // TODO: unless user has scrolled far enough above the start to prevent going back to the start
+//                        });
 
-                        String createdAt = object.getString("createdAt");
-                        String updatedAt = object.getString("updatedAt");
-
-                        runOnUiThread(() -> {
-                            Message newMsg = new Message(msgId, convId, sender_id, newMessage, createdAt, updatedAt, new User(username));
-                            messages.add(newMsg);
-                            adapter.notifyItemInserted(messages.indexOf(newMsg));
-                            recycler.scrollToPosition(messages.indexOf(newMsg)); // TODO: unless user has scrolled far enough above the start to prevent going back to the start
-
+                        // New message has been detected, pull new messages
+                        runOnUiThread(()->{
+                            getAllMessages(conversationId);
                         });
 
                     } catch (Exception e) {
@@ -146,18 +150,30 @@ public class MessageActivity extends AppCompatActivity {
     }
 
     private void getAllMessages(int conversationId) {
+        int lastMessageId = -1;
+        if(!messages.isEmpty()){
+            lastMessageId = messages.get(messages.size()-1).getId();
+        }
         Call<List<Message>> call = RetrofitClient.getInstance()
-                .getAPI().getMessages(authManager.getToken(), conversationId);
+                .getAPI().getMessages(authManager.getToken(), conversationId, lastMessageId);
 
         call.enqueue(new Callback<List<Message>>() {
             @Override
             public void onResponse(Call<List<Message>> call, Response<List<Message>> response) {
-                if (!response.isSuccessful()) {
+                if (!response.isSuccessful() || response.body() == null) {
+                    System.out.println("Invalid response from getAllMessages");
                     return;
                 }
-                messages.addAll(response.body());
-                adapter.notifyDataSetChanged();
-                recycler.scrollToPosition(messages.size() - 1);
+                for(Message msg : response.body()){
+                    System.out.println("Comparing msgId: "+msg.getId() + "with ");
+                    if(!containsMessage(messages, msg)){
+                        messages.add(msg);
+                        adapter.notifyItemInserted(messages.indexOf(msg));
+                        recycler.scrollToPosition(messages.indexOf(msg));
+                    }
+                }
+//                messages.addAll(response.body());
+//                adapter.notifyDataSetChanged();
 
 
 //                for (Message msg : messages) {
@@ -182,6 +198,15 @@ public class MessageActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    private boolean containsMessage(List<Message> messages, Message msg) {
+        for(Message m : messages) {
+            if(m.getId() == msg.getId()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void translateMessage(Message msg) {
@@ -228,6 +253,7 @@ public class MessageActivity extends AppCompatActivity {
                 //TODO: insert the new message in an "undelivered" state, then rabbitMQ will update the state as delivered
                 messages.add(response.body());
                 adapter.notifyItemInserted(messages.size() - 1);
+                recycler.scrollToPosition(messages.size() - 1);
 
             }
 

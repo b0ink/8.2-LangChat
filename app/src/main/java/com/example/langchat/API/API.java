@@ -47,10 +47,11 @@ public interface API {
     // TODO: format to @GET("conversation/{conversationId}/messages") instead?
 
     // Get messages for conversation
-    @GET("conversation/{conversationId}/messages")
+    @GET("conversation/{conversationId}/messages/{lastMessageId}")
     Call<List<Message>> getMessages(
             @Header("Authorization") String token,
-            @Path("conversationId") int conversationId
+            @Path("conversationId") int conversationId,
+            @Path("lastMessageId") int lastMessageId
     );
 
 
