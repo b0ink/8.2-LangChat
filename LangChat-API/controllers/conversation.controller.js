@@ -12,7 +12,7 @@ const Utility = require("./Utility");
 
 exports.findMessages = async (req, res) => {
     const user = req.user;
-    const conversationId = req.params.conversationId;
+    const conversationId = parseInt(req.params.conversationId);
 
     const usersConversations = await Utility.GetUsersConversations(user.id);
     if(!usersConversations.includes(conversationId)){
@@ -35,7 +35,8 @@ exports.sendMessage = async (req, res) => {
 
     // TODO: should be unique to the (in this case) participants of active converation
     // TODO: so a custom key defined by userid+conversationId?
-    const queue_name = `messages_${conversation_id}`;
+    const queue_name = `messages_${conversationId}`;
+    console.log('beggingin send message', conversationId, message, user)
 
     try {
         const newMessage = await Utility.SendMessage(user.id, conversationId, message);
