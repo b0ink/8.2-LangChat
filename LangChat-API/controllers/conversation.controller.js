@@ -1,5 +1,6 @@
 const db = require("../models");
 const User = db.users;
+const Translation = db.translations;
 
 const { secretKey } = require("../config.json");
 const Joi = require("joi");
@@ -40,9 +41,27 @@ exports.sendMessage = async (req, res) => {
 
     try {
         const newMessage = await Utility.SendMessage(user.id, conversationId, message);
+        const conversationParticipants = await Utility.GetConversationParticipants(conversationId);
+        const translations = [];
+        for(let participant in conversationParticipants){
+            if(participant.user_id === user.id){
+                // Original author will only see their original message
+                continue;
+            }
+
+            const usersLanguage = participant.preferredLanguage;
+            const translatedMessage = await Utility.TranslateMessage(translatedMesage.message, usersLanguage);
+            const translation = await Translation.create({
+                message_id: newMessage.id,
+                language: usersLanguage,
+                message: translatedMessage
+            });
+                    // let translatedMesage = {...newMessage};
+                    // translatedMesage.message = 
+        }
         // let translatedMesage = {...newMessage};
         // translatedMesage.message = await Utility.TranslateMessage(translatedMesage.message, "spanish");
-        // const response =  await Utility.NotifyNewMessage(queue_name, translatedMesage);
+        const response = await Utility.NotifyNewMessage(queue_name, translatedMesage);
 
         return res.json(newMessage);
     } catch (error) {

@@ -41,11 +41,11 @@ module.exports.GetConversationParticipants = async (conversation_id) => {
             {
                 model: User,
                 as: "user",
-                attributes: ["username"],
+                attributes: ["username", "defaultPreferredLanguage"],
             },
         ],
     });
-
+    
     console.log("participants", participants, conversation_id);
     return participants;
 };
@@ -152,7 +152,8 @@ module.exports.NotifyNewMessage = (queue, payload) => {
                 channel.assertExchange(queue, "fanout", {
                     durable: false,
                 });
-                channel.sendToQueue(queue, Buffer.from(JSON.stringify(payload)));
+                // channel.sendToQueue(queue, Buffer.from(JSON.stringify(payload)));
+                channel.sendToQueue(queue, true);
 
                 console.log(" [x] Sent %s", payload);
                 resolve(`Send ${payload} to ${queue}`);

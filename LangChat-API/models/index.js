@@ -22,6 +22,7 @@ db.conversations = require("./conversation.model.js")(sequelize, Sequelize);
 db.languages = require("./language.model.js")(sequelize, Sequelize);
 db.messages = require("./message.model.js")(sequelize, Sequelize);
 db.participants = require("./participant.model.js")(sequelize, Sequelize);
+db.translations = require("./translation.model.js")(sequelize, Sequelize);
 
 // sequelize.sync({force: true});
 
