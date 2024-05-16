@@ -24,7 +24,7 @@ module.exports = (sequelize, Sequelize) => {
     });
 
 
-    Translation.belongsTo(sequelize.models.conversation, { foreignKey: "message_id", as:'message' });
+    Translation.belongsTo(sequelize.models.conversation, { foreignKey: "message_id", as:'originalMessage' });
 
     return Translation;
 };

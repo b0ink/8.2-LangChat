@@ -24,6 +24,7 @@ module.exports = (sequelize, Sequelize) => {
             defaultPreferredLanguage: {
                 type: DataTypes.STRING(32),
                 allowNull: false,
+                defaultValue: "English"
             },
         },
         {
