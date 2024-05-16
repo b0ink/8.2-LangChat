@@ -55,12 +55,15 @@ module.exports.GetConversationParticipants = async (conversation_id) => {
  * @param INTEGER conversation_id
  * @returns An array of Message objects
  */
-module.exports.GetConversationMessages = async (conversation_id) => {
+module.exports.GetConversationMessages = async (conversation_id, lastMessageId = -1) => {
     const messages = await Message.findAll({
         where: {
             conversation_id: conversation_id,
+            id: {
+                [db.Sequelize.Op.gt]: lastMessageId // id greater than to lastMessageId
+            }
         },
-        limit: 50,
+        limit: 150,
         include: [
             {
                 model: User,
@@ -70,14 +73,6 @@ module.exports.GetConversationMessages = async (conversation_id) => {
         ],
     });
 
-    // messages.forEach(message => {
-    //     console.log('---------------------');
-    //     console.log(`Message ID: ${message.id}`);
-    //     console.log(`Sender ID: ${message.sender_id}`);
-    //     console.log(`Message: ${message.message}`);
-    //     console.log(`Sent At: ${message.sentAt}`);
-    //     console.log('---------------------');
-    // });
 
     return messages;
 };
@@ -153,7 +148,7 @@ module.exports.NotifyNewMessage = (queue, payload) => {
                     durable: false,
                 });
                 // channel.sendToQueue(queue, Buffer.from(JSON.stringify(payload)));
-                channel.sendToQueue(queue, true);
+                channel.sendToQueue(queue, Buffer.from("Success"));
 
                 console.log(" [x] Sent %s", payload);
                 resolve(`Send ${payload} to ${queue}`);

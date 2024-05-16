@@ -25,5 +25,6 @@ db.participants = require("./participant.model.js")(sequelize, Sequelize);
 db.translations = require("./translation.model.js")(sequelize, Sequelize);
 
 // sequelize.sync({force: true});
+// sequelize.sync();
 
 module.exports = db;

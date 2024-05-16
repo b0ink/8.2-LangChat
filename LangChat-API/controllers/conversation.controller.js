@@ -14,15 +14,17 @@ const Utility = require("./Utility");
 exports.findMessages = async (req, res) => {
     const user = req.user;
     const conversationId = parseInt(req.params.conversationId);
+    const lastMessageId = parseInt(req.params.lastMessageId);
 
     const usersConversations = await Utility.GetUsersConversations(user.id);
     if(!usersConversations.includes(conversationId)){
         return res.status(401);
     }
+    console.log("finding messages in ", conversationId, 'offsetting by', lastMessageId)
 
-    const Messages = await Utility.GetConversationMessages(conversationId);
+    const Messages = await Utility.GetConversationMessages(conversationId, lastMessageId);
 
-    console.log(JSON.stringify(Messages, null, 2));
+    // console.log(JSON.stringify(Messages, null, 2));
 
     return res.json(Messages);
 };
@@ -50,7 +52,7 @@ exports.sendMessage = async (req, res) => {
             }
 
             const usersLanguage = participant.preferredLanguage;
-            const translatedMessage = await Utility.TranslateMessage(translatedMesage.message, usersLanguage);
+            const translatedMessage = await Utility.TranslateMessage(newMessage.message, usersLanguage);
             const translation = await Translation.create({
                 message_id: newMessage.id,
                 language: usersLanguage,
@@ -61,7 +63,7 @@ exports.sendMessage = async (req, res) => {
         }
         // let translatedMesage = {...newMessage};
         // translatedMesage.message = await Utility.TranslateMessage(translatedMesage.message, "spanish");
-        const response = await Utility.NotifyNewMessage(queue_name, translatedMesage);
+        const response = await Utility.NotifyNewMessage(queue_name);
 
         return res.json(newMessage);
     } catch (error) {
