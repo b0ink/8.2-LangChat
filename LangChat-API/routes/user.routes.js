@@ -1,3 +1,5 @@
+const { authenticateToken } = require("../Authentication.js");
+
 module.exports = (app, API_VERSION) => {
     const users = require("../controllers/user.controller.js");
 
@@ -8,8 +10,7 @@ module.exports = (app, API_VERSION) => {
 
     router.post("/login", users.findOne);
 
-    //TODO: under authentication
-    router.post("/conversations", users.findConversations);
+    router.get("/conversations", authenticateToken, users.findConversations);
 
     app.use(`/api/${API_VERSION}/users`, router);
 };

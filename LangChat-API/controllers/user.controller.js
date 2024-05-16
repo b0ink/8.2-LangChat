@@ -84,11 +84,7 @@ exports.findOne = async (req, res) => {
 };
 
 exports.findConversations = async (req, res) => {
-    // const user = req.user;
-    const user = {
-        id: 1,
-        username: "bob"
-    };
+    const user = req.user;
 
     const conversationIds = await Utility.GetUsersConversations(user.id);
 

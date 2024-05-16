@@ -1,17 +1,15 @@
 
-const {authenticateToken} = require('../Utility.js')
+const {authenticateToken} = require('../Authentication.js')
 
 module.exports = (app, API_VERSION) => {
     const conversation = require("../controllers/conversation.controller.js");
     var router = require("express").Router();
 
+    router.get("/:conversationId/messages", authenticateToken, conversation.findMessages);
 
-    //TODO: under authentication
-    router.post("/messages", conversation.findMessages);
+    router.post("/:converationId/send-message", authenticateToken, conversation.sendMessage);
 
-    router.post("/send-message", conversation.sendMessage);
-
-    router.post("/translate", conversation.translateMessage);
+    router.post("/translate", authenticateToken, conversation.translateMessage);
 
     app.use(`/api/${API_VERSION}/conversation`, router);
 };
