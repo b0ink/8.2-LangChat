@@ -7,7 +7,8 @@ const User = db.users;
 const Conversation = db.conversations;
 const Message = db.messages;
 const Participant = db.participants;
-const language = db.participants;
+const language = db.languages;
+const Translation = db.translations;
 
 const { GradientLLM } = require("@langchain/community/llms/gradient_ai");
 
@@ -55,12 +56,23 @@ module.exports.GetConversationParticipants = async (conversation_id) => {
  * @param INTEGER conversation_id
  * @returns An array of Message objects
  */
-module.exports.GetConversationMessages = async (conversation_id, lastMessageId = -1) => {
+module.exports.GetConversationMessages = async (user, conversation_id, lastMessageId = -1) => {
+    const participant = await Participant.findOne({
+        where:{
+            conversation_id: conversation_id,
+            user_id: user.id
+        }
+    });
+
+    lastMessageId = lastMessageId - 5; // ??
+
+    let preferredLanguage = participant.preferredLanguage;
+    console.log("preferred lang", preferredLanguage);
     const messages = await Message.findAll({
         where: {
             conversation_id: conversation_id,
             id: {
-                [db.Sequelize.Op.gt]: lastMessageId // id greater than to lastMessageId
+                [db.Sequelize.Op.gte]: lastMessageId // id greater than to lastMessageId
             }
         },
         limit: 150,
@@ -70,9 +82,17 @@ module.exports.GetConversationMessages = async (conversation_id, lastMessageId =
                 as: "user",
                 attributes: ["username"],
             },
+            {
+                model: Translation,
+                as: 'translations',
+                required: false,
+                where: { language: preferredLanguage },
+                attributes: ['message_id', 'language', 'message']
+            }
         ],
     });
 
+    console.log(messages)
 
     return messages;
 };

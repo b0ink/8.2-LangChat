@@ -31,5 +31,7 @@ module.exports = (sequelize, Sequelize) => {
     Message.belongsTo(sequelize.models.conversation, { foreignKey: "conversation_id", as:'conversation' });
     Message.belongsTo(sequelize.models.user, { foreignKey: "sender_id", as:'user' });
 
+    Message.hasMany(sequelize.models.translation, { foreignKey: "message_id", as:'translations', sourceKey:'id' });
+
     return Message;
 };

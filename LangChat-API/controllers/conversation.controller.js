@@ -22,7 +22,7 @@ exports.findMessages = async (req, res) => {
     }
     console.log("finding messages in ", conversationId, 'offsetting by', lastMessageId)
 
-    const Messages = await Utility.GetConversationMessages(conversationId, lastMessageId);
+    const Messages = await Utility.GetConversationMessages(user, conversationId, lastMessageId);
 
     // console.log(JSON.stringify(Messages, null, 2));
 
