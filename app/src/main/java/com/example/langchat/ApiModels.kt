@@ -17,7 +17,7 @@ data class Translation(
     val id: Int,
     val message_id: Int,
     val language: String,
-    val message: Message
+    val message: String
 )
 
 data class Message(
@@ -27,7 +27,8 @@ data class Message(
     var message: String,
     val createdAt: String,
     val updatedAt: String,
-    val user: User
+    val user: User,
+    val translations: List<Translation>
 )
 
 data class ConversationResponse(

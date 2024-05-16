@@ -165,7 +165,6 @@ public class MessageActivity extends AppCompatActivity {
                     return;
                 }
                 for(Message msg : response.body()){
-                    System.out.println("Comparing msgId: "+msg.getId() + "with ");
                     if(!containsMessage(messages, msg)){
                         messages.add(msg);
                         adapter.notifyItemInserted(messages.indexOf(msg));

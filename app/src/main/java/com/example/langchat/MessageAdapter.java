@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.langchat.API.AuthManager;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageViewHolder> {
 
@@ -71,7 +72,17 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
         }
 
         public void bind(Message chatMessage) {
+            // set the original text of the message
             tvMessageText.setText(chatMessage.getMessage());
+
+            // if a translation is available, update it to translated version:
+            if(chatMessage.getTranslations() != null){
+                List<Translation> translations = chatMessage.getTranslations();
+                if(!translations.isEmpty()){
+                    tvMessageText.setText(translations.get(0).getMessage());
+                }
+            }
+
             System.out.println("username: " + chatMessage.getUser().getUsername());
 
             //TODO: check if authed user matches this username
