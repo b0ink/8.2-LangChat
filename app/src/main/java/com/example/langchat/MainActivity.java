@@ -24,6 +24,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import com.example.langchat.API.AuthManager;
 import com.example.langchat.API.RetrofitClient;
 
 import com.rabbitmq.client.Channel;
@@ -38,6 +39,8 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<ConversationResponse> conversations;
     private ConversationAdapter adapter;
 
+    private AuthManager authManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,6 +53,14 @@ public class MainActivity extends AppCompatActivity {
         });
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
+
+        authManager = new AuthManager(this);
+        if(authManager.getToken() == null || !authManager.isTokenValid()){
+            startActivity(new Intent(this, LoginActivity.class));
+            finish();
+            return;
+        }
+
 
         // Run the message receiving logic on a background thread
         new Thread(() -> {
@@ -66,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
                 DeliverCallback deliverCallback = (consumerTag, delivery) -> {
                     String message = new String(delivery.getBody(), "UTF-8");
                     Log.d("ADF", "Received message: " + message);
-                    try{
+                    try {
                         JSONObject object = new JSONObject(message);
                         String newMessage = object.getString("message");
                         int convId = object.getInt("conversation_id");
@@ -96,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
                             }
                         });
 
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
 
@@ -109,9 +120,8 @@ public class MainActivity extends AppCompatActivity {
         }).start();
 
 
-        if(false){
-            Intent intent = new Intent(this, MessageActivity.class);
-            startActivity(intent);
+        if (false) {
+            startActivity(new Intent(this, MessageActivity.class));
             finish();
             return;
         }
@@ -126,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
         retrieveConversations(1);
     }
 
-    private void retrieveConversations(int userId){
+    private void retrieveConversations(int userId) {
         Call<List<ConversationResponse>> call = RetrofitClient.getInstance()
                 .getAPI().getUsersConversations(userId);
 
