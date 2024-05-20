@@ -72,6 +72,11 @@ public class MessageActivity extends AppCompatActivity {
         etMessage = findViewById(R.id.etMessage);
         btnSend = findViewById(R.id.btnSend);
 
+        btnGoBack = findViewById(R.id.btnGoBack);
+        btnGoBack.setOnClickListener(view ->{
+            startActivity(new Intent(this, MainActivity.class));
+            finish();
+        });
 
         Intent intent = getIntent();
         int conversationId = intent.getIntExtra(EXTRA_CONVERSATION_ID, -1);
