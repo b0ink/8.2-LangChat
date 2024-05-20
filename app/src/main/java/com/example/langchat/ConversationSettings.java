@@ -48,6 +48,11 @@ public class ConversationSettings extends AppCompatActivity {
 
     private Button btnAddUser;
 
+
+    private String selectedLanguage = "";
+
+    private int conversationId = -1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,7 +67,7 @@ public class ConversationSettings extends AppCompatActivity {
         authManager = new AuthManager(this);
 
         Intent intent = getIntent();
-        int conversationId = intent.getIntExtra(EXTRA_CONVERSATION_ID, -1);
+        conversationId = intent.getIntExtra(EXTRA_CONVERSATION_ID, -1);
         if (intent == null || !intent.hasExtra(EXTRA_CONVERSATION_ID) || conversationId == -1) {
             Intent homeActivity = new Intent(this, MainActivity.class);
             startActivity(homeActivity);
@@ -78,13 +83,29 @@ public class ConversationSettings extends AppCompatActivity {
         spnLanguage.setAdapter(languageAdapter);
 
 
+        participants = new ArrayList<>();
+
+        RecyclerView recycler = findViewById(R.id.participantRecyclerView);
+        recycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        participantAdapter = new ParticipantAdapter(this, participants);
+        recycler.setAdapter(participantAdapter);
+
         // Set the listener to detect item selection
         spnLanguage.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String selectedItem = parent.getItemAtPosition(position).toString();
 
-                saveLanguage(conversationId, selectedItem);
+                if (selectedLanguage.isEmpty()) {
+                    selectedLanguage = selectedItem;
+                    return;
+                }
+
+                if (selectedItem.equals(selectedLanguage)) {
+                    return;
+                }
+
+                saveLanguage(selectedItem);
             }
 
             @Override
@@ -93,28 +114,17 @@ public class ConversationSettings extends AppCompatActivity {
             }
         });
 
-
-        participants = new ArrayList<>();
-
-        RecyclerView recycler = findViewById(R.id.participantRecyclerView);
-        recycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        participantAdapter = new ParticipantAdapter(this, participants);
-        recycler.setAdapter(participantAdapter);
-
-        // retrieve users in conversation (conversationId)
-        getParticipants(conversationId);
-
         getLanguages();
 
 
         btnAddUser = findViewById(R.id.btnAddUser);
         btnAddUser.setOnClickListener(view -> {
-            showAddUserDialog(conversationId);
+            showAddUserDialog();
         });
 
     }
 
-    public void showAddUserDialog(int conversationId) {
+    public void showAddUserDialog() {
         // Inflate the custom layout
         LayoutInflater inflater = getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.dialog_add_user, null);
@@ -135,7 +145,7 @@ public class ConversationSettings extends AppCompatActivity {
             if (!username.isEmpty()) {
                 // Example: Display the username using a Toast
 //                Toast.makeText(this, "Username: " + username, Toast.LENGTH_SHORT).show();
-                addUserToConversation(conversationId, username);
+                addUserToConversation(username);
 
                 // TODO: Add your code here to handle the username (e.g., save to a database)
             } else {
@@ -153,7 +163,7 @@ public class ConversationSettings extends AppCompatActivity {
         dialog.show();
     }
 
-    private void addUserToConversation(int conversationId, String username) {
+    private void addUserToConversation(String username) {
         Call<String> call = RetrofitClient.getInstance()
                 .getAPI().addParticipant(authManager.getToken(), conversationId, username);
 
@@ -161,11 +171,11 @@ public class ConversationSettings extends AppCompatActivity {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
                 if (!response.isSuccessful() || response.body() == null) {
-                    if(response.code() == 404){
+                    if (response.code() == 404) {
                         Toast.makeText(ConversationSettings.this, "User does not exist", Toast.LENGTH_SHORT).show();
-                    }else if(response.code() == 401){
+                    } else if (response.code() == 401) {
                         Toast.makeText(ConversationSettings.this, "User is already part of this conversation", Toast.LENGTH_SHORT).show();
-                    }else{
+                    } else {
                         Toast.makeText(ConversationSettings.this, "Error adding user", Toast.LENGTH_SHORT).show();
                     }
                     return;
@@ -187,7 +197,7 @@ public class ConversationSettings extends AppCompatActivity {
     }
 
 
-    private void getParticipants(int conversationId) {
+    private void getParticipants() {
         Call<List<User>> call = RetrofitClient.getInstance()
                 .getAPI().getParticipants(authManager.getToken(), conversationId);
 
@@ -204,14 +214,16 @@ public class ConversationSettings extends AppCompatActivity {
 
                 // If user object contains preferred language, set spinner item
                 // First participant will be the calling/logged in user
-                if (participants.get(0).getPreferredLanguage() != null) {
-                    spnLanguage.setSelection(availableLanguages.indexOf(participants.get(0).getPreferredLanguage()));
+
+                String language = participants.get(0).getPreferredLanguage();
+                if (language != null) {
+                    spnLanguage.setSelection(availableLanguages.indexOf(language), false);
+                    selectedLanguage = language;
                 }
 
-//                participants.add(new User("Add user to conversation", null));
-
-
                 participantAdapter.notifyDataSetChanged();
+
+//                participants.add(new User("Add user to conversation", null));
 
             }
 
@@ -238,6 +250,8 @@ public class ConversationSettings extends AppCompatActivity {
                 availableLanguages.addAll(response.body());
                 languageAdapter.notifyDataSetChanged();
 
+                // retrieve users in conversation (conversationId)
+                getParticipants();
             }
 
             @Override
@@ -247,7 +261,7 @@ public class ConversationSettings extends AppCompatActivity {
         });
     }
 
-    private void saveLanguage(int conversationId, String language) {
+    private void saveLanguage(String language) {
         Call<Boolean> call = RetrofitClient.getInstance()
                 .getAPI().saveConversationsLanguage(authManager.getToken(), conversationId, language);
 
@@ -262,6 +276,7 @@ public class ConversationSettings extends AppCompatActivity {
 
                 if (response.body() == true) {
                     Toast.makeText(ConversationSettings.this, "Successfully saved language to: " + language, Toast.LENGTH_SHORT).show();
+                    selectedLanguage = language;
                 }
 
             }
