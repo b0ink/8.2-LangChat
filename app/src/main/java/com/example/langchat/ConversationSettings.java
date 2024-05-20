@@ -2,8 +2,11 @@ package com.example.langchat;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -72,6 +75,21 @@ public class ConversationSettings extends AppCompatActivity {
         getLanguages();
 
 
+        // Set the listener to detect item selection
+        spnLanguage.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String selectedItem = parent.getItemAtPosition(position).toString();
+                Toast.makeText(ConversationSettings.this, "Selected: " + selectedItem, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // Do something when nothing is selected, if needed
+            }
+        });
+
+
         participants = new ArrayList<>();
 
         RecyclerView recycler = findViewById(R.id.participantRecyclerView);
@@ -126,6 +144,12 @@ public class ConversationSettings extends AppCompatActivity {
                 System.out.println(response.body());
                 availableLanguages.addAll(response.body());
                 languageAdapter.notifyDataSetChanged();
+
+                //TODO: get users preferred langauge for this converation
+                final String usersLanguage = "German";
+
+                spnLanguage.setSelection(availableLanguages.indexOf(usersLanguage));
+
             }
 
             @Override
