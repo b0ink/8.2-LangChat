@@ -27,41 +27,24 @@ const amqp = require("amqplib/callback_api");
 
 const db = require("./models/index");
 
-app.post("/send-chat", async (req, res) => {
-    const message = req.body.message;
-    const sender_id = req.body.sender_id;
-    const conversation_id = req.body.conversation_id;
+const Languages = ["English", "Spanish", "French", "German", "Italian", "Portugese", "Dutch", "Russian", "Chinese", "Japanese", "Korean"]
 
-    await db.messages.create({
-        sender_id,
-        message,
-        conversation_id,
-    });
+async function SeedLanguages(){
+    let langs = [];
+    
+    for(let l of await db.languages.findAll({plain: false, raw: true})){
+        langs.push(l.name)
+    }
 
-    amqp.connect("amqp://localhost", function (error0, connection) {
-        if (error0) {
-            throw error0;
+    for(let l of Languages){
+        if(!langs.includes(l)){
+            await db.languages.create({name: l})
         }
-        connection.createChannel(function (error1, channel) {
-            if (error1) {
-                throw error1;
-            }
-            var queue = "my_messages";
-            var msg = {
-                sender_id, message, conversation_id
-            };
+    }
 
-            channel.assertExchange(queue, "fanout", {
-                durable: false,
-            });
+}
 
-            channel.sendToQueue(queue, Buffer.from(JSON.stringify(msg)));
-            console.log(" [x] Sent %s", msg);
-        });
-    });
-    return res.status(200).json();
-
-});
+SeedLanguages();
 
 // Start the Express server
 app.listen(PORT, () => {
