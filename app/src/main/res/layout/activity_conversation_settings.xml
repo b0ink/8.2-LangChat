@@ -94,28 +94,13 @@
                 android:layout_height="wrap_content" />
 
             <Button
-                android:id="@+id/btnLogin"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginLeft="25dp"
-                android:layout_marginTop="15dp"
-                android:layout_marginRight="25dp"
-                android:backgroundTint="#02ff7d"
-                android:minWidth="250dp"
-                android:text="Add user to conversation"
-                android:textColor="#000000"
-                app:cornerRadius="6dp"
-                tools:visibility="gone" />
-
-            <Button
                 android:id="@+id/btnLeaveConversation"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginLeft="25dp"
+                android:layout_marginLeft="75dp"
                 android:layout_marginTop="50dp"
-                android:layout_marginRight="25dp"
+                android:layout_marginRight="75dp"
                 android:backgroundTint="#FF023D"
                 android:minWidth="250dp"
                 android:text="Leave conversation"
