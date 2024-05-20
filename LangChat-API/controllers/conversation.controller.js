@@ -12,6 +12,50 @@ const saltRounds = 10;
 
 const Utility = require("./Utility");
 
+exports.addParticipant = async (req, res) => {
+    const user = req.user;
+    const conversationId = parseInt(req.params.conversationId);
+    const usernameToAdd = req.body.username;
+
+    // Check if calling user is part of converesation
+    const usersConversations = await Utility.GetUsersConversations(user.id);
+    if(!usersConversations.includes(conversationId)){
+        return res.status(401);
+    }
+    
+    const userToAdd = await User.findOne({
+        where: {
+            username: usernameToAdd
+        }
+    });
+    
+    // Check if user exists
+    if(!userToAdd){
+        return res.status(404).json({message: "User does not exist"})
+    }
+
+    // Check if adding user is part of converesation already
+    const userToAddConversations = await Utility.GetUsersConversations(userToAdd.id);
+    if(userToAddConversations.includes(conversationId)){
+        return res.status(401).json({message: "User is already part of the conversation"});
+    }
+
+    //TODO: check if new user has maxed out conversations they participate in
+
+    const newParticipant = await Participant.create({
+        conversation_id: conversationId,
+        user_id: userToAdd.id,
+        preferredLanguage: userToAdd.defaultPreferredLanguage
+    });
+
+    if(newParticipant){
+        return res.status(200).json({message: "Added user to conversation"});
+    }
+
+
+}
+
+
 exports.findParticipants = async (req, res) => {
     const user = req.user;
     const conversationId = parseInt(req.params.conversationId);
