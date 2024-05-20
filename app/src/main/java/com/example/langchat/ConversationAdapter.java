@@ -108,9 +108,11 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
                 tvRecentMessage.setText(lastMsg.getMessage());
             }
 
+            final String usernameDisplay = username;
             rlConversationContainer.setOnClickListener(view ->{
                 Intent intent = new Intent(context, MessageActivity.class);
                 intent.putExtra(MessageActivity.EXTRA_CONVERSATION_ID, conversation.getId());
+                intent.putExtra(MessageActivity.EXTRA_USERNAME_DISPLAY, usernameDisplay);
                 context.startActivity(intent);
                 ((Activity)context).finish();
             });

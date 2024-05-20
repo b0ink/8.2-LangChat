@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -36,9 +37,15 @@ import retrofit2.Response;
 public class MessageActivity extends AppCompatActivity {
 
     public static final String EXTRA_CONVERSATION_ID = "extra_conversation_id";
+    public static final String EXTRA_USERNAME_DISPLAY = "extra_username_display";
 
     private EditText etMessage;
     private ImageButton btnSend;
+
+    private ImageButton btnProfile;
+    private ImageButton btnGoBack;
+    private ImageButton btnSettings;
+    private TextView tvUsername;
 
     private LocalDatabaseHelper databaseHelper;
     public ArrayList<Message> messages;
@@ -75,7 +82,9 @@ public class MessageActivity extends AppCompatActivity {
         authManager = new AuthManager(this);
         databaseHelper = LocalDatabaseHelper.getInstance(this);
 
-
+        tvUsername = findViewById(R.id.tvUsername);
+        String usernameDisplay = intent.getStringExtra(EXTRA_USERNAME_DISPLAY);
+        tvUsername.setText(usernameDisplay);
 
         messages = new ArrayList<>();
 

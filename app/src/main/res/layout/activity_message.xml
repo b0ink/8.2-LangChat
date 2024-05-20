@@ -9,9 +9,13 @@
     tools:context=".MessageActivity">
 
   <RelativeLayout
+      android:id="@+id/relativeLayout"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      android:padding="15dp">
+      android:padding="15dp"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/banner">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
@@ -20,7 +24,7 @@
         android:layout_above="@id/llMessageInputLayout"
         android:paddingBottom="25dp"
         app:reverseLayout="true"
-        tools:itemCount="4"
+        tools:itemCount="25"
         tools:listitem="@layout/fragment_message" />
 
     <LinearLayout
@@ -56,4 +60,71 @@
     </LinearLayout>
 
   </RelativeLayout>
+
+  <RelativeLayout
+      android:id="@+id/banner"
+      android:layout_width="match_parent"
+      android:layout_height="100dp"
+      android:background="#EA92B4"
+      android:clipToPadding="false"
+      android:padding="5dp"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="@+id/relativeLayout">
+
+    <ImageButton
+        android:id="@+id/btnGoBack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="false"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="15dp"
+        android:background="@android:color/transparent"
+        android:scaleType="centerInside"
+        app:srcCompat="@android:drawable/ic_menu_revert" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:gravity="center"
+        android:orientation="vertical">
+
+      <ImageButton
+          android:id="@+id/btnProfile"
+          android:layout_width="50dp"
+          android:layout_height="50dp"
+          android:layout_gravity="center"
+          android:background="@android:color/transparent"
+          android:padding="5dp"
+          android:scaleType="centerInside"
+          app:srcCompat="@drawable/pfp_placeholder" />
+
+      <TextView
+          android:id="@+id/tvUsername"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center_horizontal"
+          android:gravity="center_horizontal"
+          android:text="USERNAME"
+          android:textAlignment="center"
+          android:textSize="14sp" />
+
+    </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/btnSettings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:background="@android:color/transparent"
+        android:scaleType="centerInside"
+        app:srcCompat="@android:drawable/ic_dialog_info" />
+  </RelativeLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
