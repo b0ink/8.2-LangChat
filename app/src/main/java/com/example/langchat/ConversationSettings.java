@@ -161,7 +161,13 @@ public class ConversationSettings extends AppCompatActivity {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
                 if (!response.isSuccessful() || response.body() == null) {
-                    Toast.makeText(ConversationSettings.this, response.body(), Toast.LENGTH_SHORT).show();
+                    if(response.code() == 404){
+                        Toast.makeText(ConversationSettings.this, "User does not exist", Toast.LENGTH_SHORT).show();
+                    }else if(response.code() == 401){
+                        Toast.makeText(ConversationSettings.this, "User is already part of this conversation", Toast.LENGTH_SHORT).show();
+                    }else{
+                        Toast.makeText(ConversationSettings.this, "Error adding user", Toast.LENGTH_SHORT).show();
+                    }
                     return;
                 }
                 User newUser = new User(username, null);
