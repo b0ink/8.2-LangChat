@@ -1,6 +1,7 @@
 const db = require("../models");
 const User = db.users;
 const Translation = db.translations;
+const Participant = db.participants;
 
 const { secretKey } = require("../config.json");
 const Joi = require("joi");
@@ -30,7 +31,7 @@ exports.findParticipants = async (req, res) => {
     });
 
     for(let u of Participants){
-        
+
         if(u.user.username===user.username){
             continue;
         }
@@ -62,6 +63,39 @@ exports.findMessages = async (req, res) => {
 
     return res.json(Messages);
 };
+
+exports.saveUsersLanguage = async (req, res) => {
+    const user = req.user;
+    const conversationId = parseInt(req.body.conversationId);
+    const language = req.body.language;
+
+    const usersConversations = await Utility.GetUsersConversations(user.id);
+    if(!usersConversations.includes(conversationId)){
+        return res.status(401);
+    }
+
+    //TODO: validate that `language` exists in the database
+    
+
+    const [numberOfAffectedRows, affectedRows] = await Participant.update({
+        preferredLanguage: language
+    },{
+        where: {
+            conversation_id: conversationId,
+            user_id: user.id
+        },
+          returning: true,
+          plain: true
+    })
+
+    
+    if(numberOfAffectedRows > 0){
+        return res.json(true)
+    }else{
+        return res.json(false)
+    }
+}
+
 
 exports.sendMessage = async (req, res) => {
     const conversationId = parseInt(req.params.conversationId);
