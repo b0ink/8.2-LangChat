@@ -79,13 +79,13 @@ public class ParticipantAdapter extends RecyclerView.Adapter<ParticipantAdapter.
                 tvUsername.setText(user.getUsername() + " (you)");
             }
 
-            if(getAdapterPosition() == getItemCount()-1){
-                // TODO: change image to a plus / '+' button
-//                imgProfilePicture.setBackgroundResource();
-                imgProfilePicture.setVisibility(View.INVISIBLE);
-            }else{
-                imgProfilePicture.setVisibility(View.VISIBLE);
-            }
+//            if(getAdapterPosition() == getItemCount()-1){
+//                // TODO: change image to a plus / '+' button
+////                imgProfilePicture.setBackgroundResource();
+//                imgProfilePicture.setVisibility(View.INVISIBLE);
+//            }else{
+//                imgProfilePicture.setVisibility(View.VISIBLE);
+//            }
 
 //            rlConversationContainer.setOnClickListener(view ->{
 //                Intent intent = new Intent(context, MessageActivity.class);

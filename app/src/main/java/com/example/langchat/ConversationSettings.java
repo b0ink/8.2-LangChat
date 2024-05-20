@@ -109,12 +109,12 @@ public class ConversationSettings extends AppCompatActivity {
 
         btnAddUser = findViewById(R.id.btnAddUser);
         btnAddUser.setOnClickListener(view -> {
-            showAddUserDialog();
+            showAddUserDialog(conversationId);
         });
 
     }
 
-    public void showAddUserDialog() {
+    public void showAddUserDialog(int conversationId) {
         // Inflate the custom layout
         LayoutInflater inflater = getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.dialog_add_user, null);
@@ -134,7 +134,8 @@ public class ConversationSettings extends AppCompatActivity {
             // Work with the username (e.g., display a toast or save it)
             if (!username.isEmpty()) {
                 // Example: Display the username using a Toast
-                Toast.makeText(this, "Username: " + username, Toast.LENGTH_SHORT).show();
+//                Toast.makeText(this, "Username: " + username, Toast.LENGTH_SHORT).show();
+                addUserToConversation(conversationId, username);
 
                 // TODO: Add your code here to handle the username (e.g., save to a database)
             } else {
@@ -151,6 +152,34 @@ public class ConversationSettings extends AppCompatActivity {
         AlertDialog dialog = builder.create();
         dialog.show();
     }
+
+    private void addUserToConversation(int conversationId, String username) {
+        Call<String> call = RetrofitClient.getInstance()
+                .getAPI().addParticipant(authManager.getToken(), conversationId, username);
+
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                if (!response.isSuccessful() || response.body() == null) {
+                    Toast.makeText(ConversationSettings.this, response.body(), Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                User newUser = new User(username, null);
+                participants.add(newUser);
+                participantAdapter.notifyItemInserted(participants.indexOf(newUser));
+                if (response.body() != null) {
+                    Toast.makeText(ConversationSettings.this, response.body(), Toast.LENGTH_SHORT).show();
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable throwable) {
+                Toast.makeText(ConversationSettings.this, "Unable to add user, please try again.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
 
     private void getParticipants(int conversationId) {
         Call<List<User>> call = RetrofitClient.getInstance()
@@ -173,7 +202,7 @@ public class ConversationSettings extends AppCompatActivity {
                     spnLanguage.setSelection(availableLanguages.indexOf(participants.get(0).getPreferredLanguage()));
                 }
 
-                participants.add(new User("Add user to conversation", null));
+//                participants.add(new User("Add user to conversation", null));
 
 
                 participantAdapter.notifyDataSetChanged();

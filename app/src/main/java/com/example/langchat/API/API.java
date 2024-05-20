@@ -104,4 +104,13 @@ public interface API {
             @Path("conversationId") int conversationId
     );
 
+    // Add user to conversation
+    @FormUrlEncoded
+    @POST("conversation/{conversationId}/add-participant")
+    Call<String> addParticipant(
+            @Header("Authorization") String token,
+            @Path("conversationId") int conversationId,
+            @Field("username") String username
+    );
+
 }
