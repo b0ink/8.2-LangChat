@@ -94,6 +94,20 @@
                 android:layout_height="wrap_content" />
 
             <Button
+                android:id="@+id/btnAddUser"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="75dp"
+                android:layout_marginTop="50dp"
+                android:layout_marginRight="75dp"
+                android:backgroundTint="#3AA500"
+                android:minWidth="250dp"
+                android:text="Add user"
+                android:textColor="#FFFFFF"
+                app:cornerRadius="6dp" />
+
+            <Button
                 android:id="@+id/btnLeaveConversation"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

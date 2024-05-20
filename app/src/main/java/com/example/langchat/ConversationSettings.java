@@ -2,13 +2,17 @@ package com.example.langchat;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -41,6 +45,8 @@ public class ConversationSettings extends AppCompatActivity {
 
     private ArrayList<User> participants;
     private ParticipantAdapter participantAdapter;
+
+    private Button btnAddUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +106,50 @@ public class ConversationSettings extends AppCompatActivity {
 
         getLanguages();
 
+
+        btnAddUser = findViewById(R.id.btnAddUser);
+        btnAddUser.setOnClickListener(view -> {
+            showAddUserDialog();
+        });
+
+    }
+
+    public void showAddUserDialog() {
+        // Inflate the custom layout
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_add_user, null);
+
+        // Create an AlertDialog builder
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setView(dialogView);
+
+        // Find the EditText in the custom layout
+        EditText usernameEditText = dialogView.findViewById(R.id.etUsername);
+
+        // Set up the dialog buttons
+        builder.setPositiveButton("Add", (dialog, which) -> {
+            // Retrieve the inputted username
+            String username = usernameEditText.getText().toString().trim();
+
+            // Work with the username (e.g., display a toast or save it)
+            if (!username.isEmpty()) {
+                // Example: Display the username using a Toast
+                Toast.makeText(this, "Username: " + username, Toast.LENGTH_SHORT).show();
+
+                // TODO: Add your code here to handle the username (e.g., save to a database)
+            } else {
+                Toast.makeText(this, "Username cannot be empty", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        builder.setNegativeButton("Cancel", (dialog, which) -> {
+            // Cancel the dialog
+            dialog.dismiss();
+        });
+
+        // Show the dialog
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     private void getParticipants(int conversationId) {
