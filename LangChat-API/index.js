@@ -16,6 +16,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 require("./routes/user.routes")(app, API_VERSION);
 require("./routes/conversation.routes")(app, API_VERSION);
+require("./routes/language.routes")(app, API_VERSION);
 
 // testLanguage("What's the whether like today?", "Portugese");
 // testLanguage("omg lol", "portugese");
