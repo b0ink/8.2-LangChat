@@ -31,13 +31,13 @@ exports.addParticipant = async (req, res) => {
     
     // Check if user exists
     if(!userToAdd){
-        return res.status(404).json({message: "User does not exist"})
+        return res.status(404).json("User does not exist")
     }
 
     // Check if adding user is part of converesation already
     const userToAddConversations = await Utility.GetUsersConversations(userToAdd.id);
     if(userToAddConversations.includes(conversationId)){
-        return res.status(401).json({message: "User is already part of the conversation"});
+        return res.status(401).json("User is already part of the conversation");
     }
 
     //TODO: check if new user has maxed out conversations they participate in
@@ -49,7 +49,7 @@ exports.addParticipant = async (req, res) => {
     });
 
     if(newParticipant){
-        return res.status(200).json({message: "Added user to conversation"});
+        return res.status(200).json("Added user to conversation");
     }
 
 
