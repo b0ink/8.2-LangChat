@@ -24,7 +24,17 @@ exports.findParticipants = async (req, res) => {
     const Participants = await Utility.GetConversationParticipants(conversationId);
 
     let Users = [];
+    // Add the calling user to the top of the list
+    Users.push({
+        username: user.username
+    });
+
     for(let u of Participants){
+        
+        if(u.user.username===user.username){
+            continue;
+        }
+
         Users.push({
             username: u.user.username
         });
