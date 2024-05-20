@@ -33,6 +33,7 @@ exports.findParticipants = async (req, res) => {
     for(let u of Participants){
 
         if(u.user.username===user.username){
+            Users[0]['preferredLanguage'] = u.preferredLanguage;
             continue;
         }
 
