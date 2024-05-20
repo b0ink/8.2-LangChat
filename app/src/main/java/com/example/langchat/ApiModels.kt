@@ -1,7 +1,8 @@
 package com.example.langchat
 
 data class User(
-    val username: String
+    val username: String,
+    val preferredLanguage: String?
     //TODO: profile picture url?
 )
 

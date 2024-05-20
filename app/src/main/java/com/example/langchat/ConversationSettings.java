@@ -72,15 +72,11 @@ public class ConversationSettings extends AppCompatActivity {
         spnLanguage.setAdapter(languageAdapter);
 
 
-        getLanguages();
-
-
         // Set the listener to detect item selection
         spnLanguage.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String selectedItem = parent.getItemAtPosition(position).toString();
-//                Toast.makeText(ConversationSettings.this, "Selected: " + selectedItem, Toast.LENGTH_SHORT).show();
 
                 saveLanguage(conversationId, selectedItem);
             }
@@ -102,9 +98,11 @@ public class ConversationSettings extends AppCompatActivity {
         // retrieve users in conversation (conversationId)
         getParticipants(conversationId);
 
+        getLanguages();
+
     }
 
-    private void getParticipants(int conversationId){
+    private void getParticipants(int conversationId) {
         Call<List<User>> call = RetrofitClient.getInstance()
                 .getAPI().getParticipants(authManager.getToken(), conversationId);
 
@@ -116,9 +114,17 @@ public class ConversationSettings extends AppCompatActivity {
                     return;
                 }
                 System.out.println("participants" + response.body());
+
                 participants.addAll(response.body());
 
-                participants.add(new User("Add user to conversation"));
+                // If user object contains preferred language, set spinner item
+                // First participant will be the calling/logged in user
+                if (participants.get(0).getPreferredLanguage() != null) {
+                    spnLanguage.setSelection(availableLanguages.indexOf(participants.get(0).getPreferredLanguage()));
+                }
+
+                participants.add(new User("Add user to conversation", null));
+
 
                 participantAdapter.notifyDataSetChanged();
 
@@ -147,11 +153,6 @@ public class ConversationSettings extends AppCompatActivity {
                 availableLanguages.addAll(response.body());
                 languageAdapter.notifyDataSetChanged();
 
-                //TODO: get users preferred langauge for this converation
-                final String usersLanguage = "German";
-
-                spnLanguage.setSelection(availableLanguages.indexOf(usersLanguage));
-
             }
 
             @Override
@@ -173,11 +174,16 @@ public class ConversationSettings extends AppCompatActivity {
                     return;
                 }
                 System.out.println("Success save lang?: " + response.body());
+
+                if (response.body() == true) {
+                    Toast.makeText(ConversationSettings.this, "Successfully saved language to: " + language, Toast.LENGTH_SHORT).show();
+                }
+
             }
 
             @Override
             public void onFailure(Call<Boolean> call, Throwable throwable) {
-
+                Toast.makeText(ConversationSettings.this, "Unable to save language, please try again.", Toast.LENGTH_SHORT).show();
             }
         });
     }
