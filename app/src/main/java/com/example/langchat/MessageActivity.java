@@ -78,6 +78,7 @@ public class MessageActivity extends AppCompatActivity {
             finish();
         });
 
+
         Intent intent = getIntent();
         int conversationId = intent.getIntExtra(EXTRA_CONVERSATION_ID, -1);
         if (intent == null || !intent.hasExtra(EXTRA_CONVERSATION_ID) || conversationId == -1) {
@@ -86,6 +87,14 @@ public class MessageActivity extends AppCompatActivity {
             finish();
             return;
         }
+
+
+        btnSettings = findViewById(R.id.btnSettings);
+        btnSettings.setOnClickListener(view ->{
+            Intent settings = new Intent(this, ConversationSettings.class);
+            settings.putExtra(ConversationSettings.EXTRA_CONVERSATION_ID, conversationId);
+            startActivity(settings);
+        });
 
         authManager = new AuthManager(this);
         databaseHelper = LocalDatabaseHelper.getInstance(this);
