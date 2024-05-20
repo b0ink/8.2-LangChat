@@ -79,18 +79,18 @@ exports.saveUsersLanguage = async (req, res) => {
     
 
     const [numberOfAffectedRows, affectedRows] = await Participant.update({
-        preferredLanguage: language
-    },{
-        where: {
-            conversation_id: conversationId,
-            user_id: user.id
-        },
-          returning: true,
-          plain: true
-    })
-
+            preferredLanguage: language
+        },{
+            where: {
+                conversation_id: conversationId,
+                user_id: user.id
+            },
+            returning: true,
+            plain: true
+        }
+    )
     
-    if(numberOfAffectedRows > 0){
+    if(affectedRows > 0){
         return res.json(true)
     }else{
         return res.json(false)
