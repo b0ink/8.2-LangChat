@@ -80,7 +80,9 @@ public class ConversationSettings extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String selectedItem = parent.getItemAtPosition(position).toString();
-                Toast.makeText(ConversationSettings.this, "Selected: " + selectedItem, Toast.LENGTH_SHORT).show();
+//                Toast.makeText(ConversationSettings.this, "Selected: " + selectedItem, Toast.LENGTH_SHORT).show();
+
+                saveLanguage(conversationId, selectedItem);
             }
 
             @Override
@@ -154,6 +156,27 @@ public class ConversationSettings extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<List<String>> call, Throwable throwable) {
+
+            }
+        });
+    }
+
+    private void saveLanguage(int conversationId, String language) {
+        Call<Boolean> call = RetrofitClient.getInstance()
+                .getAPI().saveConversationsLanguage(authManager.getToken(), conversationId, language);
+
+        call.enqueue(new Callback<Boolean>() {
+            @Override
+            public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+                if (!response.isSuccessful() || response.body() == null) {
+                    System.out.println("Invalid response from saveLanguage");
+                    return;
+                }
+                System.out.println("Success save lang?: " + response.body());
+            }
+
+            @Override
+            public void onFailure(Call<Boolean> call, Throwable throwable) {
 
             }
         });

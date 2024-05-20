@@ -88,6 +88,15 @@ public interface API {
             @Header("Authorization") String token
     );
 
+    // Save preferred language for conversation
+    @FormUrlEncoded
+    @POST("conversation/save-language")
+    Call<Boolean> saveConversationsLanguage(
+            @Header("Authorization") String token,
+            @Field("conversationId") int conversationId,
+            @Field("language") String language
+    );
+
     // Get participants in a conversation
     @GET("conversation/{conversationId}/participants")
     Call<List<User>> getParticipants(
