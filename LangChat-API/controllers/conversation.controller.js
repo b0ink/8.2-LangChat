@@ -49,6 +49,7 @@ exports.addParticipant = async (req, res) => {
     });
 
     if(newParticipant){
+        //TODO: add system message to notify new user joining
         return res.status(200).json("Added user to conversation");
     }
 
