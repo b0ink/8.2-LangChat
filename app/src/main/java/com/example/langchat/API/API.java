@@ -3,6 +3,7 @@ package com.example.langchat.API;
 import com.example.langchat.API.models.ResponsePost;
 import com.example.langchat.ConversationResponse;
 import com.example.langchat.Message;
+import com.example.langchat.User;
 
 import retrofit2.Call;
 import retrofit2.http.Field;
@@ -79,6 +80,19 @@ public interface API {
             @Header("Authorization") String token,
             @Field("messageId") int messageId,
             @Field("usersLanguage") String usersLanguage
+    );
+
+    // Get all languages
+    @GET("languages")
+    Call<List<String>> getAvailableLanguages(
+            @Header("Authorization") String token
+    );
+
+    // Get participants in a conversation
+    @GET("conversation/{conversationId}/participants")
+    Call<List<User>> getParticipants(
+            @Header("Authorization") String token,
+            @Path("conversationId") int conversationId
     );
 
 }

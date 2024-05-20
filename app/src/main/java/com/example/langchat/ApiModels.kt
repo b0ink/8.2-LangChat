@@ -2,6 +2,7 @@ package com.example.langchat
 
 data class User(
     val username: String
+    //TODO: profile picture url?
 )
 
 data class Participant(
