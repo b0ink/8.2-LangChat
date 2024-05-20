@@ -11,6 +11,30 @@ const saltRounds = 10;
 
 const Utility = require("./Utility");
 
+exports.findParticipants = async (req, res) => {
+    const user = req.user;
+    const conversationId = parseInt(req.params.conversationId);
+
+    // Check if user is part of converesation
+    const usersConversations = await Utility.GetUsersConversations(user.id);
+    if(!usersConversations.includes(conversationId)){
+        return res.status(401);
+    }
+
+    const Participants = await Utility.GetConversationParticipants(conversationId);
+
+    let Users = [];
+    for(let u of Participants){
+        Users.push({
+            username: u.user.username
+        });
+    }
+
+    console.log(Users)
+
+    return res.json(Users);
+}
+
 exports.findMessages = async (req, res) => {
     const user = req.user;
     const conversationId = parseInt(req.params.conversationId);

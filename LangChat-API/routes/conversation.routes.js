@@ -5,6 +5,8 @@ module.exports = (app, API_VERSION) => {
     const conversation = require("../controllers/conversation.controller.js");
     var router = require("express").Router();
 
+    router.get("/:conversationId/participants", authenticateToken, conversation.findParticipants);
+
     router.get("/:conversationId/messages/:lastMessageId", authenticateToken, conversation.findMessages);
 
     router.post("/:conversationId/send-message", authenticateToken, conversation.sendMessage);
