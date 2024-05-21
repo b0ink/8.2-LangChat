@@ -68,10 +68,10 @@
       android:layout_height="100dp"
       android:background="#00EA92B4"
       android:clipToPadding="false"
-      android:padding="5dp"
+      android:padding="15dp"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toTopOf="@+id/relativeLayout">
+      app:layout_constraintTop_toTopOf="parent">
 
     <ImageButton
         android:id="@+id/btnGoBack"
@@ -126,6 +126,7 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
+        android:layout_marginRight="15dp"
         android:background="@android:color/transparent"
         android:scaleType="centerInside"
         app:srcCompat="@android:drawable/ic_dialog_info" />
