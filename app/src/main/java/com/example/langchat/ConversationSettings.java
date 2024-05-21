@@ -1,5 +1,6 @@
 package com.example.langchat;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -133,33 +134,56 @@ public class ConversationSettings extends AppCompatActivity {
 
         btnLeaveConversation = findViewById(R.id.btnLeaveConversation);
         btnLeaveConversation.setOnClickListener(view -> {
-            int removingUserid = Integer.valueOf(authManager.getJwtProperty("id"));
-
-            Call<String> call = RetrofitClient.getInstance()
-                    .getAPI().removeUser(authManager.getToken(),conversationId, removingUserid);
-
-            call.enqueue(new Callback<String>() {
-                @Override
-                public void onResponse(Call<String> call, Response<String> response) {
-                    if (!response.isSuccessful() || response.body() == null) {
-                        System.out.println("Invalid response from leaveConversation");
-                        return;
-                    }
-
-                    if(response.code() == 203){
-                        Toast.makeText(ConversationSettings.this, "You have left the conversation", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(ConversationSettings.this, MainActivity.class));
-                        finish();
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<String> call, Throwable throwable) {
-
-                }
-            });
+            showLeaveConversationConfirmationBox();
         });
 
+    }
+
+    private void showLeaveConversationConfirmationBox() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Do you really want to leave the conversation?")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User clicked Yes button
+                        leaveConversation();
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User clicked No button
+                        dialog.dismiss(); // close the dialog
+                    }
+                });
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+    private void leaveConversation() {
+        int removingUserid = Integer.valueOf(authManager.getJwtProperty("id"));
+
+        Call<String> call = RetrofitClient.getInstance()
+                .getAPI().removeUser(authManager.getToken(), conversationId, removingUserid);
+
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                if (!response.isSuccessful() || response.body() == null) {
+                    System.out.println("Invalid response from leaveConversation");
+                    return;
+                }
+
+                if (response.code() == 203) {
+                    Toast.makeText(ConversationSettings.this, "You have left the conversation", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(ConversationSettings.this, MainActivity.class));
+                    finish();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable throwable) {
+
+            }
+        });
     }
 
     public void showAddUserDialog() {
@@ -220,7 +244,7 @@ public class ConversationSettings extends AppCompatActivity {
                 }
 
                 final int newConversationId = response.body().getConversationId();
-                if(newConversationId != conversationId){
+                if (newConversationId != conversationId) {
                     // new conversation has been created, start new settings activity
                     Toast.makeText(ConversationSettings.this, "A new group chat has been created!", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(ConversationSettings.this, ConversationSettings.class);
@@ -270,7 +294,7 @@ public class ConversationSettings extends AppCompatActivity {
                     spnLanguage.setSelection(availableLanguages.indexOf(language), false);
                     selectedLanguage = language;
                 }
-                if(participants.get(0).isAdmin()){
+                if (participants.get(0).isAdmin()) {
                     participantAdapter.viewAdminControls = true;
                 }
                 participantAdapter.notifyDataSetChanged();

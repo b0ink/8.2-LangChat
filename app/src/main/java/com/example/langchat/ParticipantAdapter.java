@@ -2,6 +2,7 @@ package com.example.langchat;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.langchat.API.AuthManager;
@@ -68,6 +70,7 @@ public class ParticipantAdapter extends RecyclerView.Adapter<ParticipantAdapter.
 
 
         private Context context;
+        private AuthManager authManager;
 
         public ParticipantViewHolder(Context context, @NonNull View itemView) {
             super(itemView);
@@ -83,21 +86,21 @@ public class ParticipantAdapter extends RecyclerView.Adapter<ParticipantAdapter.
             //TODO: if logged in user is admin of current converation, display remove user button
             btnRemoveUser.setVisibility(View.GONE);
 
-            if(viewAdminControls && getAdapterPosition() != 0){
+            if (viewAdminControls && getAdapterPosition() != 0) {
                 btnRemoveUser.setVisibility(View.VISIBLE);
             }
 
-            AuthManager authManager = new AuthManager(context);
+            authManager = new AuthManager(context);
             String username = user.getUsername();
 
 
-            if(authManager.getJwtProperty("username").equals(user.getUsername())){
+            if (authManager.getJwtProperty("username").equals(user.getUsername())) {
                 tvUsername.setText(user.getUsername() + " (you)");
                 username += " (you)";
             }
 
             //TODO: replace admin text with crown icon
-            if(user.isAdmin()){
+            if (user.isAdmin()) {
                 username += " (Admin)";
             }
 
@@ -120,33 +123,56 @@ public class ParticipantAdapter extends RecyclerView.Adapter<ParticipantAdapter.
 //            });
 
             btnRemoveUser.setOnClickListener(view -> {
-                int removingUserid = user.getId();
-
-                Call<String> call = RetrofitClient.getInstance()
-                        .getAPI().removeUser(authManager.getToken(),conversationId, removingUserid);
-
-                call.enqueue(new Callback<String>() {
-                    @Override
-                    public void onResponse(Call<String> call, Response<String> response) {
-                        if (!response.isSuccessful() || response.body() == null) {
-                            System.out.println("Invalid response from removeUser");
-                            Toast.makeText(context, "Unable to remove user.", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-
-                        Toast.makeText(context, "Removed " + user.getUsername() + " from the chat.", Toast.LENGTH_SHORT).show();
-                        int positionRemoved = participants.indexOf(user);
-                        participants.remove(user);
-                        notifyItemRemoved(positionRemoved);
-                    }
-
-                    @Override
-                    public void onFailure(Call<String> call, Throwable throwable) {
-
-                    }
-                });
+                int removingUserId = user.getId();
+                showRemoveUserConfirmationBox(user, removingUserId);
             });
 
+        }
+
+        private void removeUser(User user, int removingUserId) {
+
+            Call<String> call = RetrofitClient.getInstance()
+                    .getAPI().removeUser(authManager.getToken(), conversationId, removingUserId);
+
+            call.enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(Call<String> call, Response<String> response) {
+                    if (!response.isSuccessful() || response.body() == null) {
+                        System.out.println("Invalid response from removeUser");
+                        Toast.makeText(context, "Unable to remove user.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    Toast.makeText(context, "Removed " + user.getUsername() + " from the chat.", Toast.LENGTH_SHORT).show();
+                    int positionRemoved = participants.indexOf(user);
+                    participants.remove(user);
+                    notifyItemRemoved(positionRemoved);
+                }
+
+                @Override
+                public void onFailure(Call<String> call, Throwable throwable) {
+
+                }
+            });
+        }
+
+        private void showRemoveUserConfirmationBox(User user, int removingUserId) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            builder.setMessage("Are you sure you want to remove " + user.getUsername() + " from the chat?")
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // User clicked Yes button
+                            removeUser(user, removingUserId);
+                        }
+                    })
+                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // User clicked No button
+                            dialog.dismiss(); // close the dialog
+                        }
+                    });
+            AlertDialog alert = builder.create();
+            alert.show();
         }
 
     }
