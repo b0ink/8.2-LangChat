@@ -69,15 +69,25 @@ public class ParticipantAdapter extends RecyclerView.Adapter<ParticipantAdapter.
         }
 
         public void bind(User user) {
-            tvUsername.setText(user.getUsername());
 
             //TODO: if logged in user is admin of current converation, display remove user button
             btnRemoveUser.setVisibility(View.GONE);
 
             AuthManager authManager = new AuthManager(context);
+            String username = user.getUsername();
+
+
             if(authManager.getJwtProperty("username").equals(user.getUsername())){
                 tvUsername.setText(user.getUsername() + " (you)");
+                username += " (you)";
             }
+
+            //TODO: replace admin text with crown icon
+            if(user.isAdmin()){
+                username += " (Admin)";
+            }
+
+            tvUsername.setText(username);
 
 //            if(getAdapterPosition() == getItemCount()-1){
 //                // TODO: change image to a plus / '+' button
