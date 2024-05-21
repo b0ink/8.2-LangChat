@@ -3,16 +3,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="100dp"
-    app:cardBackgroundColor="#FFFFFF"
-    app:cardCornerRadius="8dp"
+    android:layout_height="90dp"
+    app:cardBackgroundColor="#1AFFFFFF"
     app:cardElevation="0dp">
 
     <RelativeLayout
         android:id="@+id/rlConversationContainer"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:padding="15dp">
+        android:layout_height="match_parent"
+        android:paddingStart="15dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="15dp"
+        android:paddingBottom="10dp">
 
         <ImageView
             android:id="@+id/imgProfilePicture"
@@ -29,8 +31,8 @@
             android:layout_height="wrap_content"
             android:layout_alignEnd="@+id/linearLayout"
             android:text="5m ago"
-            android:textColor="#999899"
-            android:textSize="12sp" />
+            android:textColor="#BF000000"
+            android:textSize="14sp" />
 
         <LinearLayout
             android:id="@+id/linearLayout"
@@ -44,18 +46,21 @@
                 android:id="@+id/tvUsername"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/inter_bold"
                 android:text="Username"
-                android:textColor="#000000"
-                android:textSize="18sp" />
+                android:textColor="#FFFFFF"
+                android:textSize="18sp"
+                android:textStyle="normal" />
 
             <TextView
                 android:id="@+id/tvRecentMessage"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fadingEdge="vertical"
+                android:fontFamily="@font/inter"
                 android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt"
-                android:textColor="#848484"
-                android:textSize="14sp" />
+                android:textColor="#000000"
+                android:textSize="16sp" />
         </LinearLayout>
 
     </RelativeLayout>
