@@ -23,17 +23,44 @@
             android:orientation="vertical"
             android:padding="25dp">
 
-            <TextView
-                android:id="@+id/textView"
+            <RelativeLayout
+                android:id="@+id/banner"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="25dp"
-                android:layout_marginBottom="25dp"
-                android:fontFamily="@font/inter_bold"
-                android:text="Settings"
-                android:textAlignment="center"
-                android:textColor="#000000"
-                android:textSize="24sp" />
+                android:layout_height="100dp"
+                android:background="#00EA92B4"
+                android:clipToPadding="false"
+                android:padding="5dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/relativeLayout">
+
+                <ImageButton
+                    android:id="@+id/btnGoBack"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="false"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginStart="15dp"
+                    android:background="@android:color/transparent"
+                    android:scaleType="centerInside"
+                    app:srcCompat="@android:drawable/ic_menu_revert" />
+
+                <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentBottom="true"
+                    android:fontFamily="@font/inter_bold"
+                    android:gravity="center"
+                    android:text="Settings"
+                    android:textAlignment="center"
+                    android:textColor="#000000"
+                    android:textSize="24sp" />
+
+            </RelativeLayout>
 
             <TextView
                 android:id="@+id/textView"

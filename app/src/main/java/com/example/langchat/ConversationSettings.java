@@ -8,6 +8,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -47,6 +48,7 @@ public class ConversationSettings extends AppCompatActivity {
     private ParticipantAdapter participantAdapter;
 
     private Button btnAddUser;
+    private ImageButton btnGoBack;
 
 
     private String selectedLanguage = "";
@@ -120,6 +122,12 @@ public class ConversationSettings extends AppCompatActivity {
         btnAddUser = findViewById(R.id.btnAddUser);
         btnAddUser.setOnClickListener(view -> {
             showAddUserDialog();
+        });
+
+        btnGoBack = findViewById(R.id.btnGoBack);
+        btnGoBack.setOnClickListener(view -> {
+            startActivity(new Intent(this, MessageActivity.class).putExtra(MessageActivity.EXTRA_CONVERSATION_ID, conversationId));
+            finish();
         });
 
     }
