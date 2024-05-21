@@ -225,7 +225,7 @@ public class MainActivity extends AppCompatActivity {
                 int conversationId = response.body();
 
                 if (conversationId != -1) {
-                    Toast.makeText(MainActivity.this, response.body(), Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(MainActivity.this, response.body().toString(), Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(MainActivity.this, MessageActivity.class);
                     intent.putExtra(MessageActivity.EXTRA_CONVERSATION_ID, conversationId);
                     intent.putExtra(MessageActivity.EXTRA_USERNAME_DISPLAY, username);
