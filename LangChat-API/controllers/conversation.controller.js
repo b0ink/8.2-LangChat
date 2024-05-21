@@ -51,23 +51,36 @@ exports.removeUser = async (req, res) => {
 
 
     let userIsAdmin = false;
+    let conversationIsGroupChat = false;
     for(let p of participants){
-        if(p.user.id===user.id){
-            if(p.isAdmin){
+        if(p.isAdmin){
+            conversationIsGroupChat = true;
+            if(p.user.id===user.id){
                 userIsAdmin = true;
             }
         }
-        // if(p.user.id === removingUser.id){
-        //     removingUserParticipant = p;
-        // }
     }
 
 
     if(user.id===removingUser.id){
-        //TODO: re-use this route to leave conversations?
-        // eg if user is admin and attempt to remove themself, block the call
-        // or allow it if there is atleast another admin in the converesation
-        // auto-assign new admin of this call goes through?
+        if(!conversationIsGroupChat){
+            console.log("cant leave DMs")
+            return res.status(401).json("You cannot leave DMs");
+        }
+
+        await removingUserParticipant.destroy();        
+        if(userIsAdmin){
+            // admin left, assigning new admin
+            //TODO: check if there already is one? (assuming admins can assign more admins)
+            const nextParticipant = await Participant.findOne({
+                where: {
+                    conversation_id: conversationId
+                }
+            });
+            nextParticipant.isAdmin = true;
+            await nextParticipant.save();
+        }
+        return res.status(203).json("You have left the chat");
     }
 
 
