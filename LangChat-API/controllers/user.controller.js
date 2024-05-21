@@ -2,6 +2,8 @@ const db = require("../models");
 const User = db.users;
 const Conversation = db.conversations;
 
+const moment = require("moment/moment");
+
 const { secretKey } = require("../config.json");
 const Joi = require("joi");
 const jwt = require("jsonwebtoken");
@@ -127,13 +129,26 @@ exports.findConversations = async (req, res) => {
         const participants = await Utility.GetConversationParticipants(conv_id);
         const lastMessage = await Utility.GetMostRecentConversationMessage(conv_id);
         
+        const timeSince = moment(conversationData.updatedAt).fromNow();
+
+        //TODO: swap to using DD/MM/YYYY / "Yesterday" labels for older dates?
+        // const daysSince = Math.abs(moment(conversationData.updatedAt).diff(moment(), 'days'));
+        
+        // let lastUpdatedDisplay;
+        // if(daysSince < 1){
+        //     lastUpdatedDisplay = timeSince;
+        // }
+
+        const lastUpdatedDisplay = timeSince;
+
         Conversations.push({
             id: conv_id,
             // Dont include requesting user as the participant
             // Will be used to display the "name" of the conversation (more than 1 participant will be a group chat)
             participants: [...participants.filter(p=>p.user.username!==user.username)],
             lastMessage:lastMessage,
-            updatedAt: conversationData.updatedAt
+            updatedAt: conversationData.updatedAt,
+            lastUpdatedDisplay
         });
     }
 

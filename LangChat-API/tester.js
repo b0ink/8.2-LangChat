@@ -8,7 +8,8 @@ const Message = db.messages;
 const Participant = db.participants;
 const language = db.participants;
 
-const Utility = require('./controllers/Utility')
+const Utility = require('./controllers/Utility');
+const moment = require("moment/moment");
 async function testMostRecentMessage(){
     const msg = await Utility.GetMostRecentConversationMessage(1);
 
@@ -107,4 +108,22 @@ async function checkExistingConversations(){
     console.log(existingConversation);
 }
 
-checkExistingConversations();
+// checkExistingConversations();
+
+
+async function getRelativeTime(){
+    const conv = await Conversation.findOne({
+        where: {
+            id: 1
+        }
+    });
+    console.log(conv);
+
+    const result = moment(conv.updatedAt).fromNow();
+    console.log(result)
+
+    const daysSince = Math.abs(moment(conv.updatedAt).diff(moment(), 'days'));
+    console.log('days since conversation last updated: ', daysSince)
+}
+
+// getRelativeTime();
