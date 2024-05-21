@@ -268,12 +268,12 @@ function parseTranslationReponse(text) {
 
 // if isGroupChat==true, user1 will be made admin of the group chat
 module.exports.CreateConversation = async (user1, user2, isGroupChat=false) => {
-    // TODO: add groupchat admin field
     const newConversation = await Conversation.create();
     const user1Participant = await Participant.create({
         conversation_id: newConversation.id,
         user_id: user1.id,
-        preferredLanguage: user1.defaultPreferredLanguage
+        preferredLanguage: user1.defaultPreferredLanguage,
+        isAdmin: isGroupChat?true:false
     });
 
     const user2Participant = await Participant.create({

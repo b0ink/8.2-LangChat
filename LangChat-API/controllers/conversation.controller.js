@@ -154,8 +154,14 @@ exports.addParticipant = async (req, res) => {
 
 
     //TODO: check if new user has maxed out conversations they participate in
+    let isGroupChat = false;
+    for(let p of participants){
+        if(p.isAdmin){
+            isGroupChat = true;
+        }
+    }
 
-    if(participants.length == 2){
+    if(!isGroupChat){
         // attempting to add user to a DM, creating new conversation
         console.log("adding third participant, creating new conversation");
         let groupChatAdmin = null;
