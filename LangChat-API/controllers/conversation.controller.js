@@ -77,8 +77,14 @@ exports.removeUser = async (req, res) => {
                     conversation_id: conversationId
                 }
             });
-            nextParticipant.isAdmin = true;
-            await nextParticipant.save();
+
+            if(nextParticipant){
+                nextParticipant.isAdmin = true;
+                await nextParticipant.save();
+            }else{
+                //! User is the last participant to leave the conversation
+                //TODO: truncate messages/translations?
+            }
         }
         return res.status(203).json("You have left the chat");
     }
