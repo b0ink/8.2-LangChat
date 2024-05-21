@@ -49,6 +49,7 @@ public class ConversationSettings extends AppCompatActivity {
 
     private Button btnAddUser;
     private ImageButton btnGoBack;
+    private Button btnLeaveConversation;
 
 
     private String selectedLanguage = "";
@@ -128,6 +129,35 @@ public class ConversationSettings extends AppCompatActivity {
         btnGoBack.setOnClickListener(view -> {
             startActivity(new Intent(this, MessageActivity.class).putExtra(MessageActivity.EXTRA_CONVERSATION_ID, conversationId));
             finish();
+        });
+
+        btnLeaveConversation = findViewById(R.id.btnLeaveConversation);
+        btnLeaveConversation.setOnClickListener(view -> {
+            int removingUserid = Integer.valueOf(authManager.getJwtProperty("id"));
+
+            Call<String> call = RetrofitClient.getInstance()
+                    .getAPI().removeUser(authManager.getToken(),conversationId, removingUserid);
+
+            call.enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(Call<String> call, Response<String> response) {
+                    if (!response.isSuccessful() || response.body() == null) {
+                        System.out.println("Invalid response from leaveConversation");
+                        return;
+                    }
+
+                    if(response.code() == 203){
+                        Toast.makeText(ConversationSettings.this, "You have left the conversation", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(ConversationSettings.this, MainActivity.class));
+                        finish();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<String> call, Throwable throwable) {
+
+                }
+            });
         });
 
     }
