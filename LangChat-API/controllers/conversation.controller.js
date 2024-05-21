@@ -222,17 +222,19 @@ exports.findParticipants = async (req, res) => {
     let Users = [];
     // Add the calling user to the top of the list
     Users.push({
-        username: user.username,
+        username: user.username
     });
 
     for (let u of Participants) {
         if (u.user.username === user.username) {
             Users[0]["preferredLanguage"] = u.preferredLanguage;
+            Users[0]['isAdmin'] = u.isAdmin?true:false;
             continue;
         }
 
         Users.push({
             username: u.user.username,
+            isAdmin: u.isAdmin
         });
     }
 
