@@ -71,6 +71,7 @@ public class MessageActivity extends AppCompatActivity {
 
         etMessage = findViewById(R.id.etMessage);
         btnSend = findViewById(R.id.btnSend);
+        btnProfile = findViewById(R.id.btnProfile);
 
         btnGoBack = findViewById(R.id.btnGoBack);
         btnGoBack.setOnClickListener(view ->{
@@ -101,8 +102,8 @@ public class MessageActivity extends AppCompatActivity {
         databaseHelper = LocalDatabaseHelper.getInstance(this);
 
         tvUsername = findViewById(R.id.tvUsername);
-        String usernameDisplay = intent.getStringExtra(EXTRA_USERNAME_DISPLAY);
-        tvUsername.setText(usernameDisplay);
+//        String usernameDisplay = intent.getStringExtra(EXTRA_USERNAME_DISPLAY);
+//        tvUsername.setText(usernameDisplay);
 
         messages = new ArrayList<>();
 
@@ -111,7 +112,11 @@ public class MessageActivity extends AppCompatActivity {
         adapter = new MessageAdapter(this, messages);
         recycler.setAdapter(adapter);
 
+        // Set recipients username
+        getParticipants(conversationId);
+
         getAllMessages(conversationId);
+
 
 
         // TODO: instead, re-query the database for new messages that we dont yet have instead of manually inserting a new message item
@@ -177,6 +182,49 @@ public class MessageActivity extends AppCompatActivity {
             sendNewMessage(conversationId, message);
         });
 
+    }
+
+    private void getParticipants(int conversationId){
+        Call<List<User>> call = RetrofitClient.getInstance()
+                .getAPI().getParticipants(authManager.getToken(), conversationId);
+
+        call.enqueue(new Callback<List<User>>() {
+            @Override
+            public void onResponse(Call<List<User>> call, Response<List<User>> response) {
+                if (!response.isSuccessful()) {
+                    return;
+                }
+
+                String username = "";
+                List<User> participantList = response.body();
+                participantList.remove(0); // Remove calling user
+
+                if(participantList.size() == 1){
+                    username = participantList.get(0).getUsername();
+                    //TODO: profile pic
+                    btnProfile.setImageResource(R.drawable.pfp_placeholder);
+                }else{
+                    ArrayList<String> usernames = new ArrayList<>();
+                    for(User p : participantList){
+                        usernames.add(p.getUsername());
+                    }
+                    if(usernames.size() <= 2){
+                        username = String.join(", ", usernames);
+                    }else{
+                        int otherUserCount = usernames.size()-2;
+                        username = usernames.get(0) + ", " + usernames.get(1) + " +" + otherUserCount + " more";
+                    }
+                    btnProfile.setImageResource(R.drawable.pfp_group_placeholder);
+                }
+
+                tvUsername.setText(username);
+            }
+
+            @Override
+            public void onFailure(Call<List<User>> call, Throwable throwable) {
+
+            }
+        });
     }
 
     private void getAllMessages(int conversationId) {

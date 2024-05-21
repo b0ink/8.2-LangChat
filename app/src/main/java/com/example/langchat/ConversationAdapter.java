@@ -82,6 +82,8 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
         public void bind(ConversationResponse conversation) {
             String username = "";
             List<Participant> participantList = conversation.getParticipants();
+
+            //TODO: put into static util class
             if(participantList.size() == 1){
                 username = participantList.get(0).getUser().getUsername();
                 imgProfilePicture.setBackgroundResource(R.drawable.pfp_placeholder);
