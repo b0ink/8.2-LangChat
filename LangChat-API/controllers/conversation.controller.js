@@ -237,14 +237,10 @@ exports.sendMessage = async (req, res) => {
     try {
         const newMessage = await Utility.SendMessage(user.id, conversationId, message);
         
-        if(newMessage){
-            await Conversation.update({
-                updatedAt: new Date()
-            },{
-                where: {
-                    id: conversationId
-                }
-            })
+        const conversation = await Conversation.findByPk(conversationId);
+        if(conversation && newMessage){
+            conversation.changed('updatedAt', true);
+            await conversation.save();
         }
 
         TranslationService(user, conversationId, newMessage);
