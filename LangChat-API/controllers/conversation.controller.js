@@ -13,6 +13,76 @@ const saltRounds = 10;
 
 const Utility = require("./Utility");
 
+exports.removeUser = async (req, res) => {
+    const user = req.user;
+    const conversationId = parseInt(req.params.conversationId);
+    const removingUserId = parseInt(req.body.removingUserId);
+
+    const usersConversations = await Utility.GetUsersConversations(user.id);
+    if (!usersConversations.includes(conversationId)) {
+        console.log(usersConversations)
+        console.log(conversationId)
+        console.log("admin is not in conversation")
+        return res.status(401);
+    }
+
+    const removingUser = await User.findByPk(removingUserId);
+    if(!removingUser){
+        console.log("removing user doenst exist")
+        return res.status(404);
+    }
+
+
+    const participants = await Utility.GetConversationParticipants(conversationId);
+
+    const removingUserParticipant = await Participant.findOne({
+        where: {
+            conversation_id: conversationId,
+            user_id: removingUser.id
+        }
+    });
+
+
+
+    if(!removingUserParticipant){
+        console.log("removing user is not part of this conversation")
+        return res.status(400);
+    }
+
+
+    let userIsAdmin = false;
+    for(let p of participants){
+        if(p.user.id===user.id){
+            if(p.isAdmin){
+                userIsAdmin = true;
+            }
+        }
+        // if(p.user.id === removingUser.id){
+        //     removingUserParticipant = p;
+        // }
+    }
+
+
+    if(user.id===removingUser.id){
+        //TODO: re-use this route to leave conversations?
+        // eg if user is admin and attempt to remove themself, block the call
+        // or allow it if there is atleast another admin in the converesation
+        // auto-assign new admin of this call goes through?
+    }
+
+
+    if(!userIsAdmin){
+        console.log('calling user is not an admin');
+        return res.status(401);
+    }
+
+    //TODO: prevent admins kicking other admins?
+
+    await removingUserParticipant.destroy()
+    return res.status(200).json("Removed");
+
+}
+
 exports.createConversation = async (req, res) => {
     const userData = req.user;
     const recipientsUsername = req.body.recipientsUsername;
@@ -222,6 +292,7 @@ exports.findParticipants = async (req, res) => {
     let Users = [];
     // Add the calling user to the top of the list
     Users.push({
+        id: user.id,
         username: user.username
     });
 
@@ -233,6 +304,7 @@ exports.findParticipants = async (req, res) => {
         }
 
         Users.push({
+            id: u.user.id,
             username: u.user.username,
             isAdmin: u.isAdmin
         });

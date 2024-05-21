@@ -42,7 +42,7 @@ module.exports.GetConversationParticipants = async (conversation_id) => {
             {
                 model: User,
                 as: "user",
-                attributes: ["username", "defaultPreferredLanguage"],
+                attributes: ["id", "username", "defaultPreferredLanguage"],
             },
         ],
     });

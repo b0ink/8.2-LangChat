@@ -20,5 +20,8 @@ module.exports = (app, API_VERSION) => {
 
     router.post("/new", authenticateToken, conversation.createConversation);
 
+
+    router.post("/:conversationId/remove-user", authenticateToken, conversation.removeUser);
+
     app.use(`/api/${API_VERSION}/conversation`, router);
 };
