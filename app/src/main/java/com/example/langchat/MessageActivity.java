@@ -94,6 +94,7 @@ public class MessageActivity extends AppCompatActivity {
             Intent settings = new Intent(this, ConversationSettings.class);
             settings.putExtra(ConversationSettings.EXTRA_CONVERSATION_ID, conversationId);
             startActivity(settings);
+            finish();
         });
 
         authManager = new AuthManager(this);

@@ -164,12 +164,12 @@ public class ConversationSettings extends AppCompatActivity {
     }
 
     private void addUserToConversation(String username) {
-        Call<String> call = RetrofitClient.getInstance()
+        Call<NewConversationResponse> call = RetrofitClient.getInstance()
                 .getAPI().addParticipant(authManager.getToken(), conversationId, username);
 
-        call.enqueue(new Callback<String>() {
+        call.enqueue(new Callback<NewConversationResponse>() {
             @Override
-            public void onResponse(Call<String> call, Response<String> response) {
+            public void onResponse(Call<NewConversationResponse> call, Response<NewConversationResponse> response) {
                 if (!response.isSuccessful() || response.body() == null) {
                     if (response.code() == 404) {
                         Toast.makeText(ConversationSettings.this, "User does not exist", Toast.LENGTH_SHORT).show();
@@ -180,17 +180,29 @@ public class ConversationSettings extends AppCompatActivity {
                     }
                     return;
                 }
+
+                final int newConversationId = response.body().getConversationId();
+                if(newConversationId != conversationId){
+                    // new conversation has been created, start new settings activity
+                    Toast.makeText(ConversationSettings.this, "A new group chat has been created!", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(ConversationSettings.this, ConversationSettings.class);
+                    intent.putExtra(EXTRA_CONVERSATION_ID, newConversationId);
+                    startActivity(intent);
+                    finish();
+                    return;
+                }
+
                 User newUser = new User(username, null);
                 participants.add(newUser);
                 participantAdapter.notifyItemInserted(participants.indexOf(newUser));
                 if (response.body() != null) {
-                    Toast.makeText(ConversationSettings.this, response.body(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ConversationSettings.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
                 }
 
             }
 
             @Override
-            public void onFailure(Call<String> call, Throwable throwable) {
+            public void onFailure(Call<NewConversationResponse> call, Throwable throwable) {
                 Toast.makeText(ConversationSettings.this, "Unable to add user, please try again.", Toast.LENGTH_SHORT).show();
             }
         });

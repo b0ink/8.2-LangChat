@@ -40,3 +40,7 @@ data class ConversationResponse(
     val lastUpdatedDisplay: String
 )
 
+data class NewConversationResponse(
+    val conversationId: Int,
+    val message: String
+)

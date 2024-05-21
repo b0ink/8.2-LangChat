@@ -203,12 +203,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startNewConversation(String username) {
-        Call<Integer> call = RetrofitClient.getInstance()
+        Call<NewConversationResponse> call = RetrofitClient.getInstance()
                 .getAPI().createConversation(authManager.getToken(), username);
 
-        call.enqueue(new Callback<Integer>() {
+        call.enqueue(new Callback<NewConversationResponse>() {
             @Override
-            public void onResponse(Call<Integer> call, Response<Integer> response) {
+            public void onResponse(Call<NewConversationResponse> call, Response<NewConversationResponse> response) {
                 if (!response.isSuccessful() || response.body() == null) {
                     if (response.code() == 404) {
                         Toast.makeText(MainActivity.this, "User does not exist", Toast.LENGTH_SHORT).show();
@@ -222,7 +222,7 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 }
 
-                int conversationId = response.body();
+                int conversationId = response.body().getConversationId();
 
                 if (conversationId != -1) {
 //                    Toast.makeText(MainActivity.this, response.body().toString(), Toast.LENGTH_SHORT).show();
@@ -238,7 +238,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<Integer> call, Throwable throwable) {
+            public void onFailure(Call<NewConversationResponse> call, Throwable throwable) {
                 Toast.makeText(MainActivity.this, "Unable to add user, please try again.", Toast.LENGTH_SHORT).show();
             }
         });

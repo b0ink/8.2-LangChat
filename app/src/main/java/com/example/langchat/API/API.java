@@ -3,6 +3,7 @@ package com.example.langchat.API;
 import com.example.langchat.API.models.ResponsePost;
 import com.example.langchat.ConversationResponse;
 import com.example.langchat.Message;
+import com.example.langchat.NewConversationResponse;
 import com.example.langchat.User;
 
 import retrofit2.Call;
@@ -107,7 +108,7 @@ public interface API {
     // Add user to conversation
     @FormUrlEncoded
     @POST("conversation/{conversationId}/add-participant")
-    Call<String> addParticipant(
+    Call<NewConversationResponse> addParticipant(
             @Header("Authorization") String token,
             @Path("conversationId") int conversationId,
             @Field("username") String username
@@ -117,7 +118,7 @@ public interface API {
     // Returns the conversationId, either an existing conversation id or a new one
     @FormUrlEncoded
     @POST("conversation/new")
-    Call<Integer> createConversation(
+    Call<NewConversationResponse> createConversation(
             @Header("Authorization") String token,
             @Field("recipientsUsername") String recipientsUsername
     );
