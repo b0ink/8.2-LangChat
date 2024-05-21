@@ -22,7 +22,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@id/llMessageInputLayout"
-        android:paddingBottom="25dp"
+        android:layout_marginTop="100dp"
+        android:paddingBottom="10dp"
         app:reverseLayout="true"
         tools:itemCount="25"
         tools:listitem="@layout/fragment_message" />
@@ -65,7 +66,7 @@
       android:id="@+id/banner"
       android:layout_width="match_parent"
       android:layout_height="100dp"
-      android:background="#EA92B4"
+      android:background="#00EA92B4"
       android:clipToPadding="false"
       android:padding="5dp"
       app:layout_constraintEnd_toEndOf="parent"
@@ -108,10 +109,13 @@
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_gravity="center_horizontal"
+          android:fontFamily="@font/inter_bold"
           android:gravity="center_horizontal"
           android:text="USERNAME"
           android:textAlignment="center"
-          android:textSize="14sp" />
+          android:textColor="#FFFFFF"
+          android:textSize="16sp"
+          android:textStyle="bold" />
 
     </LinearLayout>
 
