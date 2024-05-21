@@ -6,7 +6,7 @@
     android:padding="20dp">
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/tvDialogPrompt"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Enter a username to add them to the conversation" />

@@ -113,4 +113,13 @@ public interface API {
             @Field("username") String username
     );
 
+    // Start new conversation with user
+    // Returns the conversationId, either an existing conversation id or a new one
+    @FormUrlEncoded
+    @POST("conversation/new")
+    Call<Integer> createConversation(
+            @Header("Authorization") String token,
+            @Field("recipientsUsername") String recipientsUsername
+    );
+
 }

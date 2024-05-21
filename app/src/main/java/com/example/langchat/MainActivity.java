@@ -4,11 +4,17 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.Adapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -43,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
 
     private AuthManager authManager;
     private Button btnLogout;
+    private ImageButton btnNewMessage;
 
     private ImageButton btnProfile;
 
@@ -60,20 +67,24 @@ public class MainActivity extends AppCompatActivity {
         StrictMode.setThreadPolicy(policy);
 
         authManager = new AuthManager(this);
-        if(authManager.getToken() == null || !authManager.isTokenValid()){
+        if (authManager.getToken() == null || !authManager.isTokenValid()) {
             startActivity(new Intent(this, LoginActivity.class));
             finish();
             return;
         }
 
         btnProfile = findViewById(R.id.btnProfile);
-        btnProfile.setOnClickListener(view ->{
+        btnProfile.setOnClickListener(view -> {
             authManager.logout();
             startActivity(new Intent(this, LoginActivity.class));
             finish();
             return;
         });
 
+        btnNewMessage = findViewById(R.id.btnNewMessage);
+        btnNewMessage.setOnClickListener(view -> {
+            showAddUserDialog("Enter a username to start a conversation!");
+        });
 
         // Run the message receiving logic on a background thread
         new Thread(() -> {
@@ -146,10 +157,94 @@ public class MainActivity extends AppCompatActivity {
         adapter = new ConversationAdapter(this, conversations);
         recycler.setAdapter(adapter);
 
-        retrieveConversations(1);
+        retrieveConversations();
     }
 
-    private void retrieveConversations(int userId) {
+
+    public void showAddUserDialog(String prompt) {
+        // Inflate the custom layout
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_add_user, null);
+
+        // Create an AlertDialog builder
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setView(dialogView);
+
+        // Find the EditText in the custom layout
+        EditText usernameEditText = dialogView.findViewById(R.id.etUsername);
+        TextView tvDialogPrompt = dialogView.findViewById(R.id.tvDialogPrompt);
+        tvDialogPrompt.setText(prompt);
+
+        // Set up the dialog buttons
+        builder.setPositiveButton("Add", (dialog, which) -> {
+            // Retrieve the inputted username
+            String username = usernameEditText.getText().toString().trim();
+
+            // Work with the username (e.g., display a toast or save it)
+            if (!username.isEmpty()) {
+                // Example: Display the username using a Toast
+//                Toast.makeText(this, "Username: " + username, Toast.LENGTH_SHORT).show();
+                startNewConversation(username);
+
+                // TODO: Add your code here to handle the username (e.g., save to a database)
+            } else {
+                Toast.makeText(this, "Username cannot be empty", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        builder.setNegativeButton("Cancel", (dialog, which) -> {
+            // Cancel the dialog
+            dialog.dismiss();
+        });
+
+        // Show the dialog
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    private void startNewConversation(String username) {
+        Call<Integer> call = RetrofitClient.getInstance()
+                .getAPI().createConversation(authManager.getToken(), username);
+
+        call.enqueue(new Callback<Integer>() {
+            @Override
+            public void onResponse(Call<Integer> call, Response<Integer> response) {
+                if (!response.isSuccessful() || response.body() == null) {
+                    if (response.code() == 404) {
+                        Toast.makeText(MainActivity.this, "User does not exist", Toast.LENGTH_SHORT).show();
+                    }
+//                    else if (response.code() == 401) {
+//                        Toast.makeText(MainActivity.this, "User is already part of this conversation", Toast.LENGTH_SHORT).show();
+//                    }
+                    else {
+                        Toast.makeText(MainActivity.this, "Error starting new conversation", Toast.LENGTH_SHORT).show();
+                    }
+                    return;
+                }
+
+                int conversationId = response.body();
+
+                if (conversationId != -1) {
+                    Toast.makeText(MainActivity.this, response.body(), Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(MainActivity.this, MessageActivity.class);
+                    intent.putExtra(MessageActivity.EXTRA_CONVERSATION_ID, conversationId);
+                    intent.putExtra(MessageActivity.EXTRA_USERNAME_DISPLAY, username);
+                    startActivity(intent);
+                    finish();
+                } else {
+                    Toast.makeText(MainActivity.this, "Could not start conversation. Please try again later.", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<Integer> call, Throwable throwable) {
+                Toast.makeText(MainActivity.this, "Unable to add user, please try again.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void retrieveConversations() {
         Call<List<ConversationResponse>> call = RetrofitClient.getInstance()
                 .getAPI().getUsersConversations(authManager.getToken());
 
