@@ -240,7 +240,9 @@ public class ConversationSettings extends AppCompatActivity {
                     spnLanguage.setSelection(availableLanguages.indexOf(language), false);
                     selectedLanguage = language;
                 }
-
+                if(participants.get(0).isAdmin()){
+                    participantAdapter.viewAdminControls = true;
+                }
                 participantAdapter.notifyDataSetChanged();
 
 //                participants.add(new User("Add user to conversation", null));

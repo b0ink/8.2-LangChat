@@ -23,6 +23,8 @@ public class ParticipantAdapter extends RecyclerView.Adapter<ParticipantAdapter.
 
     public ArrayList<User> participants;
 
+    public Boolean viewAdminControls = false;
+
     private Context context;
 
     public ParticipantAdapter(Context context, ArrayList<User> participants) {
@@ -72,6 +74,10 @@ public class ParticipantAdapter extends RecyclerView.Adapter<ParticipantAdapter.
 
             //TODO: if logged in user is admin of current converation, display remove user button
             btnRemoveUser.setVisibility(View.GONE);
+
+            if(viewAdminControls && getAdapterPosition() != 0){
+                btnRemoveUser.setVisibility(View.VISIBLE);
+            }
 
             AuthManager authManager = new AuthManager(context);
             String username = user.getUsername();
