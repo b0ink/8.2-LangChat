@@ -1,5 +1,6 @@
 const db = require("../models");
 const User = db.users;
+const Conversation = db.conversations;
 
 const { secretKey } = require("../config.json");
 const Joi = require("joi");
@@ -117,6 +118,12 @@ exports.findConversations = async (req, res) => {
     let Conversations = [];
 
     for(let conv_id of conversationIds){
+        const conversationData = await Conversation.findOne({
+            where: {
+                id: conv_id
+            }
+        });
+
         const participants = await Utility.GetConversationParticipants(conv_id);
         const lastMessage = await Utility.GetMostRecentConversationMessage(conv_id);
         
@@ -125,14 +132,28 @@ exports.findConversations = async (req, res) => {
             // Dont include requesting user as the participant
             // Will be used to display the "name" of the conversation (more than 1 participant will be a group chat)
             participants: [...participants.filter(p=>p.user.username!==user.username)],
-            lastMessage:lastMessage
+            lastMessage:lastMessage,
+            updatedAt: conversationData.updatedAt
         });
     }
 
+    // Conversations.sort((a, b) => {
+    //     // Convert createdAt strings to Date objects for comparison
+    //     const dateA = new Date(a.lastMessage.createdAt);
+    //     const dateB = new Date(b.lastMessage.createdAt);
+    
+    //     // Compare dates in descending order
+    //     return dateB - dateA;
+    // });
+
+    // Conversation timestamps are updated when new messages are sent to the conversation
+    // Sort by recently updated
     Conversations.sort((a, b) => {
-        // Convert createdAt strings to Date objects for comparison
-        const dateA = new Date(a.lastMessage.createdAt);
-        const dateB = new Date(b.lastMessage.createdAt);
+        // Convert updatedAt strings to Date objects for comparison
+        const dateA = new Date(a.updatedAt);
+        const dateB = new Date(b.updatedAt);
+
+        console.log(dateA, dateB)
     
         // Compare dates in descending order
         return dateB - dateA;
