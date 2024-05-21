@@ -99,6 +99,7 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
                 imgProfilePicture.setBackgroundResource(R.drawable.pfp_group_placeholder);
             }
 
+            tvLastMessageTime.setText(conversation.getLastUpdatedDisplay());
 
             tvUsername.setText(username);
             Message lastMsg = conversation.getLastMessage();
