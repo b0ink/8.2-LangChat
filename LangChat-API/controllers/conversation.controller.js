@@ -21,7 +21,10 @@ exports.createConversation = async (req, res) => {
 
     const user = await User.findByPk(userData.id);
     if(!user){
-        return res.status(401).json(-1);
+        return res.status(401).json({
+            conversationId: -1,
+            message: "Invalid user"
+        });
     }
 
     // TODO: create response class with conversation_id and message
@@ -36,13 +39,19 @@ exports.createConversation = async (req, res) => {
 
     if(!recipientUser){
         console.log('invalid recipient')
-        return res.status(404).json(-1);
+        return res.status(404).json({
+            conversationId: -1,
+            message: "Invalid user"
+        });
         // return res.status(404).json("User does not exist");
     }
 
     if(recipientUser.id === user.id){
         console.log('recipient cant be same as user')
-        return res.status(401).json(-1);
+        return res.status(401).json({
+            conversationId: -1,
+            message: "You can't add yourself to the conversation"
+        });
     }
 
     // Check if such a (DMs only - not a group chat) conversation exists between user and recipient
@@ -66,33 +75,38 @@ exports.createConversation = async (req, res) => {
     // Conversation between user and recipient already exists, return id
     if(!!existingConversation){
         console.log("returning existing conversation", existingConversation.conversation_id)
-        return res.status(201).json(existingConversation.conversation_id);
+        return res.status(202).json({
+            conversationId: existingConversation.conversation_id,
+            message: "Conversation with user already exists!"
+        })
     }
     
-    const newConversation = await Conversation.create();
 
-    if(!newConversation){
-        console.log("failed to init new conversation")
-        return res.json(500);
-    }
+    // const newConversation = await Conversation.create();
 
-    const userParticipant = await Participant.create({
-        conversation_id: newConversation.id,
-        user_id: user.id,
-        preferredLanguage: user.defaultPreferredLanguage
-    });
+    // if(!newConversation){
+    //     console.log("failed to init new conversation")
+    //     return res.json(500);
+    // }
 
-    const recipientParticipant = await Participant.create({
-        conversation_id: newConversation.id,
-        user_id: recipientUser.id,
-        preferredLanguage: recipientUser.defaultPreferredLanguage
-    });
+    // const userParticipant = await Participant.create({
+    //     conversation_id: newConversation.id,
+    //     user_id: user.id,
+    //     preferredLanguage: user.defaultPreferredLanguage
+    // });
 
+    // const recipientParticipant = await Participant.create({
+    //     conversation_id: newConversation.id,
+    //     user_id: recipientUser.id,
+    //     preferredLanguage: recipientUser.defaultPreferredLanguage
+    // });
+    const newConversation = await Utility.CreateConversation(user, recipientUser);
     console.log(`New conversation ${newConversation.id}} with participants:`);
-    console.log(userParticipant, recipientParticipant);
-    
 
-    return res.status(200).json(newConversation.id);
+    return res.status(200).json({
+        conversationId: newConversation.id,
+        message: "Success"
+    });
 
 }
 
@@ -101,7 +115,6 @@ exports.addParticipant = async (req, res) => {
     const conversationId = parseInt(req.params.conversationId);
     const usernameToAdd = req.body.username;
 
-    // Check if calling user is part of converesation
     const usersConversations = await Utility.GetUsersConversations(user.id);
     if (!usersConversations.includes(conversationId)) {
         return res.status(401);
@@ -124,18 +137,68 @@ exports.addParticipant = async (req, res) => {
         return res.status(401).json("User is already part of the conversation");
     }
 
-    //TODO: check if new user has maxed out conversations they participate in
-
-    const newParticipant = await Participant.create({
-        conversation_id: conversationId,
-        user_id: userToAdd.id,
-        preferredLanguage: userToAdd.defaultPreferredLanguage,
+    const participants = await Participant.findAll({
+        where: {
+            conversation_id: conversationId
+        },
+        include: [
+            {
+                model: User,
+                as: "user",
+                attributes: ["id","username", "defaultPreferredLanguage"],
+            },
+        ]
     });
 
-    if (newParticipant) {
-        //TODO: add system message to notify new user joining
-        return res.status(200).json("Added user to conversation");
+    console.log(participants)
+
+
+    //TODO: check if new user has maxed out conversations they participate in
+
+    if(participants.length == 2){
+        // attempting to add user to a DM, creating new conversation
+        console.log("adding third participant, creating new conversation");
+        let groupChatAdmin = null;
+        let user2 = null;
+
+        for(let u of participants){
+            if(u.user.id===user.id){
+                groupChatAdmin = u.user;
+                continue;
+            }
+            user2 = u.user;
+        }
+        
+        const newConversation = await Utility.CreateConversation(groupChatAdmin, user2, true);
+
+        const newParticipant = await Participant.create({
+            conversation_id: newConversation.id,
+            user_id: userToAdd.id,
+            preferredLanguage: userToAdd.defaultPreferredLanguage,
+        });
+
+        if (newParticipant) {
+            return res.status(200).json({
+                conversationId: newConversation.id,
+                message: "Added user to conversation"
+            });
+        }
+
+    }else{
+        const newParticipant = await Participant.create({
+            conversation_id: conversationId,
+            user_id: userToAdd.id,
+            preferredLanguage: userToAdd.defaultPreferredLanguage,
+        });
+        if (newParticipant) {
+            //TODO: add system message to notify new user joining
+            return res.status(200).json({
+                conversationId: conversationId,
+                message: "Added user to conversation"
+            });
+        }
     }
+
 };
 
 exports.findParticipants = async (req, res) => {
