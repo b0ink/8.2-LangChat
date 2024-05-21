@@ -2,6 +2,7 @@ const db = require("../models");
 const User = db.users;
 const Translation = db.translations;
 const Participant = db.participants;
+const Conversation = db.conversations;
 
 const { secretKey } = require("../config.json");
 const Joi = require("joi");
@@ -11,6 +12,89 @@ const bcrypt = require("bcrypt");
 const saltRounds = 10;
 
 const Utility = require("./Utility");
+
+exports.createConversation = async (req, res) => {
+    const userData = req.user;
+    const recipientsUsername = req.body.recipientsUsername;
+
+    console.log(userData, recipientsUsername)
+
+    const user = await User.findByPk(userData.id);
+    if(!user){
+        return res.status(401).json(-1);
+    }
+
+    // TODO: create response class with conversation_id and message
+
+    // Check to see if recipient exists
+    const recipientUser = await User.findOne({
+        // TODO: case sensitivity?
+        where: {
+            username: recipientsUsername
+        }
+    });
+
+    if(!recipientUser){
+        console.log('invalid recipient')
+        return res.status(404).json(-1);
+        // return res.status(404).json("User does not exist");
+    }
+
+    if(recipientUser.id === user.id){
+        console.log('recipient cant be same as user')
+        return res.status(401).json(-1);
+    }
+
+    // Check if such a (DMs only - not a group chat) conversation exists between user and recipient
+    const existingConversation = await Participant.findOne({
+        attributes: ['conversation_id'],
+        where: {
+            user_id: {
+                [db.Sequelize.Op.in]: [user.id, recipientUser.id]
+            }
+        },
+        group: ['conversation_id'],
+        having: db.sequelize.where(
+            db.sequelize.fn('COUNT', db.sequelize.col('user_id')),
+            2
+        ),
+        raw: true
+    });
+
+    console.log(existingConversation);
+
+    // Conversation between user and recipient already exists, return id
+    if(!!existingConversation){
+        console.log("returning existing conversation", existingConversation.conversation_id)
+        return res.status(201).json(existingConversation.conversation_id);
+    }
+    
+    const newConversation = await Conversation.create();
+
+    if(!newConversation){
+        console.log("failed to init new conversation")
+        return res.json(500);
+    }
+
+    const userParticipant = await Participant.create({
+        conversation_id: newConversation.id,
+        user_id: user.id,
+        preferredLanguage: user.defaultPreferredLanguage
+    });
+
+    const recipientParticipant = await Participant.create({
+        conversation_id: newConversation.id,
+        user_id: recipientUser.id,
+        preferredLanguage: recipientUser.defaultPreferredLanguage
+    });
+
+    console.log(`New conversation ${newConversation.id}} with participants:`);
+    console.log(userParticipant, recipientParticipant);
+    
+
+    return res.status(200).json(newConversation.id);
+
+}
 
 exports.addParticipant = async (req, res) => {
     const user = req.user;

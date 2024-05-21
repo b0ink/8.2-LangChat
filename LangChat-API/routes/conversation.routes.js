@@ -18,6 +18,7 @@ module.exports = (app, API_VERSION) => {
 
     router.post("/:conversationId/add-participant", authenticateToken, conversation.addParticipant);
 
+    router.post("/new", authenticateToken, conversation.createConversation);
 
     app.use(`/api/${API_VERSION}/conversation`, router);
 };

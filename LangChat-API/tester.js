@@ -82,4 +82,29 @@ async function getConversations(){
 
 }
 
-getConversations();
+// getConversations();
+
+
+
+async function checkExistingConversations(){
+    const userId = 1;
+    const recipientId = 2;
+    const existingConversation = await Participant.findOne({
+        attributes: ['conversation_id'],
+        where: {
+            user_id: {
+                [db.Sequelize.Op.in]: [userId, recipientId]
+            }
+        },
+        group: ['conversation_id'],
+        having: db.sequelize.where(
+            db.sequelize.fn('COUNT', db.sequelize.col('user_id')),
+            2
+        ),
+        raw: true
+    });
+
+    console.log(existingConversation);
+}
+
+checkExistingConversations();
