@@ -10,24 +10,32 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.langchat.API.AuthManager;
+import com.example.langchat.API.RetrofitClient;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ParticipantAdapter extends RecyclerView.Adapter<ParticipantAdapter.ParticipantViewHolder> {
 
     public ArrayList<User> participants;
 
     public Boolean viewAdminControls = false;
+    public int conversationId = -1;
 
     private Context context;
 
-    public ParticipantAdapter(Context context, ArrayList<User> participants) {
+    public ParticipantAdapter(Context context, ArrayList<User> participants, int conversationId) {
+        this.conversationId = conversationId;
         this.participants = participants;
         this.context = context;
     }
@@ -110,6 +118,35 @@ public class ParticipantAdapter extends RecyclerView.Adapter<ParticipantAdapter.
 //                context.startActivity(intent);
 //                ((Activity)context).finish();
 //            });
+
+            btnRemoveUser.setOnClickListener(view -> {
+                int removingUserid = user.getId();
+
+                Call<String> call = RetrofitClient.getInstance()
+                        .getAPI().removeUser(authManager.getToken(),conversationId, removingUserid);
+
+                call.enqueue(new Callback<String>() {
+                    @Override
+                    public void onResponse(Call<String> call, Response<String> response) {
+                        if (!response.isSuccessful() || response.body() == null) {
+                            System.out.println("Invalid response from removeUser");
+                            Toast.makeText(context, "Unable to remove user.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        Toast.makeText(context, "Removed " + user.getUsername() + " from the chat.", Toast.LENGTH_SHORT).show();
+                        int positionRemoved = participants.indexOf(user);
+                        participants.remove(user);
+                        notifyItemRemoved(positionRemoved);
+                    }
+
+                    @Override
+                    public void onFailure(Call<String> call, Throwable throwable) {
+
+                    }
+                });
+            });
+
         }
 
     }

@@ -1,6 +1,7 @@
 package com.example.langchat
 
 data class User(
+    val id: Int,
     val username: String,
     val preferredLanguage: String?,
     val isAdmin: Boolean

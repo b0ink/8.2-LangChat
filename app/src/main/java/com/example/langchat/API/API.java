@@ -123,4 +123,12 @@ public interface API {
             @Field("recipientsUsername") String recipientsUsername
     );
 
+    @FormUrlEncoded
+    @POST("conversation/{conversationId}}/remove-user")
+    Call<String> removeUser(
+            @Header("Authorization") String token,
+            @Path("conversationId") int conversationId,
+            @Field("removingUserId") int removingUserId
+    );
+
 }

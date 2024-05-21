@@ -89,7 +89,7 @@ public class ConversationSettings extends AppCompatActivity {
 
         RecyclerView recycler = findViewById(R.id.participantRecyclerView);
         recycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        participantAdapter = new ParticipantAdapter(this, participants);
+        participantAdapter = new ParticipantAdapter(this, participants, conversationId);
         recycler.setAdapter(participantAdapter);
 
         // Set the listener to detect item selection
@@ -200,7 +200,7 @@ public class ConversationSettings extends AppCompatActivity {
                     return;
                 }
 
-                User newUser = new User(username, null, false);
+                User newUser = new User(-1, username, null, false);
                 participants.add(newUser);
                 participantAdapter.notifyItemInserted(participants.indexOf(newUser));
                 if (response.body() != null) {
