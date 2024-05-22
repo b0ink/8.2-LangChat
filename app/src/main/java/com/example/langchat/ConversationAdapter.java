@@ -61,6 +61,7 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
         private TextView tvLastMessageTime;
         private TextView tvRecentMessage;
         private ImageView imgProfilePicture;
+        private ImageView imgNewMessageIcon;
 
         private RelativeLayout rlConversationContainer;
 
@@ -75,6 +76,8 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
             tvRecentMessage = itemView.findViewById(R.id.tvRecentMessage);
             imgProfilePicture = itemView.findViewById(R.id.imgProfilePicture);
             rlConversationContainer = itemView.findViewById(R.id.rlConversationContainer);
+            imgNewMessageIcon = itemView.findViewById(R.id.imgNewMessageIcon);
+
             this.context = context;
             this.selectedInterests = selectedInterests;
         }
@@ -82,6 +85,9 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
         public void bind(ConversationResponse conversation) {
             String username = "";
             List<Participant> participantList = conversation.getParticipants();
+            imgNewMessageIcon.setVisibility(View.GONE);
+
+
 
             //TODO: put into static util class
             if(participantList.size() == 1){
@@ -107,9 +113,19 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
             Message lastMsg = conversation.getLastMessage();
             if(lastMsg == null){
                 tvRecentMessage.setText("Tap to send a message...");
+                imgNewMessageIcon.setVisibility(View.VISIBLE);
             }else{
                 tvRecentMessage.setText(lastMsg.getMessage());
+
+                int recentMessageId = conversation.getLastMessage().getId();
+                int lastReadMessageId = LocalDatabaseHelper.getInstance(context).getLastReadMessage(conversation.getId());
+                System.out.println("Recent msg: " + recentMessageId + " lastsaveid: " + lastReadMessageId);
+
+                if(recentMessageId > lastReadMessageId){
+                    imgNewMessageIcon.setVisibility(View.VISIBLE);
+                }
             }
+
 
             final String usernameDisplay = username;
             rlConversationContainer.setOnClickListener(view ->{

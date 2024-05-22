@@ -68,12 +68,21 @@ public class LocalDatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
 
-        contentValues.put("last_message_read_id", message_id);
+        // If row for conversation doesn't exist, insert row
+        if (getLastReadMessage(conversation_id) == -1) {
+            contentValues.put("conversation_id", conversation_id);
+            contentValues.put("last_message_read_id", message_id);
+            long result = db.insert("message_receipts", null, contentValues);
+            return result != -1;
+        }
 
+
+        // otherwise update existing row
+        contentValues.put("last_message_read_id", message_id);
         long result = db.update("message_receipts", contentValues, "conversation_id=?", new String[]{String.valueOf(conversation_id)});
 
         if (result != -1) {
-            Log.d("DatabaseHelper", "Added translation successfully");
+            Log.d("DatabaseHelper", "Saved local message receipt successfully");
         }
 
         return result != -1;

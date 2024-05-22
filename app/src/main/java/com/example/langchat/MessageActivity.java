@@ -239,6 +239,13 @@ public class MessageActivity extends AppCompatActivity {
                     }
                 }
 
+                if (!messages.isEmpty()) {
+                    int mostRecentMessage = messages.get(messages.size() - 1).getId();
+                    runOnUiThread(() -> {
+                        databaseHelper.saveLastReadMessage(conversationId, mostRecentMessage);
+                    });
+                }
+
             }
 
             @Override
