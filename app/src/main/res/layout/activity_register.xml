@@ -5,6 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/background_gradient"
     tools:context=".RegisterActivity">
 
     <LinearLayout
@@ -21,15 +22,17 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="50dp"
+            android:layout_marginBottom="25dp"
             android:orientation="vertical">
 
             <TextView
                 android:id="@+id/tvTitle1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins_extrabold"
+                android:includeFontPadding="false"
                 android:text="Lets get you"
-                android:textColor="#000000"
+                android:textColor="#FFFFFF"
                 android:textSize="36sp"
                 android:textStyle="bold" />
 
@@ -37,85 +40,164 @@
                 android:id="@+id/tvTitle2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins_extrabold"
+                android:includeFontPadding="false"
                 android:text="Setup!"
-                android:textColor="#000000"
+                android:textColor="#FFFFFF"
                 android:textSize="48sp"
                 android:textStyle="bold" />
 
         </LinearLayout>
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <EditText
-                android:id="@+id/etUsername"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/filledTextFieldUsername"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:ems="10"
+                android:layout_marginBottom="5dp"
                 android:hint="Username"
-                android:inputType="text" />
+                android:textColorHint="#99FFFFFF"
+                app:boxBackgroundMode="outline"
+                app:boxStrokeColor="@color/custom_outlined_stroke_color"
+                app:cursorColor="#FFFFFF"
+                app:cursorErrorColor="@color/white"
+                app:hintTextColor="@color/button_text_primary">
 
-            <EditText
-                android:id="@+id/etEmail"
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etUsername"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/inter_medium" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/filledTextField"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:ems="10"
+                android:layout_marginBottom="5dp"
                 android:hint="Email"
-                android:inputType="textEmailAddress" />
+                android:textColorHint="#99FFFFFF"
+                app:boxBackgroundMode="outline"
+                app:boxStrokeColor="@color/custom_outlined_stroke_color"
+                app:cursorColor="#FFFFFF"
+                app:cursorErrorColor="@color/white"
+                app:hintTextColor="@color/button_text_primary">
 
-            <EditText
-                android:id="@+id/etConfirmEmail"
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/inter_medium"
+                    android:inputType="textEmailAddress" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/filledTextFieldEmail"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:ems="10"
-                android:hint="Confirm Email"
-                android:inputType="textEmailAddress" />
+                android:layout_marginBottom="5dp"
+                android:hint="Confirm email"
+                android:textColorHint="#99FFFFFF"
+                app:boxBackgroundMode="outline"
+                app:boxStrokeColor="@color/custom_outlined_stroke_color"
+                app:cursorColor="#FFFFFF"
+                app:cursorErrorColor="@color/white"
+                app:hintTextColor="@color/button_text_primary">
 
-            <EditText
-                android:id="@+id/etPassword"
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etConfirmEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/inter_medium"
+                    android:inputType="textEmailAddress" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/filledTextFieldPassword"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:ems="10"
+                android:layout_marginBottom="5dp"
                 android:hint="Password"
-                android:inputType="textPassword" />
+                android:textColorHint="#99FFFFFF"
+                app:boxBackgroundMode="outline"
+                app:boxStrokeColor="@color/custom_outlined_stroke_color"
+                app:cursorColor="#FFFFFF"
+                app:cursorErrorColor="@color/white"
+                app:hintTextColor="@color/button_text_primary"
+                app:passwordToggleEnabled="true">
 
-            <EditText
-                android:id="@+id/etConfirmPassword"
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/inter_medium"
+                    android:inputType="textPassword" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/filledTextFieldConfirmPassword"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:ems="10"
-                android:hint="Confirm Password"
-                android:inputType="textPassword" />
+                android:layout_marginBottom="5dp"
+                android:hint="Confirm password"
+                android:textColorHint="#99FFFFFF"
+                app:boxBackgroundMode="outline"
+                app:boxStrokeColor="@color/custom_outlined_stroke_color"
+                app:cursorColor="#FFFFFF"
+                app:cursorErrorColor="@color/white"
+                app:hintTextColor="@color/button_text_primary">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etConfirmPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/inter_medium"
+                    android:inputType="textPassword" />
+            </com.google.android.material.textfield.TextInputLayout>
+
 
             <Button
                 android:id="@+id/btnRegister"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="65dp"
                 android:layout_gravity="center"
+                android:layout_marginLeft="50dp"
                 android:layout_marginTop="15dp"
-                android:backgroundTint="#02ff7d"
-                android:minWidth="250dp"
+                android:layout_marginRight="50dp"
+                android:backgroundTint="#005FADBE"
+                android:elevation="5dp"
+                android:fontFamily="@font/inter_bold"
                 android:text="Register"
-                android:textColor="#000000"
-                app:cornerRadius="6dp" />
+                android:textColor="#BFFFFFFF"
+                android:textSize="16sp"
+                app:cornerRadius="6dp"
+                app:strokeColor="#5DAABB"
+                app:strokeWidth="2dp" />
 
             <Button
                 android:id="@+id/btnLogin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginTop="15dp"
-                android:backgroundTint="#02F7FF"
-                android:minWidth="250dp"
+                android:layout_marginLeft="50dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="50dp"
+                android:backgroundTint="#0002F7FF"
+                android:fontFamily="@font/inter_medium"
+                android:includeFontPadding="false"
+                android:padding="0dp"
                 android:text="Login instead"
-                android:textColor="#000000"
+                android:textColor="#80FFFFFF"
+                android:textSize="14sp"
                 app:cornerRadius="6dp" />
         </LinearLayout>
 
