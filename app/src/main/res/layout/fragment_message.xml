@@ -5,11 +5,22 @@
     android:id="@+id/llMessageContainer"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="5dp"
+    android:layout_marginBottom="2dp"
     android:background="@android:color/transparent"
     android:gravity="left"
-    android:orientation="horizontal">
+    android:orientation="vertical">
 
+
+    <TextView
+        android:id="@+id/tvSenderUsername"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="2dp"
+        android:layout_weight="1"
+        android:paddingLeft="5dp"
+        android:text="Bill"
+        android:textColor="#BF000000" />
 
     <TextView
         android:id="@+id/tvMessageText"

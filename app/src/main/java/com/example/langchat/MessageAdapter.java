@@ -59,6 +59,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
 
         private Context context;
         private TextView tvMessageText;
+        private TextView tvSenderUsername;
         private LinearLayout llMessageContainer;
 
         private AuthManager authManager;
@@ -67,6 +68,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
             super(itemView);
             tvMessageText = itemView.findViewById(R.id.tvMessageText);
             llMessageContainer = itemView.findViewById(R.id.llMessageContainer);
+            tvSenderUsername = itemView.findViewById(R.id.tvSenderUsername);
             authManager = new AuthManager(context);
             this.context = context;
         }
@@ -74,6 +76,8 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
         public void bind(Message chatMessage) {
             // set the original text of the message
             tvMessageText.setText(chatMessage.getMessage());
+
+            tvSenderUsername.setText(chatMessage.getUser().getUsername());
 
             // if a translation is available, update it to translated version:
             if(chatMessage.getTranslations() != null){
@@ -88,10 +92,33 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
             //TODO: check if authed user matches this username
             if(chatMessage.getUser().getUsername().equals(authManager.getJwtProperty("username"))){
                 llMessageContainer.setGravity(Gravity.RIGHT);
+
+                LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) tvMessageText.getLayoutParams();
+                params.gravity = Gravity.RIGHT; // or any other gravity
+                tvMessageText.setLayoutParams(params);
+
                 tvMessageText.setBackgroundResource(R.drawable.text_view_background_user);
+                tvSenderUsername.setVisibility(View.GONE);
+
+
             }else{
                 llMessageContainer.setGravity(Gravity.LEFT);
+//                tvMessageText.setGravity(Gravity.LEFT);
+                LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) tvMessageText.getLayoutParams();
+                params.gravity = Gravity.LEFT; // or any other gravity
+                tvMessageText.setLayoutParams(params);
+
+
                 tvMessageText.setBackgroundResource(R.drawable.text_view_background_ai);
+                tvSenderUsername.setVisibility(View.VISIBLE);
+
+                int position = getAdapterPosition();
+                if(position >= 1){
+                    Message previousMessage = chatMessages.get(position-1);
+                    if(previousMessage.getUser().equals(chatMessage.getUser())){
+                        tvSenderUsername.setVisibility(View.GONE);
+                    }
+                }
             }
         }
 
