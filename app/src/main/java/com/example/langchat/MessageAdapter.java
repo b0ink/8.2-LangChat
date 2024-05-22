@@ -80,9 +80,9 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
             tvSenderUsername.setText(chatMessage.getUser().getUsername());
 
             // if a translation is available, update it to translated version:
-            if(chatMessage.getTranslations() != null){
+            if (chatMessage.getTranslations() != null) {
                 List<Translation> translations = chatMessage.getTranslations();
-                if(!translations.isEmpty()){
+                if (!translations.isEmpty()) {
                     tvMessageText.setText(translations.get(0).getMessage());
                 }
             }
@@ -90,7 +90,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
             System.out.println("username: " + chatMessage.getUser().getUsername());
 
             //TODO: check if authed user matches this username
-            if(chatMessage.getUser().getUsername().equals(authManager.getJwtProperty("username"))){
+            if (chatMessage.getUser().getUsername().equals(authManager.getJwtProperty("username"))) {
                 llMessageContainer.setGravity(Gravity.RIGHT);
 
                 LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) tvMessageText.getLayoutParams();
@@ -101,7 +101,16 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
                 tvSenderUsername.setVisibility(View.GONE);
 
 
-            }else{
+            } else if (chatMessage.getUser().getUsername().equals("SYSTEM")) {
+                // SYSTEM message, eg. announcing users added to or have left the chat
+                llMessageContainer.setGravity(Gravity.CENTER);
+                LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) tvMessageText.getLayoutParams();
+                params.gravity = Gravity.CENTER; // or any other gravity
+                tvMessageText.setLayoutParams(params);
+                tvSenderUsername.setVisibility(View.GONE);
+                tvMessageText.setBackgroundResource(0);
+                tvMessageText.setTextSize(14);
+            } else {
                 llMessageContainer.setGravity(Gravity.LEFT);
 //                tvMessageText.setGravity(Gravity.LEFT);
                 LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) tvMessageText.getLayoutParams();
@@ -113,9 +122,9 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
                 tvSenderUsername.setVisibility(View.VISIBLE);
 
                 int position = getAdapterPosition();
-                if(position >= 1){
-                    Message previousMessage = chatMessages.get(position-1);
-                    if(previousMessage.getUser().equals(chatMessage.getUser())){
+                if (position >= 1) {
+                    Message previousMessage = chatMessages.get(position - 1);
+                    if (previousMessage.getUser().equals(chatMessage.getUser())) {
                         tvSenderUsername.setVisibility(View.GONE);
                     }
                 }
