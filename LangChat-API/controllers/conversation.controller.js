@@ -431,11 +431,14 @@ async function TranslationService(user, conversationId, newMessage) {
 
         const usersLanguage = participant.preferredLanguage;
         const translatedMessage = await Utility.TranslateMessage(newMessage.message, usersLanguage);
-        const translation = await Translation.create({
-            message_id: newMessage.id,
-            language: usersLanguage,
-            message: translatedMessage,
-        });
+        if(!!translatedMessage){
+            const translation = await Translation.create({
+                message_id: newMessage.id,
+                language: usersLanguage,
+                message: translatedMessage,
+            });
+        }
+
 
         setTimeout(()=>{
             const response = Utility.NotifyNewMessage(`messages_${conversationId}_${participant.user_id}`);
