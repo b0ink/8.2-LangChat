@@ -89,7 +89,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
             }
 
             System.out.println("username: " + chatMessage.getUser().getUsername());
-
+            tvMessageText.setTextColor(Color.parseColor("#E6000000"));
             //TODO: check if authed user matches this username
             if (chatMessage.getUser().getUsername().equals(authManager.getJwtProperty("username"))) {
                 llMessageContainer.setGravity(Gravity.RIGHT);
@@ -111,6 +111,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
                 tvSenderUsername.setVisibility(View.GONE);
                 tvMessageText.setBackgroundResource(0);
                 tvMessageText.setTextSize(14);
+                tvMessageText.setTextColor(Color.parseColor("#BFFFFFFF"));
             } else {
                 llMessageContainer.setGravity(Gravity.LEFT);
 //                tvMessageText.setGravity(Gravity.LEFT);

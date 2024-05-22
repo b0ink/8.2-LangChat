@@ -20,7 +20,7 @@
         android:layout_weight="1"
         android:paddingLeft="5dp"
         android:text="Bill"
-        android:textColor="#BF000000" />
+        android:textColor="#BFFFFFFF" />
 
     <TextView
         android:id="@+id/tvMessageText"
@@ -39,7 +39,7 @@
         android:paddingBottom="10dp"
         android:text="Hello world..."
         android:textAlignment="viewStart"
-        android:textColor="#000000"
+        android:textColor="#E6000000"
         android:textSize="16sp" />
 
 </LinearLayout>
