@@ -90,7 +90,7 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
 
 
             //TODO: put into static util class
-            if(participantList.size() == 1){
+            if(!conversation.isGroupChat()){
                 username = participantList.get(0).getUser().getUsername();
                 imgProfilePicture.setBackgroundResource(R.drawable.pfp_placeholder);
             }else{

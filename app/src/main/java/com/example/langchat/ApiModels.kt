@@ -14,7 +14,8 @@ data class Participant(
     val user_id: Int,
     val createdAt: String,
     val updatedAt: String,
-    val user: User
+    val user: User,
+    val isAdmin: Boolean
 )
 
 data class Translation(
@@ -39,7 +40,8 @@ data class ConversationResponse(
     val id: Int,
     val participants: List<Participant>,
     val lastMessage: Message,
-    val lastUpdatedDisplay: String
+    val lastUpdatedDisplay: String,
+    val isGroupChat: Boolean
 )
 
 data class NewConversationResponse(

@@ -140,15 +140,23 @@ exports.findConversations = async (req, res) => {
         // }
 
         const lastUpdatedDisplay = timeSince;
-
+    
+        let isGroupChat = false;
+        for(let p of participants){
+            if(p.isAdmin){
+                isGroupChat = true
+            }
+        }
         Conversations.push({
             id: conv_id,
             // Dont include requesting user as the participant
             // Will be used to display the "name" of the conversation (more than 1 participant will be a group chat)
             participants: [...participants.filter(p=>p.user.username!==user.username)],
+            // participants: [...participants],
             lastMessage:lastMessage,
             updatedAt: conversationData.updatedAt,
-            lastUpdatedDisplay
+            lastUpdatedDisplay,
+            isGroupChat
         });
     }
 
