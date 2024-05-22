@@ -117,8 +117,6 @@ public class MessageActivity extends AppCompatActivity {
 
         getAllMessages(conversationId);
 
-
-        // TODO: instead, re-query the database for new messages that we dont yet have instead of manually inserting a new message item
         new Thread(() -> {
             try {
                 ConnectionFactory factory = new ConnectionFactory();
@@ -135,27 +133,10 @@ public class MessageActivity extends AppCompatActivity {
                     String message = new String(delivery.getBody(), "UTF-8");
                     Log.d("ADF", "Received message: " + message);
                     try {
-//                        JSONObject object = new JSONObject(message);
-//                        String newMessage = object.getString("message");
-//                        int convId = object.getInt("conversation_id");
-//                        int sender_id = object.getInt("sender_id");
-//                        int msgId = object.getInt("id");
-//                        JSONObject user = object.getJSONObject("user");
-//                        String username = user.getString("username");
-//
-//                        String createdAt = object.getString("createdAt");
-//                        String updatedAt = object.getString("updatedAt");
-//
-//                        runOnUiThread(() -> {
-//                            Message newMsg = new Message(msgId, convId, sender_id, newMessage, createdAt, updatedAt, new User(username));
-//                            messages.add(newMsg);
-//                            adapter.notifyItemInserted(messages.indexOf(newMsg));
-//                            recycler.scrollToPosition(messages.indexOf(newMsg)); // TODO: unless user has scrolled far enough above the start to prevent going back to the start
-//                        });
 
                         // New message has been detected, pull new messages
                         runOnUiThread(() -> {
-                            Toast.makeText(this, "DEBUG: Incoming new message", Toast.LENGTH_SHORT).show();
+//                            Toast.makeText(this, "DEBUG: Incoming new message", Toast.LENGTH_SHORT).show();
                             getAllMessages(conversationId);
                         });
 
@@ -253,28 +234,10 @@ public class MessageActivity extends AppCompatActivity {
                             adapter.notifyItemInserted(messages.size() - 1);
                             recycler.scrollToPosition(messages.size() - 1);
                         });
-                    }else{
+                    } else {
                         System.out.println("ignoring old msg received: " + msg.getMessage());
                     }
                 }
-//                messages.addAll(response.body());
-//                adapter.notifyDataSetChanged();
-
-
-//                for (Message msg : messages) {
-//                    if (msg.getSender_id() == 1) {
-//                        // dont translate messages from self
-//                        continue;
-//                    }
-//                    String translatedMessage = databaseHelper.retrieveTranslatedMessage(msg.getId(), "german");
-//                    if (translatedMessage != null) {
-//                        msg.setMessage(translatedMessage);
-//                        adapter.notifyItemChanged(messages.indexOf(msg));
-//                        continue;
-//                    }
-//
-//                    translateMessage(msg);
-//                }
 
             }
 
@@ -294,37 +257,6 @@ public class MessageActivity extends AppCompatActivity {
         return false;
     }
 
-    private void translateMessage(Message msg) {
-        // -> if local translation not found:
-        final String preferredLanguage = "german"; // TODO: to be replaced with user's preference for this specific conversation
-        final int senderId = 1; // TODO: to be replaced with logged in user
-
-        Call<Message> callTranslation = RetrofitClient.getInstance()
-                .getAPI().translateMessage(authManager.getToken(), msg.getId(), "german");
-
-        callTranslation.enqueue(new Callback<Message>() {
-            @Override
-            public void onResponse(Call<Message> callTranslation, Response<Message> response) {
-                if (!response.isSuccessful()) {
-                    return;
-                }
-                if (response.body() == null || response.body().getMessage() == null) {
-                    return;
-                }
-                databaseHelper.saveTranslation(msg.getId(), preferredLanguage, response.body().getMessage());
-                System.out.println(response.body());
-                msg.setMessage(response.body().getMessage());
-                adapter.notifyItemChanged(messages.indexOf(msg));
-
-            }
-
-            @Override
-            public void onFailure(Call<Message> callTranslation, Throwable throwable) {
-
-            }
-        });
-    }
-
     private void sendNewMessage(int conversationId, String message) {
         Call<Message> newMsgCall = RetrofitClient.getInstance()
                 .getAPI().sendMessage(authManager.getToken(), conversationId, message);
@@ -342,7 +274,6 @@ public class MessageActivity extends AppCompatActivity {
                     adapter.notifyItemInserted(messages.size() - 1);
                     recycler.scrollToPosition(messages.size() - 1);
                 });
-
 
             }
 
