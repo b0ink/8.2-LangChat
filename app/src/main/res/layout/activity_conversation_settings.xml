@@ -57,7 +57,7 @@
                     android:gravity="center"
                     android:text="Settings"
                     android:textAlignment="center"
-                    android:textColor="#000000"
+                    android:textColor="#E6FFFFFF"
                     android:textSize="24sp" />
 
             </RelativeLayout>
@@ -68,7 +68,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/inter_bold"
                 android:text="Language"
-                android:textColor="#000000"
+                android:textColor="#BFFFFFFF"
                 android:textSize="24sp" />
 
             <TextView
@@ -112,7 +112,7 @@
                 android:layout_marginBottom="15dp"
                 android:fontFamily="@font/inter_bold"
                 android:text="Participants"
-                android:textColor="#000000"
+                android:textColor="#BFFFFFFF"
                 android:textSize="24sp" />
 
             <androidx.recyclerview.widget.RecyclerView
