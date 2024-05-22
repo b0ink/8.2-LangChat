@@ -433,7 +433,10 @@ async function TranslationService(user, conversationId, newMessage) {
             message: translatedMessage,
         });
 
-        const response = await Utility.NotifyNewMessage(`messages_${conversationId}_${participant.user_id}`);
+        setTimeout(()=>{
+            const response = Utility.NotifyNewMessage(`messages_${conversationId}_${participant.user_id}`);
+        }, 1000);
+        
     }
 
     // let translatedMesage = {...newMessage};

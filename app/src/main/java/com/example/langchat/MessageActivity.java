@@ -74,7 +74,7 @@ public class MessageActivity extends AppCompatActivity {
         btnProfile = findViewById(R.id.btnProfile);
 
         btnGoBack = findViewById(R.id.btnGoBack);
-        btnGoBack.setOnClickListener(view ->{
+        btnGoBack.setOnClickListener(view -> {
             startActivity(new Intent(this, MainActivity.class));
             finish();
         });
@@ -91,7 +91,7 @@ public class MessageActivity extends AppCompatActivity {
 
 
         btnSettings = findViewById(R.id.btnSettings);
-        btnSettings.setOnClickListener(view ->{
+        btnSettings.setOnClickListener(view -> {
             Intent settings = new Intent(this, ConversationSettings.class);
             settings.putExtra(ConversationSettings.EXTRA_CONVERSATION_ID, conversationId);
             startActivity(settings);
@@ -118,7 +118,6 @@ public class MessageActivity extends AppCompatActivity {
         getAllMessages(conversationId);
 
 
-
         // TODO: instead, re-query the database for new messages that we dont yet have instead of manually inserting a new message item
         new Thread(() -> {
             try {
@@ -127,8 +126,8 @@ public class MessageActivity extends AppCompatActivity {
                 factory.setPort(5672);
                 Connection connection = factory.newConnection();
                 Channel channel = connection.createChannel();
-                String QueueName = "messages_" + conversationId +"_"+authManager.getJwtProperty("id");
-                System.out.println("Queeue name: "+QueueName);
+                String QueueName = "messages_" + conversationId + "_" + authManager.getJwtProperty("id");
+                System.out.println("Queeue name: " + QueueName);
                 channel.queueDeclare(QueueName, false, false, false, null);
                 Log.d("ADF", "Waiting for messages. To exit press CTRL+C");
 
@@ -155,7 +154,7 @@ public class MessageActivity extends AppCompatActivity {
 //                        });
 
                         // New message has been detected, pull new messages
-                        runOnUiThread(()->{
+                        runOnUiThread(() -> {
                             Toast.makeText(this, "DEBUG: Incoming new message", Toast.LENGTH_SHORT).show();
                             getAllMessages(conversationId);
                         });
@@ -184,7 +183,7 @@ public class MessageActivity extends AppCompatActivity {
 
     }
 
-    private void getParticipants(int conversationId){
+    private void getParticipants(int conversationId) {
         Call<List<User>> call = RetrofitClient.getInstance()
                 .getAPI().getParticipants(authManager.getToken(), conversationId);
 
@@ -199,19 +198,19 @@ public class MessageActivity extends AppCompatActivity {
                 List<User> participantList = response.body();
                 participantList.remove(0); // Remove calling user
 
-                if(participantList.size() == 1){
+                if (participantList.size() == 1) {
                     username = participantList.get(0).getUsername();
                     //TODO: profile pic
                     btnProfile.setImageResource(R.drawable.pfp_placeholder);
-                }else{
+                } else {
                     ArrayList<String> usernames = new ArrayList<>();
-                    for(User p : participantList){
+                    for (User p : participantList) {
                         usernames.add(p.getUsername());
                     }
-                    if(usernames.size() <= 2){
+                    if (usernames.size() <= 2) {
                         username = String.join(", ", usernames);
-                    }else{
-                        int otherUserCount = usernames.size()-2;
+                    } else {
+                        int otherUserCount = usernames.size() - 2;
                         username = usernames.get(0) + ", " + usernames.get(1) + " +" + otherUserCount + " more";
                     }
                     btnProfile.setImageResource(R.drawable.pfp_group_placeholder);
@@ -229,8 +228,8 @@ public class MessageActivity extends AppCompatActivity {
 
     private void getAllMessages(int conversationId) {
         int lastMessageId = -1;
-        if(!messages.isEmpty()){
-            lastMessageId = messages.get(messages.size()-1).getId();
+        if (!messages.isEmpty()) {
+            lastMessageId = messages.get(messages.size() - 1).getId();
         }
 
         Call<List<Message>> call = RetrofitClient.getInstance()
@@ -243,11 +242,14 @@ public class MessageActivity extends AppCompatActivity {
                     System.out.println("Invalid response from getAllMessages");
                     return;
                 }
-                for(Message msg : response.body()){
-                    if(!containsMessage(messages, msg)){
+                for (Message msg : response.body()) {
+                    if (!containsMessage(messages, msg)) {
                         messages.add(msg);
-                        adapter.notifyItemInserted(messages.size()-1);
-                        recycler.scrollToPosition(messages.size()-1);
+                        runOnUiThread(() -> {
+                            Toast.makeText(MessageActivity.this, msg.getMessage(), Toast.LENGTH_SHORT).show();
+                            adapter.notifyItemInserted(messages.size() - 1);
+                            recycler.scrollToPosition(messages.size() - 1);
+                        });
                     }
                 }
 //                messages.addAll(response.body());
@@ -279,8 +281,8 @@ public class MessageActivity extends AppCompatActivity {
     }
 
     private boolean containsMessage(List<Message> messages, Message msg) {
-        for(Message m : messages) {
-            if(m.getId() == msg.getId()) {
+        for (Message m : messages) {
+            if (m.getId() == msg.getId()) {
                 return true;
             }
         }
@@ -329,9 +331,13 @@ public class MessageActivity extends AppCompatActivity {
                     return;
                 }
                 //TODO: insert the new message in an "undelivered" state, then rabbitMQ will update the state as delivered
+                Toast.makeText(MessageActivity.this, "New message id :" + response.body().getId(), Toast.LENGTH_SHORT).show();
                 messages.add(response.body());
-                adapter.notifyItemInserted(messages.size() - 1);
-                recycler.scrollToPosition(messages.size() - 1);
+                runOnUiThread(() -> {
+                    adapter.notifyItemInserted(messages.size() - 1);
+                    recycler.scrollToPosition(messages.size() - 1);
+                });
+
 
             }
 
