@@ -14,7 +14,7 @@ import java.util.ArrayList;
 
 
 public class LocalDatabaseHelper extends SQLiteOpenHelper {
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     private static LocalDatabaseHelper instance;
 
@@ -33,15 +33,15 @@ public class LocalDatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String CREATE_TABLE_TRANSLATIONS = "CREATE TABLE IF NOT EXISTS translations (id INTEGER PRIMARY KEY AUTOINCREMENT, messageId INTEGER, language VARCHAR(32), message VARCHAR(255))";
-        db.execSQL(CREATE_TABLE_TRANSLATIONS);
+        String CREATE_TABLE_MESSAGE_RECEIPTS = "CREATE TABLE IF NOT EXISTS message_receipts (id INTEGER PRIMARY KEY AUTOINCREMENT, conversation_id INTEGER, last_message_read_id INTEGER)";
+        db.execSQL(CREATE_TABLE_MESSAGE_RECEIPTS);
         Log.d("DatabaseHelper", "Database created successfully");
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // Drop older table if existed
-        db.execSQL("DROP TABLE IF EXISTS translations");
+        db.execSQL("DROP TABLE IF EXISTS message_receipts");
 
         // Create tables again
         onCreate(db);
@@ -49,30 +49,28 @@ public class LocalDatabaseHelper extends SQLiteOpenHelper {
 
 
     @SuppressLint("Range")
-    public String retrieveTranslatedMessage(int message_id, String language) {
+    public int getLastReadMessage(int conversation_id) {
         SQLiteDatabase db = this.getWritableDatabase();
 
-        Cursor cursor = db.rawQuery("SELECT * FROM translations WHERE messageId=? AND language=? LIMIT 1", new String[]{String.valueOf(message_id), language});
-        String message = null;
+        int last_message_read_id = -1;
+        Cursor cursor = db.rawQuery("SELECT * FROM message_receipts WHERE conversation_id=? LIMIT 1", new String[]{String.valueOf(conversation_id)});
         if (cursor != null && cursor.moveToFirst()) {
-            message = cursor.getString(cursor.getColumnIndex("message"));
+            last_message_read_id = cursor.getInt(cursor.getColumnIndex("last_message_read_id"));
         }
 
         if (cursor != null) {
             cursor.close();
         }
-        return message;
+        return last_message_read_id;
     }
 
-    public Boolean saveTranslation(int message_id, String language, String message) {
+    public Boolean saveLastReadMessage(int conversation_id, int message_id) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
 
-        contentValues.put("messageId", message_id);
-        contentValues.put("language", language);
-        contentValues.put("message", message);
+        contentValues.put("last_message_read_id", message_id);
 
-        long result = db.insert("translations", null, contentValues);
+        long result = db.update("message_receipts", contentValues, "conversation_id=?", new String[]{String.valueOf(conversation_id)});
 
         if (result != -1) {
             Log.d("DatabaseHelper", "Added translation successfully");
@@ -80,6 +78,7 @@ public class LocalDatabaseHelper extends SQLiteOpenHelper {
 
         return result != -1;
     }
+
 
 
 }
