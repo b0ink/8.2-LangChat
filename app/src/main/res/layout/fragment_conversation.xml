@@ -30,8 +30,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignEnd="@+id/linearLayout"
+            android:fontFamily="@font/inter_medium"
             android:text="5m ago"
-            android:textColor="#BF000000"
+            android:textColor="#BFFFFFFF"
             android:textSize="14sp" />
 
         <LinearLayout
@@ -58,9 +59,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fadingEdge="vertical"
-                android:fontFamily="@font/inter"
+                android:fontFamily="@font/inter_medium"
                 android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt"
-                android:textColor="#000000"
+                android:textColor="#BFFFFFFF"
                 android:textSize="16sp" />
         </LinearLayout>
 
