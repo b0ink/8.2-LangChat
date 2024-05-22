@@ -2,6 +2,7 @@ package com.example.langchat;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.StrictMode;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -52,6 +53,9 @@ public class MainActivity extends AppCompatActivity {
     private ImageButton btnNewMessage;
 
     private ImageButton btnProfile;
+
+    private Handler handler;
+    private Runnable runnable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -158,8 +162,25 @@ public class MainActivity extends AppCompatActivity {
         recycler.setAdapter(adapter);
 
         retrieveConversations();
+
+        handler = new Handler();
+        runnable = new Runnable() {
+            @Override
+            public void run() {
+                retrieveConversations();
+                handler.postDelayed(this, 5000); // 5000 milliseconds = 5 seconds
+            }
+        };
+
+        // Start the repeated task
+        handler.post(runnable);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        handler.removeCallbacks(runnable);
+    }
 
     public void showAddUserDialog(String prompt) {
         // Inflate the custom layout
