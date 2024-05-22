@@ -55,6 +55,10 @@ public class MessageActivity extends AppCompatActivity {
 
     private AuthManager authManager;
 
+    private Thread messageThread;
+    private Channel channel;
+    private Connection connection;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,13 +121,13 @@ public class MessageActivity extends AppCompatActivity {
 
         getAllMessages(conversationId);
 
-        new Thread(() -> {
+        messageThread = new Thread(() -> {
             try {
                 ConnectionFactory factory = new ConnectionFactory();
                 factory.setHost("10.0.2.2");
                 factory.setPort(5672);
-                Connection connection = factory.newConnection();
-                Channel channel = connection.createChannel();
+                connection = factory.newConnection();
+                channel = connection.createChannel();
                 String QueueName = "messages_" + conversationId + "_" + authManager.getJwtProperty("id");
                 System.out.println("Queeue name: " + QueueName);
                 channel.queueDeclare(QueueName, false, false, false, null);
@@ -150,7 +154,8 @@ public class MessageActivity extends AppCompatActivity {
             } catch (IOException | TimeoutException e) {
                 e.printStackTrace();
             }
-        }).start();
+        });
+        messageThread.start();
 
         btnSend.setOnClickListener(view -> {
             String message = etMessage.getText().toString();
@@ -161,6 +166,28 @@ public class MessageActivity extends AppCompatActivity {
             etMessage.setText("");
             sendNewMessage(conversationId, message);
         });
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if (messageThread != null && messageThread.isAlive()) {
+            messageThread.interrupt();
+        }
+
+        try {
+            if (channel != null) {
+                channel.close();
+            }
+            if (connection != null) {
+                connection.close();
+            }
+        } catch (IOException | TimeoutException e) {
+            e.printStackTrace();
+        }
+
 
     }
 

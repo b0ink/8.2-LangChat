@@ -82,7 +82,7 @@ public class LocalDatabaseHelper extends SQLiteOpenHelper {
         long result = db.update("message_receipts", contentValues, "conversation_id=?", new String[]{String.valueOf(conversation_id)});
 
         if (result != -1) {
-            Log.d("DatabaseHelper", "Saved local message receipt successfully");
+            Log.d("DatabaseHelper", "Saved local message receipt successfully id:" + message_id);
         }
 
         return result != -1;
