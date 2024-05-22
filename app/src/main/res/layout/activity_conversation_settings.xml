@@ -123,29 +123,35 @@
             <Button
                 android:id="@+id/btnAddUser"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="65dp"
                 android:layout_gravity="center"
-                android:layout_marginLeft="75dp"
-                android:layout_marginTop="50dp"
-                android:layout_marginRight="75dp"
-                android:backgroundTint="#3AA500"
-                android:minWidth="250dp"
+                android:layout_marginLeft="50dp"
+                android:layout_marginTop="25dp"
+                android:layout_marginRight="50dp"
+                android:backgroundTint="#005FADBE"
+                android:elevation="5dp"
+                android:fontFamily="@font/inter_bold"
                 android:text="Add user"
-                android:textColor="#FFFFFF"
-                app:cornerRadius="6dp" />
+                android:textColor="#BFFFFFFF"
+                android:textSize="16sp"
+                app:cornerRadius="6dp"
+                app:strokeColor="#5DAABB"
+                app:strokeWidth="2dp" />
 
             <Button
                 android:id="@+id/btnLeaveConversation"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="25dp"
                 android:layout_gravity="center"
                 android:layout_marginLeft="75dp"
-                android:layout_marginTop="50dp"
+                android:layout_marginTop="10dp"
                 android:layout_marginRight="75dp"
-                android:backgroundTint="#FF023D"
+                android:backgroundTint="#00FF023D"
+                android:includeFontPadding="false"
                 android:minWidth="250dp"
+                android:padding="0dp"
                 android:text="Leave conversation"
-                android:textColor="#FFFFFF"
+                android:textColor="#80FFFFFF"
                 app:cornerRadius="6dp" />
 
 
