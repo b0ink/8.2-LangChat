@@ -68,6 +68,7 @@ exports.removeUser = async (req, res) => {
             return res.status(401).json("You cannot leave DMs");
         }
 
+        Utility.SendSystemMessage(conversationId, `${removingUser.username} has left the conversation.`);
         await removingUserParticipant.destroy();        
         if(userIsAdmin){
             // admin left, assigning new admin
@@ -96,6 +97,7 @@ exports.removeUser = async (req, res) => {
     }
 
     //TODO: prevent admins kicking other admins?
+    Utility.SendSystemMessage(conversationId, `${user.username} removed ${removingUser.username} from the conversation.`);
 
     await removingUserParticipant.destroy()
     return res.status(200).json("Removed");
@@ -273,6 +275,7 @@ exports.addParticipant = async (req, res) => {
         });
 
         if (newParticipant) {
+            Utility.SendSystemMessage(conversationId, `${user.username} added ${userToAdd.username} to the conversation.`);
             return res.status(200).json({
                 conversationId: newConversation.id,
                 message: "Added user to conversation"
@@ -287,6 +290,7 @@ exports.addParticipant = async (req, res) => {
         });
         if (newParticipant) {
             //TODO: add system message to notify new user joining
+            Utility.SendSystemMessage(conversationId, `${user.username} added ${userToAdd.username} to the conversation.`);
             return res.status(200).json({
                 conversationId: conversationId,
                 message: "Added user to conversation"

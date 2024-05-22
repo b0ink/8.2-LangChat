@@ -120,6 +120,22 @@ module.exports.GetMostRecentConversationMessage = async (conversation_id) => {
     return message;
 };
 
+
+module.exports.SendSystemMessage = async (conversation_id, message) => {
+    await Message.create({
+        conversation_id,
+        sender_id: 0,
+        message,
+    });
+
+    const conversationParticipants = await this.GetConversationParticipants(conversation_id);
+    setTimeout(()=>{
+        for(let p of conversationParticipants){
+                this.NotifyNewMessage(`messages_${conversation_id}_${p.user_id}`);
+        }
+    }, 1000);
+}
+
 module.exports.SendMessage = async (sender_id, conversation_id, message) => {
     const user = await User.findByPk(sender_id);
 
