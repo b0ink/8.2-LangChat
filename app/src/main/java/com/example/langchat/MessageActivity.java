@@ -304,6 +304,7 @@ public class MessageActivity extends AppCompatActivity {
                 //TODO: insert the new message in an "undelivered" state, then rabbitMQ will update the state as delivered
 //                Toast.makeText(MessageActivity.this, "New message id :" + response.body().getId(), Toast.LENGTH_SHORT).show();
                 messages.add(response.body());
+                databaseHelper.saveLastReadMessage(conversationId, response.body().getId());
                 runOnUiThread(() -> {
                     adapter.notifyItemInserted(messages.size() - 1);
                     recycler.scrollToPosition(messages.size() - 1);
