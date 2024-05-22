@@ -242,14 +242,19 @@ public class MessageActivity extends AppCompatActivity {
                     System.out.println("Invalid response from getAllMessages");
                     return;
                 }
+                System.out.println("Received all messages: ");
+
                 for (Message msg : response.body()) {
                     if (!containsMessage(messages, msg)) {
+                        System.out.println("new msg received: " + msg);
                         messages.add(msg);
                         runOnUiThread(() -> {
-                            Toast.makeText(MessageActivity.this, msg.getMessage(), Toast.LENGTH_SHORT).show();
+//                            Toast.makeText(MessageActivity.this, msg.getMessage(), Toast.LENGTH_SHORT).show();
                             adapter.notifyItemInserted(messages.size() - 1);
                             recycler.scrollToPosition(messages.size() - 1);
                         });
+                    }else{
+                        System.out.println("ignoring old msg received: " + msg.getMessage());
                     }
                 }
 //                messages.addAll(response.body());
@@ -331,7 +336,7 @@ public class MessageActivity extends AppCompatActivity {
                     return;
                 }
                 //TODO: insert the new message in an "undelivered" state, then rabbitMQ will update the state as delivered
-                Toast.makeText(MessageActivity.this, "New message id :" + response.body().getId(), Toast.LENGTH_SHORT).show();
+//                Toast.makeText(MessageActivity.this, "New message id :" + response.body().getId(), Toast.LENGTH_SHORT).show();
                 messages.add(response.body());
                 runOnUiThread(() -> {
                     adapter.notifyItemInserted(messages.size() - 1);

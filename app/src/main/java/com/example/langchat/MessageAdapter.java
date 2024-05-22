@@ -75,6 +75,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
 
         public void bind(Message chatMessage) {
             // set the original text of the message
+            tvMessageText.setVisibility(View.VISIBLE);
             tvMessageText.setText(chatMessage.getMessage());
 
             tvSenderUsername.setText(chatMessage.getUser().getUsername());
