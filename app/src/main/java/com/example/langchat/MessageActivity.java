@@ -232,6 +232,7 @@ public class MessageActivity extends AppCompatActivity {
         if(!messages.isEmpty()){
             lastMessageId = messages.get(messages.size()-1).getId();
         }
+
         Call<List<Message>> call = RetrofitClient.getInstance()
                 .getAPI().getMessages(authManager.getToken(), conversationId, lastMessageId);
 
@@ -245,8 +246,8 @@ public class MessageActivity extends AppCompatActivity {
                 for(Message msg : response.body()){
                     if(!containsMessage(messages, msg)){
                         messages.add(msg);
-                        adapter.notifyItemInserted(messages.indexOf(msg));
-                        recycler.scrollToPosition(messages.indexOf(msg));
+                        adapter.notifyItemInserted(messages.size()-1);
+                        recycler.scrollToPosition(messages.size()-1);
                     }
                 }
 //                messages.addAll(response.body());
