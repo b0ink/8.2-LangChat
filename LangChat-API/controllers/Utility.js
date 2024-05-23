@@ -122,11 +122,17 @@ module.exports.GetMostRecentConversationMessage = async (conversation_id) => {
 
 
 module.exports.SendSystemMessage = async (conversation_id, message) => {
-    await Message.create({
+    const systemMessage = await Message.create({
         conversation_id,
         sender_id: 0,
         message,
     });
+
+    const conversation = await Conversation.findByPk(conversation_id);
+    if(conversation && systemMessage){
+        conversation.changed('updatedAt', true);
+        await conversation.save();
+    }
 
     const conversationParticipants = await this.GetConversationParticipants(conversation_id);
     setTimeout(()=>{
