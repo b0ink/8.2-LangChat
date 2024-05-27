@@ -78,6 +78,11 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
             tvMessageText.setVisibility(View.VISIBLE);
             tvMessageText.setText(chatMessage.getMessage());
 
+            if(chatMessage.isTranscribed()){
+                tvMessageText.setText("\uD83C\uDFA4 " + chatMessage.getMessage());
+            }
+
+
             tvSenderUsername.setText(chatMessage.getUser().getUsername());
 
             // if a translation is available, update it to translated version:
@@ -85,6 +90,9 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
                 List<Translation> translations = chatMessage.getTranslations();
                 if (!translations.isEmpty()) {
                     tvMessageText.setText(translations.get(0).getMessage());
+                    if(chatMessage.isTranscribed()){
+                        tvMessageText.setText("\uD83C\uDFA4 " + translations.get(0).getMessage());
+                    }
                 }
             }
 
