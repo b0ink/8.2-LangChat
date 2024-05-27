@@ -25,6 +25,10 @@ module.exports = (sequelize, Sequelize) => {
                 type: DataTypes.STRING(32),
                 allowNull: false,
                 defaultValue: "English"
+            },
+            avatar: {
+                type: DataTypes.TEXT('long'),
+                allowNull: true
             }
         },
         {

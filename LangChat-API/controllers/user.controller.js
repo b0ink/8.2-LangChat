@@ -102,28 +102,57 @@ exports.getLanguage = async (req, res) => {
     return res.json("English");
 }
 
-exports.saveAvatar = async (req, res) => {
-    try {
-        const user = req.user;
-        const file = req.file;
+// exports.saveAvatar = async (req, res) => {
+//     try {
+//         const user = req.user;
+//         const file = req.file;
 
-        if (!file) {
-            return res.status(400).send({ message: 'Please upload a file.' });
-        }
+//         if (!file) {
+//             return res.status(400).send({ message: 'Please upload a file.' });
+//         }
 
-        // Perform additional processing or save file information in the database
-        user.avatar = file.path;
-        await user.save();
+//         // Perform additional processing or save file information in the database
+//         user.avatar = file.path;
+//         await user.save();
 
-        res.status(200).send({
-            message: 'Avatar uploaded successfully',
-            file: file,
-            user: user
-        });
-    } catch (error) {
-        res.status(500).send({ message: 'Failed to upload avatar', error: error.message });
-    }
+//         res.status(200).send({
+//             message: 'Avatar uploaded successfully',
+//             file: file,
+//             user: user
+//         });
+//     } catch (error) {
+//         res.status(500).send({ message: 'Failed to upload avatar', error: error.message });
+//     }
     
+// }
+
+exports.saveAvatar = async (req, res) => {
+
+    const userId = req.user.id;
+    const imageBase64 = req.body.imageBase64;
+
+    const user = await User.findByPk(userId);
+    if(!user){
+        return res.status(401);
+    }
+
+    user.avatar = imageBase64;
+    await user.save();
+
+    return res.status(200).json("Success");
+    
+}
+
+
+exports.getAvatar = async (req, res) => {
+    const userId = req.user.id;
+
+    const user = await User.findByPk(userId);
+    if(!user){
+        return res.status(401);
+    }
+
+    return res.status(200).json(user.avatar?user.avatar:'');
 }
 
 exports.saveLanguage = async (req, res) => {
