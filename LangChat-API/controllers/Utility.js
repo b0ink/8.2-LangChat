@@ -102,7 +102,27 @@ module.exports.GetConversationMessages = async (user, conversation_id, lastMessa
  * @param INTEGER conversation_id
  * @returns Message object
  */
-module.exports.GetMostRecentConversationMessage = async (conversation_id) => {
+module.exports.GetMostRecentConversationMessage = async (user_id, conversation_id) => {
+
+    const user = await User.findByPk(user_id);
+    if(!user){
+        return [];
+    }
+
+    let preferredLanguage = user.defaultPreferredLanguage;
+
+    const userAsParticipant = await Participant.findOne({
+        where: {
+            user_id: user.id,
+            conversation_id: conversation_id
+        }
+    });
+
+    if(userAsParticipant){
+        preferredLanguage = userAsParticipant.preferredLanguage;
+    }
+    
+
     const message = await Message.findOne({
         where: {
             conversation_id: conversation_id,
@@ -114,8 +134,17 @@ module.exports.GetMostRecentConversationMessage = async (conversation_id) => {
                 as: "user",
                 attributes: ["username"],
             },
-        ],
+            {
+                model: Translation,
+                as: 'translations',
+                required: false,
+                where: { language: preferredLanguage },
+                attributes: ['message_id', 'language', 'message']
+            }
+        ]
     });
+
+    console.log(message)
 
     return message;
 };

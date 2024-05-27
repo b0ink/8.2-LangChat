@@ -127,7 +127,7 @@ exports.findConversations = async (req, res) => {
         });
 
         const participants = await Utility.GetConversationParticipants(conv_id);
-        const lastMessage = await Utility.GetMostRecentConversationMessage(conv_id);
+        const lastMessage = await Utility.GetMostRecentConversationMessage(user.id, conv_id);
         
         const timeSince = moment(conversationData.updatedAt).fromNow();
 

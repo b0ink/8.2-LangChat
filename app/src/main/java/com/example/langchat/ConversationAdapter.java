@@ -115,8 +115,15 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
                 tvRecentMessage.setText("Tap to send a message...");
                 imgNewMessageIcon.setVisibility(View.VISIBLE);
             }else{
-                tvRecentMessage.setText(lastMsg.getMessage());
 
+                List<Translation> translations = lastMsg.getTranslations();
+                tvRecentMessage.setText(lastMsg.getMessage());
+                if(translations != null && translations.size() > 0){
+                    tvRecentMessage.setText(translations.get(0).getMessage());
+                }
+
+                System.out.println(conversation.toString());
+                // Check if message has been opened yet (notification)
                 int recentMessageId = conversation.getLastMessage().getId();
                 int lastReadMessageId = LocalDatabaseHelper.getInstance(context).getLastReadMessage(conversation.getId());
                 System.out.println("Recent msg: " + recentMessageId + " lastsaveid: " + lastReadMessageId);

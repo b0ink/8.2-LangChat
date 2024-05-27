@@ -39,9 +39,9 @@ data class Message(
 data class ConversationResponse(
     val id: Int,
     val participants: List<Participant>,
-    val lastMessage: Message,
+    val lastMessage: Message?,
     val lastUpdatedDisplay: String,
-    val isGroupChat: Boolean
+    val isGroupChat: Boolean,
 )
 
 data class NewConversationResponse(
