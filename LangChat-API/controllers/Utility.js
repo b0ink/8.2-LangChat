@@ -204,7 +204,7 @@ module.exports.NotifyNewMessage = (queue, payload) => {
 
 
 
-module.exports.TranslateMessage = async (text, language) => {
+module.exports.TranslateMessage = async (text, language, sourceLanguage) => {
     // const query = `[INST]
     // Translate the following text into this language: ${language}.
     // ${text}
@@ -227,13 +227,17 @@ module.exports.TranslateMessage = async (text, language) => {
     // [/INST]`;
 
     const query = `[INST]
-    Translate the following text into this language: ${language}.
-    ${text}
+    Translate the following text into this language: ${language}. The source language is possibly ${sourceLanguage}.
+    If you do not understand the slang or abbreviations, interpret it as if its from the source language.
+    The source language may be different to what the actual text is, translate it to the required language regardless.
+    If you are unable to translate the message, return nothing. Do not reply saying you do not understand or were unable to translate.
+    Here is the text: ${text}
 
     Please then correct the translation to ensure it accurately reflects the original text message in terms of tone and purpose.
+    Try to repeat the same capitalisation. If the the original text and the text you were translating to look the same, or is the same language, return nothing.
     If the original text appears to be casual, the translation should be casual.
     If the original text appears to be rather formal, the translation should remain formal.
-    Do not respond in phonetic language. remove any quote marks unless the original text contained it.
+    Do not respond in phonetic language. Remove any quote marks unless the original text contained it.
     Respond in the following format:
     TRANSLATION: {final translation}
 

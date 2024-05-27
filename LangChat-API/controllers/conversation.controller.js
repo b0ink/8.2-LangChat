@@ -423,6 +423,15 @@ async function TranslationService(user, conversationId, newMessage) {
     const queue_name = `messages_${conversationId}`;
 
     const conversationParticipants = await Utility.GetConversationParticipants(conversationId);
+
+    let possibleSourceLanguage = null;
+    for(let participant of conversationParticipants){
+        if(participant.user_id === user.id){
+            possibleSourceLanguage = participant.preferredLanguage;
+        }
+    }
+
+
     for (let participant of conversationParticipants) {
         if (participant.user_id === user.id) {
             // Original author will only see their original message
@@ -430,7 +439,7 @@ async function TranslationService(user, conversationId, newMessage) {
         }
 
         const usersLanguage = participant.preferredLanguage;
-        const translatedMessage = await Utility.TranslateMessage(newMessage.message, usersLanguage);
+        const translatedMessage = await Utility.TranslateMessage(newMessage.message, usersLanguage, possibleSourceLanguage);
         if(!!translatedMessage){
             const translation = await Translation.create({
                 message_id: newMessage.id,
