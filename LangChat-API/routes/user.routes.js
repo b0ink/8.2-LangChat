@@ -12,5 +12,7 @@ module.exports = (app, API_VERSION) => {
 
     router.get("/conversations", authenticateToken, users.findConversations);
 
+    router.get("/get-language", authenticateToken, users.getLanguage);
+
     app.use(`/api/${API_VERSION}/users`, router);
 };

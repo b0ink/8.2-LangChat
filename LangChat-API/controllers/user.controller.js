@@ -86,6 +86,39 @@ exports.findOne = async (req, res) => {
     return res.header("Authorization", token).json({ message: "Login successful", token });
 };
 
+exports.getLanguage = async (req, res) => {
+    const userId = req.user.id;
+    const user = await User.findByPk(userId);
+
+    if(!user){
+        return res.status(404).json("Invalid authentication");
+    }
+
+    const defaultLanguage = user.defaultPreferredLanguage;
+    if(defaultLanguage){
+        return res.json(defaultPreferredLanguage);
+    }
+    return res.json("English");
+}
+
+
+exports.saveLanguage = async (req, res) => {
+    const userId = req.user.id;
+    const user = await User.findByPk(userId);
+
+    if(!user){
+        return res.status(404).json("Invalid authentication");
+    }
+
+    const language = req.body.language;
+    
+    user.defaultPreferredLanguage = language;
+    await user.save();
+
+    return res.status(200).json("Success");
+}
+
+
 exports.findConversations = async (req, res) => {
     const user = req.user;
 
