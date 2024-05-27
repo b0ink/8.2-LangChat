@@ -6,15 +6,20 @@ import com.example.langchat.Message;
 import com.example.langchat.NewConversationResponse;
 import com.example.langchat.User;
 
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 
 
 import java.util.List;
+
 import retrofit2.http.Header;
 import retrofit2.http.GET;
+import retrofit2.http.Part;
 import retrofit2.http.Path;
 
 public interface API {
@@ -113,7 +118,6 @@ public interface API {
     );
 
 
-
     // Get participants in a conversation
     @GET("conversation/{conversationId}/participants")
     Call<List<User>> getParticipants(
@@ -146,5 +150,19 @@ public interface API {
             @Path("conversationId") int conversationId,
             @Field("removingUserId") int removingUserId
     );
+
+    @Multipart
+    @POST("users/save-avatar")
+    Call<String> uploadAvatar(
+            @Header("Authorization") String token,
+            @Part MultipartBody.Part file
+    );
+
+//    @Multipart
+//    @POST("users/get-avatar")
+//    Call<String> uploadAvatar(
+//            @Header("Authorization") String token,
+//            @Part MultipartBody.Part file
+//    );
 
 }

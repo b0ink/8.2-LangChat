@@ -7,6 +7,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -35,6 +36,9 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -140,6 +144,34 @@ public class ProfileSettings extends AppCompatActivity {
         });
     }
 
+    private void uploadAvatar(){
+        File image = new File(getCacheDir(), "avatar_"+authManager.getJwtProperty("username")+".jpg");
+
+        RequestBody requestFile = RequestBody.create(MediaType.parse("image/jpeg"), image);
+        MultipartBody.Part body = MultipartBody.Part.createFormData("image", image.getName(), requestFile);
+
+        Call<String> call = RetrofitClient.getInstance()
+                .getAPI().uploadAvatar(authManager.getToken(), body);
+
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                if (response.isSuccessful()) {
+                    Log.d("Upload", "Success");
+                } else {
+                    Log.e("Upload", "Error: " + response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                Log.e("Upload", "Failure: " + t.getMessage());
+            }
+        });
+
+
+    }
+
     private void getUsersDefaultLanguage() {
         Call<String> call = RetrofitClient.getInstance()
                 .getAPI().getDefaultPreferredLanguage(authManager.getToken());
@@ -207,7 +239,7 @@ public class ProfileSettings extends AppCompatActivity {
                 UCrop.Options options = new UCrop.Options();
                 options.setCircleDimmedLayer(true);  // Enable circle crop
 
-                UCrop.of(imageUri, Uri.fromFile(new File(getCacheDir(), "avatar_cropped.jpg")))
+                UCrop.of(imageUri, Uri.fromFile(new File(getCacheDir(), "avatar_"+authManager.getJwtProperty("username")+".jpg")))
                         .withOptions(options)
                         .withAspectRatio(1, 1)
                         .withMaxResultSize(100, 100)
@@ -231,7 +263,7 @@ public class ProfileSettings extends AppCompatActivity {
 
             // Convert Bitmap to Drawable
             Drawable drawable = new BitmapDrawable(getResources(), selectedImage);
-
+            uploadAvatar();
             // Set the drawable as the background of the ImageButton
 //            btnAvatar.setBackground(drawable);
             btnAvatar.setImageDrawable(drawable);
