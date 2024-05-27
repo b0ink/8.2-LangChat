@@ -107,7 +107,7 @@ exports.saveLanguage = async (req, res) => {
     const user = await User.findByPk(userId);
 
     if(!user){
-        return res.status(404).json("Invalid authentication");
+        return res.status(404).json(false);
     }
 
     const language = req.body.language;
@@ -115,7 +115,7 @@ exports.saveLanguage = async (req, res) => {
     user.defaultPreferredLanguage = language;
     await user.save();
 
-    return res.status(200).json("Success");
+    return res.status(200).json(true);
 }
 
 
