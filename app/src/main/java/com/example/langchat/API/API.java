@@ -151,11 +151,23 @@ public interface API {
             @Field("removingUserId") int removingUserId
     );
 
-    @Multipart
+//    @Multipart
+//    @POST("users/save-avatar")
+//    Call<String> uploadAvatar(
+//            @Header("Authorization") String token,
+//            @Part MultipartBody.Part file
+//    );
+
+    @FormUrlEncoded
     @POST("users/save-avatar")
     Call<String> uploadAvatar(
             @Header("Authorization") String token,
-            @Part MultipartBody.Part file
+            @Field("imageBase64") String avatar
+    );
+
+    @GET("users/get-avatar")
+    Call<String> getAvatar(
+            @Header("Authorization") String token
     );
 
 //    @Multipart

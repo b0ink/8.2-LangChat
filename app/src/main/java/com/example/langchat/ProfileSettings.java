@@ -142,16 +142,42 @@ public class ProfileSettings extends AppCompatActivity {
             photoPickerIntent.setType("image/*");
             startActivityForResult(photoPickerIntent, RESULT_LOAD_IMAGE);
         });
+
+        getAvatar();
     }
 
-    private void uploadAvatar(){
-        File image = new File(getCacheDir(), "avatar_"+authManager.getJwtProperty("username")+".jpg");
+    private void getAvatar(){
+        Call<String> call = RetrofitClient.getInstance()
+                .getAPI().getAvatar(authManager.getToken());
 
-        RequestBody requestFile = RequestBody.create(MediaType.parse("image/jpeg"), image);
-        MultipartBody.Part body = MultipartBody.Part.createFormData("image", image.getName(), requestFile);
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                if (!response.isSuccessful()) {
+                    return;
+                }
+
+                if(response.body() == null || response.body().isEmpty()){
+                    return;
+                }
+
+                Bitmap avatar = ImageUtil.convert(response.body());
+                btnAvatar.setImageBitmap(avatar);
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                Log.e("Upload", "Failure: " + t.getMessage());
+            }
+        });
+
+    }
+
+    private void uploadAvatar(Bitmap avatar){
+        String encoded = ImageUtil.convert(avatar);
 
         Call<String> call = RetrofitClient.getInstance()
-                .getAPI().uploadAvatar(authManager.getToken(), body);
+                .getAPI().uploadAvatar(authManager.getToken(), encoded);
 
         call.enqueue(new Callback<String>() {
             @Override
@@ -168,6 +194,30 @@ public class ProfileSettings extends AppCompatActivity {
                 Log.e("Upload", "Failure: " + t.getMessage());
             }
         });
+
+//        File image = new File(getCacheDir(), "avatar_"+authManager.getJwtProperty("username")+".jpg");
+//
+//        RequestBody requestFile = RequestBody.create(MediaType.parse("image/jpeg"), image);
+//        MultipartBody.Part body = MultipartBody.Part.createFormData("image", image.getName(), requestFile);
+//
+//        Call<String> call = RetrofitClient.getInstance()
+//                .getAPI().uploadAvatar(authManager.getToken(), body);
+//
+//        call.enqueue(new Callback<String>() {
+//            @Override
+//            public void onResponse(Call<String> call, Response<String> response) {
+//                if (response.isSuccessful()) {
+//                    Log.d("Upload", "Success");
+//                } else {
+//                    Log.e("Upload", "Error: " + response.message());
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<String> call, Throwable t) {
+//                Log.e("Upload", "Failure: " + t.getMessage());
+//            }
+//        });
 
 
     }
@@ -263,7 +313,7 @@ public class ProfileSettings extends AppCompatActivity {
 
             // Convert Bitmap to Drawable
             Drawable drawable = new BitmapDrawable(getResources(), selectedImage);
-            uploadAvatar();
+            uploadAvatar(selectedImage);
             // Set the drawable as the background of the ImageButton
 //            btnAvatar.setBackground(drawable);
             btnAvatar.setImageDrawable(drawable);
