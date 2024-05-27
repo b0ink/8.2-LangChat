@@ -19,5 +19,3 @@ local.properties
 
 node_modules/
 config.json
-
-LangChat-API/avatars/**
