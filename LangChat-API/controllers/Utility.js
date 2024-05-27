@@ -1,5 +1,8 @@
 // const amqp = require("amqplib/callback_api");
 const amqp = require("amqplib");
+const FormData = require("form-data");
+const fetch = require("node-fetch");
+const fs = require("fs");
 
 const db = require("../models/index");
 
@@ -46,7 +49,7 @@ module.exports.GetConversationParticipants = async (conversation_id) => {
             },
         ],
     });
-    
+
     console.log("participants", participants, conversation_id);
     return participants;
 };
@@ -58,10 +61,10 @@ module.exports.GetConversationParticipants = async (conversation_id) => {
  */
 module.exports.GetConversationMessages = async (user, conversation_id, lastMessageId = -1) => {
     const participant = await Participant.findOne({
-        where:{
+        where: {
             conversation_id: conversation_id,
-            user_id: user.id
-        }
+            user_id: user.id,
+        },
     });
 
     lastMessageId = lastMessageId - 5; // ??
@@ -72,8 +75,8 @@ module.exports.GetConversationMessages = async (user, conversation_id, lastMessa
         where: {
             conversation_id: conversation_id,
             id: {
-                [db.Sequelize.Op.gte]: lastMessageId // id greater than to lastMessageId
-            }
+                [db.Sequelize.Op.gte]: lastMessageId, // id greater than to lastMessageId
+            },
         },
         limit: 150,
         include: [
@@ -84,15 +87,15 @@ module.exports.GetConversationMessages = async (user, conversation_id, lastMessa
             },
             {
                 model: Translation,
-                as: 'translations',
+                as: "translations",
                 required: false,
                 where: { language: preferredLanguage },
-                attributes: ['message_id', 'language', 'message']
-            }
+                attributes: ["message_id", "language", "message"],
+            },
         ],
     });
 
-    console.log(messages)
+    console.log(messages);
 
     return messages;
 };
@@ -103,9 +106,8 @@ module.exports.GetConversationMessages = async (user, conversation_id, lastMessa
  * @returns Message object
  */
 module.exports.GetMostRecentConversationMessage = async (user_id, conversation_id) => {
-
     const user = await User.findByPk(user_id);
-    if(!user){
+    if (!user) {
         return [];
     }
 
@@ -114,14 +116,13 @@ module.exports.GetMostRecentConversationMessage = async (user_id, conversation_i
     const userAsParticipant = await Participant.findOne({
         where: {
             user_id: user.id,
-            conversation_id: conversation_id
-        }
+            conversation_id: conversation_id,
+        },
     });
 
-    if(userAsParticipant){
+    if (userAsParticipant) {
         preferredLanguage = userAsParticipant.preferredLanguage;
     }
-    
 
     const message = await Message.findOne({
         where: {
@@ -136,19 +137,18 @@ module.exports.GetMostRecentConversationMessage = async (user_id, conversation_i
             },
             {
                 model: Translation,
-                as: 'translations',
+                as: "translations",
                 required: false,
                 where: { language: preferredLanguage },
-                attributes: ['message_id', 'language', 'message']
-            }
-        ]
+                attributes: ["message_id", "language", "message"],
+            },
+        ],
     });
 
-    console.log(message)
+    console.log(message);
 
     return message;
 };
-
 
 module.exports.SendSystemMessage = async (conversation_id, message) => {
     const systemMessage = await Message.create({
@@ -158,18 +158,18 @@ module.exports.SendSystemMessage = async (conversation_id, message) => {
     });
 
     const conversation = await Conversation.findByPk(conversation_id);
-    if(conversation && systemMessage){
-        conversation.changed('updatedAt', true);
+    if (conversation && systemMessage) {
+        conversation.changed("updatedAt", true);
         await conversation.save();
     }
 
     const conversationParticipants = await this.GetConversationParticipants(conversation_id);
-    setTimeout(()=>{
-        for(let p of conversationParticipants){
-                this.NotifyNewMessage(`messages_${conversation_id}_${p.user_id}`);
+    setTimeout(() => {
+        for (let p of conversationParticipants) {
+            this.NotifyNewMessage(`messages_${conversation_id}_${p.user_id}`);
         }
     }, 1000);
-}
+};
 
 module.exports.SendMessage = async (sender_id, conversation_id, message) => {
     const user = await User.findByPk(sender_id);
@@ -186,24 +186,30 @@ module.exports.SendMessage = async (sender_id, conversation_id, message) => {
         throw new Error("Sender is not part of this converation");
     }
 
-    const newMesssage = await Message.create({
+    const newMessage = await Message.create({
         conversation_id,
         sender_id,
         message,
     });
 
+    const conversation = await Conversation.findByPk(conversation_id);
+    if (conversation && newMessage) {
+        conversation.changed("updatedAt", true);
+        await conversation.save();
+    }
+
     const messageData = {
-        id: newMesssage.id,
+        id: newMessage.id,
         conversation_id,
         sender_id,
         message,
-        createdAt: newMesssage.createdAt,
-        updatedAt: newMesssage.updatedAt,
+        createdAt: newMessage.createdAt,
+        updatedAt: newMessage.updatedAt,
         user: {
-            username: user.username
-        }
-    }
-    console.log(messageData)
+            username: user.username,
+        },
+    };
+    console.log(messageData);
     // console.log(messageData.toJSON());
     return messageData;
 };
@@ -225,13 +231,100 @@ module.exports.NotifyNewMessage = (queue, payload) => {
                 resolve(`Send ${payload} to ${queue}`);
             })
             .catch((error) => {
-                console.log('erropr', error);
+                console.log("erropr", error);
                 reject(new Error(error));
             });
     });
 };
 
 
+
+module.exports.TranscribeAudio = async (file) => {
+    const authorization = "Bearer " + accessToken;
+
+    const formData = new FormData();
+
+    formData.append("file", fs.createReadStream(`audio/${file.originalname}`));
+
+    // Upload file
+
+    console.log("uploading file...");
+
+    const url = "https://api.gradient.ai/api/files?type=audioFile";
+    const options = {
+        method: "POST",
+        headers: {
+            accept: "application/json",
+            "x-gradient-workspace-id": workspaceId,
+            authorization,
+        },
+    };
+    options.body = formData;
+
+    const uploadFileResponse = await fetch(url, options);
+    const response = await uploadFileResponse.json();
+    const audioFileId = response.id;
+    console.log("audio file id", audioFileId);
+    // const audioFileId = uploadFileResponse.data;
+    console.log("creating audio transcript job...");
+
+    const createAudioTranscript = await fetch(`https://api.gradient.ai/api/blocks/transcription`, {
+        method: "POST",
+        headers: {
+            accept: "application/json",
+            "content-type": "application/json",
+            "x-gradient-workspace-id": workspaceId,
+            authorization,
+        },
+        body: JSON.stringify({ fileId: audioFileId }),
+    });
+    const transcriptJobResponse = await createAudioTranscript.json();
+    console.log(transcriptJobResponse)
+    const transcriptionId = transcriptJobResponse.transcriptionId;
+    console.log("getting transcription", transcriptionId);
+
+    const transcription = await fetchTranscription(transcriptionId);
+    console.log("done!:");
+
+    console.log(transcription);
+
+    if (transcription.status == "succeeded") {
+        if (transcription.result && transcription.result.text) {
+            return transcription.result.text;
+        }
+    }
+
+    console.log(transcription);
+    return null;
+};
+
+async function fetchTranscription(transcriptionId) {
+    let transcription;
+    while (true) {
+        try {
+            const getTranscription = await fetch(`https://api.gradient.ai/api/blocks/transcription?transcriptionId=${transcriptionId}`, {
+                method: "GET",
+                headers: {
+                    accept: "application/json",
+                    "x-gradient-workspace-id": workspaceId,
+                    authorization: 'Bearer ' + accessToken,
+                },
+            });
+
+            transcription = await getTranscription.json();
+            if (transcription.status !== "pending" && transcription.status !== "running") {
+                break;
+            }
+            // Add a delay before making the next API call
+            await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait for 1 second before next attempt
+        } catch (error) {
+            console.error("Error fetching transcription:", error.message);
+            // Retry the API call in case of an error
+            await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait for 1 second before next attempt
+        }
+    }
+    return transcription;
+}
 
 module.exports.TranslateMessage = async (text, language, sourceLanguage) => {
     // const query = `[INST]
@@ -295,7 +388,7 @@ module.exports.TranslateMessage = async (text, language, sourceLanguage) => {
     console.log(translation);
     console.log(note);
     return translation;
-}
+};
 
 function parseTranslationReponse(text) {
     const lines = text.split("\n");
@@ -320,21 +413,20 @@ function parseTranslationReponse(text) {
     };
 }
 
-
 // if isGroupChat==true, user1 will be made admin of the group chat
-module.exports.CreateConversation = async (user1, user2, isGroupChat=false) => {
+module.exports.CreateConversation = async (user1, user2, isGroupChat = false) => {
     const newConversation = await Conversation.create();
     const user1Participant = await Participant.create({
         conversation_id: newConversation.id,
         user_id: user1.id,
         preferredLanguage: user1.defaultPreferredLanguage,
-        isAdmin: isGroupChat?true:false
+        isAdmin: isGroupChat ? true : false,
     });
 
     const user2Participant = await Participant.create({
         conversation_id: newConversation.id,
         user_id: user2.id,
-        preferredLanguage: user2.defaultPreferredLanguage
+        preferredLanguage: user2.defaultPreferredLanguage,
     });
     return newConversation;
-}
+};

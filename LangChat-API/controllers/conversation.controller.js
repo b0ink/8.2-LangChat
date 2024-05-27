@@ -405,11 +405,6 @@ exports.sendMessage = async (req, res) => {
     try {
         const newMessage = await Utility.SendMessage(user.id, conversationId, message);
         
-        const conversation = await Conversation.findByPk(conversationId);
-        if(conversation && newMessage){
-            conversation.changed('updatedAt', true);
-            await conversation.save();
-        }
 
         TranslationService(user, conversationId, newMessage);
 
@@ -418,6 +413,66 @@ exports.sendMessage = async (req, res) => {
         console.log(error);
         return res.status(500);
     }
+};
+
+
+exports.sendAudioMessage = async (req, res) => {
+    const conversationId = parseInt(req.params.conversationId);
+    const userId = req.user.id;
+    const user = await db.users.findByPk(userId);
+    if(!user){
+        return res.status(401);
+    }
+
+    console.log("sending audio message", conversationId, user.username);
+
+    try {
+        const file = req.file;
+
+        if (!file) {
+            console.log(file);
+            return res.status(400).send({ message: 'Please upload a file.' });
+        }
+
+        console.log(file.originalname)
+        console.log(file.buffer)
+        const transcription = await Utility.TranscribeAudio(file);
+        if(transcription){
+            console.log(transcription);
+
+            const newMessage = await Utility.SendMessage(user.id, conversationId, transcription);
+            TranslationService(user, conversationId, newMessage);
+            
+            return res.status(200).json(newMessage)
+        }
+        return res.status(500);
+        
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).send({ message: 'Failed to send audio message', error: error.message });
+    }
+    
+
+    return res.status(200)
+
+
+    // try {
+    //     const newMessage = await Utility.SendMessage(user.id, conversationId, message);
+        
+    //     const conversation = await Conversation.findByPk(conversationId);
+    //     if(conversation && newMessage){
+    //         conversation.changed('updatedAt', true);
+    //         await conversation.save();
+    //     }
+
+    //     TranslationService(user, conversationId, newMessage);
+
+    //     return res.json(newMessage);
+    // } catch (error) {
+    //     console.log(error);
+    //     return res.status(500);
+    // }
 };
 
 // reponse of sendMessage is used to insert the new bubble client-side, but client should not wait for server-side translations ifrst

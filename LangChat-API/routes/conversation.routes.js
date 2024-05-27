@@ -1,5 +1,6 @@
 
 const {authenticateToken} = require('../Authentication.js')
+const upload = require('../upload');
 
 module.exports = (app, API_VERSION) => {
     const conversation = require("../controllers/conversation.controller.js");
@@ -11,6 +12,7 @@ module.exports = (app, API_VERSION) => {
     router.get("/:conversationId/messages/:lastMessageId", authenticateToken, conversation.findMessages);
 
     router.post("/:conversationId/send-message", authenticateToken, conversation.sendMessage);
+    router.post("/:conversationId/send-audio-message", authenticateToken, upload.single('audio'), conversation.sendAudioMessage);
 
     router.post("/save-language", authenticateToken, conversation.saveUsersLanguage);
 

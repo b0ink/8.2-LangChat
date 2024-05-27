@@ -1,5 +1,4 @@
 const { authenticateToken } = require("../Authentication.js");
-const upload = require('../upload');
 
 module.exports = (app, API_VERSION) => {
     const users = require("../controllers/user.controller.js");
