@@ -17,6 +17,7 @@
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.2",
     "express": "^4.19.2",
+    "form-data": "^4.0.0",
     "joi": "^17.13.0",
     "jsonwebtoken": "^9.0.2",
     "moment": "^2.30.1",
