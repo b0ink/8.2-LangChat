@@ -98,6 +98,22 @@ public interface API {
             @Field("language") String language
     );
 
+    // Save default language for user's account
+    @FormUrlEncoded
+    @POST("user/save-language")
+    Call<Boolean> saveDefaultPreferredLanguage(
+            @Header("Authorization") String token,
+            @Field("language") String language
+    );
+
+    // Get default language for user's account
+    @GET("user/get-language")
+    Call<String> getDefaultPreferredLanguage(
+            @Header("Authorization") String token
+    );
+
+
+
     // Get participants in a conversation
     @GET("conversation/{conversationId}/participants")
     Call<List<User>> getParticipants(

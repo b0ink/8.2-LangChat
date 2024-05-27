@@ -73,6 +73,8 @@ public class MainActivity extends AppCompatActivity {
         authManager = new AuthManager(this);
         if (authManager.getToken() == null || !authManager.isTokenValid()) {
             startActivity(new Intent(this, LoginActivity.class));
+            System.out.println("Invalid token, logging out");
+            authManager.logout();
             finish();
             return;
         }
