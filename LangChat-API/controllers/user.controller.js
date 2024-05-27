@@ -96,7 +96,7 @@ exports.getLanguage = async (req, res) => {
 
     const defaultLanguage = user.defaultPreferredLanguage;
     if(defaultLanguage){
-        return res.json(defaultPreferredLanguage);
+        return res.json(defaultLanguage);
     }
     return res.json("English");
 }
