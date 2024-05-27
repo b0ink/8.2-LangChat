@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -88,6 +89,8 @@ public class MessageActivity extends AppCompatActivity {
     private Runnable updateVisualizer;
     private String audioMessageFilename;
     int conversationId = -1;
+
+    private ImageView gifSpinner;
 
     private boolean sendingAudioMessage = false;
 
@@ -193,8 +196,17 @@ public class MessageActivity extends AppCompatActivity {
         });
         messageThread.start();
 
+        gifSpinner  = findViewById(R.id.gifSpinner);
+        gifSpinner.setVisibility(View.GONE);
+        btnSend.setVisibility(View.VISIBLE);
+
         btnSend.setOnClickListener(view -> {
             if (!audioMessageFilename.isEmpty()) {
+                btnSend.setVisibility(View.GONE);
+                gifSpinner.setVisibility(View.VISIBLE);
+                stopRecording();
+                stopVisualizer();
+
                 sendAudioMessage();
                 //TODO: loading spinner
                 return;
@@ -215,6 +227,10 @@ public class MessageActivity extends AppCompatActivity {
 
         btnMicrophone = findViewById(R.id.btnMicrophone);
         btnMicrophone.setOnClickListener(view -> {
+            if(sendingAudioMessage){
+                return;
+            }
+
             if (!audioMessageFilename.isEmpty()) {
                 //TODO: check to see if the file exists
                 if (!voiceRecording) {
@@ -247,6 +263,9 @@ public class MessageActivity extends AppCompatActivity {
         });
 
         audioMessageWaveform.setOnClickListener(view -> {
+            if(sendingAudioMessage){
+                return;
+            }
             //TODO: message that says "tap to delete" above/under the waveform
             resetAudioMessageRecording();
         });
@@ -263,6 +282,9 @@ public class MessageActivity extends AppCompatActivity {
     }
 
     private void resetAudioMessageRecording(){
+        if(sendingAudioMessage){
+            return;
+        }
         voiceRecording = false;
         stopRecording();
         stopVisualizer();
@@ -271,6 +293,8 @@ public class MessageActivity extends AppCompatActivity {
         audioMessageWaveform.setVisibility(View.GONE);
         btnMicrophone.setImageResource(R.drawable.microphone_off);
         audioMessageFilename = "";
+        btnSend.setVisibility(View.VISIBLE);
+        gifSpinner.setVisibility(View.GONE);
     }
 
     @Override
@@ -318,6 +342,7 @@ public class MessageActivity extends AppCompatActivity {
                 .getAPI().sendAudioMessage(authManager.getToken(), conversationId, body);
 
         sendingAudioMessage = true;
+
         call.enqueue(new Callback<Message>() {
             @Override
             public void onResponse(Call<Message> call, Response<Message> response) {
@@ -329,7 +354,7 @@ public class MessageActivity extends AppCompatActivity {
                 }
 
                 sendingAudioMessage = false;
-
+                resetAudioMessageRecording();
             }
 
             @Override

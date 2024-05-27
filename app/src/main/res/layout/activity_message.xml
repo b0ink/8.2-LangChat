@@ -76,6 +76,16 @@
           android:backgroundTint="#00FFFFFF"
           android:scaleType="center"
           app:srcCompat="@drawable/send_icon" />
+
+        <pl.droidsonroids.gif.GifImageView
+            android:id="@+id/gifSpinner"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center_vertical"
+            android:backgroundTintMode="multiply"
+            android:scaleType="fitCenter"
+            android:src="@drawable/spinner2"
+            tools:visibility="visible" />
     </LinearLayout>
 
   </RelativeLayout>
