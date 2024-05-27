@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,7 @@ import com.example.langchat.API.AuthManager;
 import com.example.langchat.API.RetrofitClient;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.List;
 
 import retrofit2.Call;
@@ -87,6 +89,11 @@ public class ParticipantAdapter extends RecyclerView.Adapter<ParticipantAdapter.
             //TODO: if logged in user is admin of current converation, display remove user button
             btnRemoveUser.setVisibility(View.GONE);
 
+            String imageBase64 = user.getAvatar();
+            if(imageBase64 != null){
+                Bitmap avatar = ImageUtil.convert(imageBase64);
+                imgProfilePicture.setImageBitmap(avatar);
+            }
             if (viewAdminControls && getAdapterPosition() != 0) {
                 btnRemoveUser.setVisibility(View.VISIBLE);
             }
