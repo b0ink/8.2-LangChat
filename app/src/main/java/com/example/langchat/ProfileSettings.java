@@ -8,6 +8,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -43,6 +44,8 @@ public class ProfileSettings extends AppCompatActivity {
     private ImageButton btnGoBack;
     private ImageButton btnAvatar;
 
+    private TextView tvUsername;
+
 
     private String selectedLanguage = "";
 
@@ -58,6 +61,17 @@ public class ProfileSettings extends AppCompatActivity {
         });
 
         authManager = new AuthManager(this);
+
+        if (authManager.getToken() == null || !authManager.isTokenValid()) {
+            startActivity(new Intent(this, LoginActivity.class));
+            System.out.println("Invalid token, logging out");
+            authManager.logout();
+            finish();
+            return;
+        }
+
+        tvUsername = findViewById(R.id.tvUsername);
+        tvUsername.setText(authManager.getJwtProperty("username"));
 
         spnLanguage = findViewById(R.id.spnLanguage);
         availableLanguages = new ArrayList<>();
