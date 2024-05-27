@@ -13,6 +13,7 @@ const saltRounds = 10;
 
 const Utility = require("./Utility");
 
+
 // Create and Save a new User
 exports.create = async (req, res) => {
     const user = { ...req.body };
@@ -101,6 +102,29 @@ exports.getLanguage = async (req, res) => {
     return res.json("English");
 }
 
+exports.saveAvatar = async (req, res) => {
+    try {
+        const user = req.user;
+        const file = req.file;
+
+        if (!file) {
+            return res.status(400).send({ message: 'Please upload a file.' });
+        }
+
+        // Perform additional processing or save file information in the database
+        user.avatar = file.path;
+        await user.save();
+
+        res.status(200).send({
+            message: 'Avatar uploaded successfully',
+            file: file,
+            user: user
+        });
+    } catch (error) {
+        res.status(500).send({ message: 'Failed to upload avatar', error: error.message });
+    }
+    
+}
 
 exports.saveLanguage = async (req, res) => {
     const userId = req.user.id;

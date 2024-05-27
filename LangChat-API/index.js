@@ -23,6 +23,8 @@ require("./routes/language.routes")(app, API_VERSION);
 // testLanguage("whats the whether like today?", "korean");
 // testLanguage("My name is john", "spanish");
 
+const upload = require('./upload');
+
 const amqp = require("amqplib/callback_api");
 
 const db = require("./models/index");
