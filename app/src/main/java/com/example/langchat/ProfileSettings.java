@@ -1,12 +1,18 @@
 package com.example.langchat;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,7 +27,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.langchat.API.AuthManager;
 import com.example.langchat.API.RetrofitClient;
+import com.yalantis.ucrop.UCrop;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +41,7 @@ import retrofit2.Response;
 
 public class ProfileSettings extends AppCompatActivity {
 
+    final int RESULT_LOAD_IMAGE = 10034;
 
     private Spinner spnLanguage;
 
@@ -42,7 +53,7 @@ public class ProfileSettings extends AppCompatActivity {
 
     private Button btnLogout;
     private ImageButton btnGoBack;
-    private ImageButton btnAvatar;
+    private ImageView btnAvatar;
 
     private TextView tvUsername;
 
@@ -111,18 +122,25 @@ public class ProfileSettings extends AppCompatActivity {
         btnLogout = findViewById(R.id.btnLogout);
         btnLogout.setOnClickListener(view -> {
             authManager.logout();
-            startActivity( new Intent(this, MainActivity.class));
+            startActivity(new Intent(this, MainActivity.class));
             finish();
         });
 
         btnGoBack = findViewById(R.id.btnGoBack);
         btnGoBack.setOnClickListener(view -> {
-            startActivity( new Intent(this, MainActivity.class));
+            startActivity(new Intent(this, MainActivity.class));
             finish();
+        });
+
+        btnAvatar = findViewById(R.id.imgAvatar);
+        btnAvatar.setOnClickListener(view -> {
+            Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+            photoPickerIntent.setType("image/*");
+            startActivityForResult(photoPickerIntent, RESULT_LOAD_IMAGE);
         });
     }
 
-    private void getUsersDefaultLanguage(){
+    private void getUsersDefaultLanguage() {
         Call<String> call = RetrofitClient.getInstance()
                 .getAPI().getDefaultPreferredLanguage(authManager.getToken());
 
@@ -149,7 +167,6 @@ public class ProfileSettings extends AppCompatActivity {
     }
 
 
-
     private void getLanguages() {
         Call<List<String>> call = RetrofitClient.getInstance()
                 .getAPI().getAvailableLanguages(authManager.getToken());
@@ -173,6 +190,57 @@ public class ProfileSettings extends AppCompatActivity {
 
             }
         });
+    }
+
+
+    @Override
+    protected void onActivityResult(int reqCode, int resultCode, Intent data) {
+        super.onActivityResult(reqCode, resultCode, data);
+
+        if (resultCode == RESULT_OK && reqCode == RESULT_LOAD_IMAGE) {
+            try {
+                final Uri imageUri = data.getData();
+                final InputStream imageStream = getContentResolver().openInputStream(imageUri);
+//                final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
+
+
+                UCrop.Options options = new UCrop.Options();
+                options.setCircleDimmedLayer(true);  // Enable circle crop
+
+                UCrop.of(imageUri, Uri.fromFile(new File(getCacheDir(), "avatar_cropped.jpg")))
+                        .withOptions(options)
+                        .withAspectRatio(1, 1)
+                        .withMaxResultSize(100, 100)
+                        .start(this);
+
+
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                Toast.makeText(ProfileSettings.this, "Something went wrong", Toast.LENGTH_LONG).show();
+            }
+
+        } else if (resultCode == RESULT_OK && reqCode == UCrop.REQUEST_CROP) {
+            final Uri resultUri = UCrop.getOutput(data);
+            final InputStream imageStream;
+            try {
+                imageStream = getContentResolver().openInputStream(resultUri);
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+            final Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
+
+            // Convert Bitmap to Drawable
+            Drawable drawable = new BitmapDrawable(getResources(), selectedImage);
+
+            // Set the drawable as the background of the ImageButton
+//            btnAvatar.setBackground(drawable);
+            btnAvatar.setImageDrawable(drawable);
+
+        } else if (resultCode == UCrop.RESULT_ERROR) {
+            final Throwable cropError = UCrop.getError(data);
+        } else {
+            Toast.makeText(ProfileSettings.this, "You haven't picked Image", Toast.LENGTH_LONG).show();
+        }
     }
 
     private void saveGlobalLanguage(String language) {

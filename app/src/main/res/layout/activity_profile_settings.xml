@@ -69,13 +69,17 @@
                 android:layout_marginTop="25dp"
                 android:orientation="vertical">
 
-                <ImageButton
+
+                <androidx.constraintlayout.utils.widget.ImageFilterView
                     android:id="@+id/imgAvatar"
                     android:layout_width="100dp"
                     android:layout_height="100dp"
                     android:layout_gravity="center"
-                    android:background="@drawable/pfp_placeholder"
-                    android:scaleType="fitCenter" />
+                    android:background="@drawable/circle_shape"
+                    android:cropToPadding="false"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/pfp_placeholder"
+                    app:roundPercent="1" />
 
                 <TextView
                     android:id="@+id/tvUsername"
@@ -83,7 +87,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/inter_medium"
                     android:padding="10dp"
-                    android:text="USERNAME"
+                    android:text="USERRNAME"
                     android:textAlignment="center"
                     android:textColor="#FFFFFF" />
             </LinearLayout>
