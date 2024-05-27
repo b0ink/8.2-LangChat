@@ -169,7 +169,7 @@ public class ProfileSettings extends AppCompatActivity {
             @Override
             public void onResponse(Call<Boolean> call, Response<Boolean> response) {
                 if (!response.isSuccessful() || response.body() == null) {
-                    System.out.println("Invalid response from saveLanguage");
+                    System.out.println("Invalid response from saveGlobalLanguage" + response.toString());
                     return;
                 }
                 System.out.println("Success save lang?: " + response.body());

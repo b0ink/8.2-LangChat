@@ -100,14 +100,14 @@ public interface API {
 
     // Save default language for user's account
     @FormUrlEncoded
-    @POST("user/save-language")
+    @POST("users/save-language")
     Call<Boolean> saveDefaultPreferredLanguage(
             @Header("Authorization") String token,
             @Field("language") String language
     );
 
     // Get default language for user's account
-    @GET("user/get-language")
+    @GET("users/get-language")
     Call<String> getDefaultPreferredLanguage(
             @Header("Authorization") String token
     );
