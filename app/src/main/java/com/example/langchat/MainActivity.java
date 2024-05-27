@@ -81,8 +81,7 @@ public class MainActivity extends AppCompatActivity {
 
         btnProfile = findViewById(R.id.btnProfile);
         btnProfile.setOnClickListener(view -> {
-            authManager.logout();
-            startActivity(new Intent(this, LoginActivity.class));
+            startActivity(new Intent(this, ProfileSettings.class));
             finish();
             return;
         });
