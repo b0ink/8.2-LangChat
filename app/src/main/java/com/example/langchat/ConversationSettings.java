@@ -254,7 +254,7 @@ public class ConversationSettings extends AppCompatActivity {
                     return;
                 }
 
-                User newUser = new User(-1, username, null, false);
+                User newUser = new User(-1, username, null, false, null);
                 participants.add(newUser);
                 participantAdapter.notifyItemInserted(participants.indexOf(newUser));
                 if (response.body() != null) {

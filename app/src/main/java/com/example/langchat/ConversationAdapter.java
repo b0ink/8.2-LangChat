@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.text.Layout;
 import android.view.LayoutInflater;
@@ -93,6 +94,11 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
             if(!conversation.isGroupChat()){
                 username = participantList.get(0).getUser().getUsername();
                 imgProfilePicture.setBackgroundResource(R.drawable.pfp_placeholder);
+                String avatarBase64 = participantList.get(0).getUser().getAvatar();
+                if(avatarBase64 != null && !avatarBase64.isEmpty()){
+                    Bitmap avatar = ImageUtil.convert(avatarBase64);
+                    imgProfilePicture.setImageBitmap(avatar);
+                }
             }else{
                 ArrayList<String> usernames = new ArrayList<>();
                 for(Participant p : participantList){

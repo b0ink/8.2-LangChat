@@ -4,8 +4,8 @@ data class User(
     val id: Int,
     val username: String,
     val preferredLanguage: String?,
-    val isAdmin: Boolean
-    //TODO: profile picture url?
+    val isAdmin: Boolean,
+    val avatar: String?
 )
 
 data class Participant(
