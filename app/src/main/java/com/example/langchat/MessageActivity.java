@@ -206,6 +206,7 @@ public class MessageActivity extends AppCompatActivity {
                 gifSpinner.setVisibility(View.VISIBLE);
                 stopRecording();
                 stopVisualizer();
+                btnMicrophone.setImageResource(R.drawable.microphone_off);
 
                 sendAudioMessage();
                 //TODO: loading spinner
