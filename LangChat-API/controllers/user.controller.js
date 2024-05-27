@@ -74,6 +74,10 @@ exports.findOne = async (req, res) => {
         console.log("no user!");
         return res.status(400).json({ message: "Invalid username/password" });
     }
+    
+    if(user.id <= 0){
+        return res.status(401);
+    }
 
     const passwordsMatch = await bcrypt.compareSync(password, user.password);
 
