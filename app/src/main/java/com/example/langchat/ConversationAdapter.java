@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
+import androidx.constraintlayout.utils.widget.ImageFilterView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.langchat.API.AuthManager;
@@ -61,7 +62,7 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
         private TextView tvUsername;
         private TextView tvLastMessageTime;
         private TextView tvRecentMessage;
-        private ImageView imgProfilePicture;
+        private ImageFilterView imgProfilePicture;
         private ImageView imgNewMessageIcon;
 
         private RelativeLayout rlConversationContainer;
@@ -93,7 +94,7 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
             //TODO: put into static util class
             if(!conversation.isGroupChat()){
                 username = participantList.get(0).getUser().getUsername();
-                imgProfilePicture.setBackgroundResource(R.drawable.pfp_placeholder);
+                imgProfilePicture.setImageResource(R.drawable.pfp_placeholder);
                 String avatarBase64 = participantList.get(0).getUser().getAvatar();
                 if(avatarBase64 != null && !avatarBase64.isEmpty()){
                     Bitmap avatar = ImageUtil.convert(avatarBase64);
@@ -110,7 +111,7 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
                     int otherUserCount = usernames.size()-2;
                     username = usernames.get(0) + ", " + usernames.get(1) + " +" + otherUserCount + " more";
                 }
-                imgProfilePicture.setBackgroundResource(R.drawable.pfp_group_placeholder);
+                imgProfilePicture.setImageResource(R.drawable.pfp_group_placeholder);
             }
 
             tvLastMessageTime.setText(conversation.getLastUpdatedDisplay());

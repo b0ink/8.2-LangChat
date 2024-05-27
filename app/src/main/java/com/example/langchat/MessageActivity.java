@@ -1,6 +1,8 @@
 package com.example.langchat;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.WindowManager;
@@ -11,6 +13,7 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.utils.widget.ImageFilterView;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -43,7 +46,8 @@ public class MessageActivity extends AppCompatActivity {
     private EditText etMessage;
     private ImageButton btnSend;
 
-    private ImageButton btnProfile;
+    private ImageFilterView btnProfile;
+
     private ImageButton btnGoBack;
     private ImageButton btnSettings;
     private TextView tvUsername;
@@ -210,6 +214,11 @@ public class MessageActivity extends AppCompatActivity {
                     username = participantList.get(0).getUsername();
                     //TODO: profile pic
                     btnProfile.setImageResource(R.drawable.pfp_placeholder);
+                    String avatarBase64 = participantList.get(0).getAvatar();
+                    if(avatarBase64 != null && !avatarBase64.isEmpty()){
+                        Bitmap avatar = ImageUtil.convert(avatarBase64);
+                        btnProfile.setImageBitmap(avatar);
+                    }
                 } else {
                     ArrayList<String> usernames = new ArrayList<>();
                     for (User p : participantList) {

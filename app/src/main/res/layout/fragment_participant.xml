@@ -14,13 +14,25 @@
         android:layout_height="75dp"
         android:padding="15dp">
 
-        <ImageView
+
+        <androidx.constraintlayout.utils.widget.ImageFilterView
             android:id="@+id/imgProfilePicture"
             android:layout_width="45dp"
             android:layout_height="45dp"
+            android:background="@drawable/circle_shape"
+            android:cropToPadding="false"
+            android:scaleType="fitCenter"
+            android:src="@drawable/pfp_placeholder"
             android:layout_alignParentLeft="true"
-            android:background="@drawable/pfp_placeholder"
-            android:scaleType="center" />
+            app:roundPercent="1" />
+
+<!--        <ImageView-->
+<!--            android:id="@+id/imgProfilePicture"-->
+<!--            android:layout_width="45dp"-->
+<!--            android:layout_height="45dp"-->
+<!--            android:layout_alignParentLeft="true"-->
+<!--            android:background="@drawable/pfp_placeholder"-->
+<!--            android:scaleType="center" />-->
 
         <TextView
             android:id="@+id/tvUsername"

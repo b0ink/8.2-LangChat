@@ -63,16 +63,30 @@
 
             </LinearLayout>
 
-            <ImageButton
+            <androidx.constraintlayout.utils.widget.ImageFilterView
                 android:id="@+id/btnProfile"
                 android:layout_width="45dp"
                 android:layout_height="45dp"
+                android:background="@drawable/circle_shape"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentBottom="true"
-                android:background="@android:color/transparent"
-                android:scaleType="centerInside"
-                app:srcCompat="@drawable/pfp_placeholder" />
+                android:cropToPadding="false"
+                android:scaleType="fitCenter"
+                android:src="@drawable/pfp_placeholder"
+                android:layout_alignParentLeft="true"
+                app:roundPercent="1" />
+
+<!--            <ImageButton-->
+<!--                android:id="@+id/btnProfile"-->
+<!--                android:layout_width="45dp"-->
+<!--                android:layout_height="45dp"-->
+<!--                android:layout_alignParentTop="true"-->
+<!--                android:layout_alignParentEnd="true"-->
+<!--                android:layout_alignParentBottom="true"-->
+<!--                android:background="@android:color/transparent"-->
+<!--                android:scaleType="centerInside"-->
+<!--                app:srcCompat="@drawable/pfp_placeholder" />-->
         </RelativeLayout>
 
         <androidx.recyclerview.widget.RecyclerView

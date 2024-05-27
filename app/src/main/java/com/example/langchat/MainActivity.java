@@ -1,6 +1,7 @@
 package com.example.langchat;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.StrictMode;
@@ -17,6 +18,7 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.utils.widget.ImageFilterView;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -52,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
     private Button btnLogout;
     private ImageButton btnNewMessage;
 
-    private ImageButton btnProfile;
+    private ImageFilterView btnProfile;
 
     private Handler handler;
     private Runnable runnable;
@@ -85,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
             finish();
             return;
         });
+
 
         btnNewMessage = findViewById(R.id.btnNewMessage);
         btnNewMessage.setOnClickListener(view -> {
@@ -175,6 +178,8 @@ public class MainActivity extends AppCompatActivity {
 
         // Start the repeated task
         handler.post(runnable);
+
+        getAvatar();
     }
 
     @Override
@@ -264,6 +269,32 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<NewConversationResponse> call, Throwable throwable) {
                 Toast.makeText(MainActivity.this, "Unable to add user, please try again.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void getAvatar(){
+        Call<String> call = RetrofitClient.getInstance()
+                .getAPI().getAvatar(authManager.getToken());
+
+        call.enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                if (!response.isSuccessful()) {
+                    return;
+                }
+
+                if(response.body() == null || response.body().isEmpty()){
+                    return;
+                }
+
+                Bitmap avatar = ImageUtil.convert(response.body());
+                btnProfile.setImageBitmap(avatar);
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                Log.e("Upload", "Failure: " + t.getMessage());
             }
         });
     }

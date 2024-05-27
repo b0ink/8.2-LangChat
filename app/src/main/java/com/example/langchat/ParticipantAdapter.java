@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.constraintlayout.utils.widget.ImageFilterView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.langchat.API.AuthManager;
@@ -64,7 +65,7 @@ public class ParticipantAdapter extends RecyclerView.Adapter<ParticipantAdapter.
     public class ParticipantViewHolder extends RecyclerView.ViewHolder {
         private TextView tvUsername;
         private ImageButton btnRemoveUser;
-        private ImageView imgProfilePicture;
+        private ImageFilterView imgProfilePicture;
 
         private RelativeLayout rlConversationContainer;
 
