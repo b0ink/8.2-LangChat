@@ -1,10 +1,15 @@
 package com.example.langchat;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.media.Image;
+import android.media.MediaRecorder;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
 import android.util.Log;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -14,6 +19,7 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.utils.widget.ImageFilterView;
+import androidx.core.app.ActivityCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -30,7 +36,9 @@ import com.rabbitmq.client.DeliverCallback;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.security.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
@@ -64,9 +72,24 @@ public class MessageActivity extends AppCompatActivity {
     private Connection connection;
 
 
+    private MediaRecorder mediaRecorder;
+    //    private String fileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/recording.3gp";
+    private Handler voiceMessageHandler = new Handler();
+    private ImageButton btnMicrophone;
+    public Boolean voiceRecording = false;
+    AudioMessageWaveformView audioMessageWaveform;
+    private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
+    private boolean permissionToRecordAccepted = false;
+    private final String[] permissions = {android.Manifest.permission.RECORD_AUDIO, android.Manifest.permission.WRITE_EXTERNAL_STORAGE};
+    private Runnable updateVisualizer;
+    private String audioMessageFilename;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        ActivityCompat.requestPermissions(this, permissions, REQUEST_RECORD_AUDIO_PERMISSION);
+
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_message);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -74,6 +97,8 @@ public class MessageActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        audioMessageFilename = "";
 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
@@ -171,6 +196,60 @@ public class MessageActivity extends AppCompatActivity {
             sendNewMessage(conversationId, message);
         });
 
+        audioMessageWaveform = findViewById(R.id.audioMessageWaveformView);
+        audioMessageWaveform.setVisibility(View.GONE);
+
+        btnMicrophone = findViewById(R.id.btnMicrophone);
+        btnMicrophone.setOnClickListener(view -> {
+            if (!audioMessageFilename.isEmpty()) {
+                //TODO: check to see if the file exists
+                if (!voiceRecording) {
+                    //TODO: delete the file
+                    audioMessageWaveform.reset();
+                }
+            }
+
+            if (!voiceRecording) {
+                String filename = conversationId + "_" + authManager.getJwtProperty("username") + "_" + System.currentTimeMillis();
+                boolean recording = startRecording(filename);
+
+                if (!recording) {
+                    return;
+                }
+
+                startVisualizer();
+                etMessage.setVisibility(View.GONE);
+                audioMessageWaveform.setVisibility(View.VISIBLE);
+                btnMicrophone.setImageResource(R.drawable.microphone_on);
+                return;
+            }
+
+            btnMicrophone.setImageResource(R.drawable.microphone_off);
+            voiceRecording = false;
+//            etMessage.setVisibility(View.VISIBLE);
+//            audioMessageWaveform.setVisibility(View.GONE);
+            stopRecording();
+            stopVisualizer();
+        });
+        audioMessageWaveform.setOnClickListener(view -> {
+            //TODO: message that says "tap to delete" above/under the waveform
+            voiceRecording = false;
+            stopRecording();
+            stopVisualizer();
+            audioMessageWaveform.reset();
+            etMessage.setVisibility(View.VISIBLE);
+            audioMessageWaveform.setVisibility(View.GONE);
+            btnMicrophone.setImageResource(R.drawable.microphone_off);
+        });
+        updateVisualizer = new Runnable() {
+            @Override
+            public void run() {
+                int amplitude = getAmplitude();
+                // Pass amplitude to the custom view to render waveform
+                audioMessageWaveform.addAmplitude(amplitude);
+                voiceMessageHandler.postDelayed(this, 100);
+            }
+        };
     }
 
     @Override
@@ -192,8 +271,63 @@ public class MessageActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-
     }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        permissionToRecordAccepted = requestCode == REQUEST_RECORD_AUDIO_PERMISSION && grantResults.length > 0
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED;
+    }
+
+
+    private boolean startRecording(String fileName) {
+        if (fileName.isEmpty()) {
+            return false;
+        }
+        mediaRecorder = new MediaRecorder();
+        audioMessageFilename = getExternalCacheDir().getAbsolutePath() + "/" + fileName + ".3gp";
+        try {
+            mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+            mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+            mediaRecorder.setOutputFile(audioMessageFilename);
+            mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+            mediaRecorder.prepare();
+        } catch (IOException | IllegalStateException e) {
+            e.printStackTrace();
+            return false;
+        }
+        mediaRecorder.start();
+        voiceRecording = true;
+        return true;
+    }
+
+    private void stopRecording() {
+        if (mediaRecorder == null) {
+            return;
+        }
+
+        mediaRecorder.stop();
+        mediaRecorder.release();
+        mediaRecorder = null;
+    }
+
+    private int getAmplitude() {
+        if (mediaRecorder != null) {
+            return mediaRecorder.getMaxAmplitude();
+        }
+        return 0;
+    }
+
+
+    private void startVisualizer() {
+        voiceMessageHandler.post(updateVisualizer);
+    }
+
+    private void stopVisualizer() {
+        voiceMessageHandler.removeCallbacks(updateVisualizer);
+    }
+
 
     private void getParticipants(int conversationId) {
         Call<List<User>> call = RetrofitClient.getInstance()
@@ -215,7 +349,7 @@ public class MessageActivity extends AppCompatActivity {
                     //TODO: profile pic
                     btnProfile.setImageResource(R.drawable.pfp_placeholder);
                     String avatarBase64 = participantList.get(0).getAvatar();
-                    if(avatarBase64 != null && !avatarBase64.isEmpty()){
+                    if (avatarBase64 != null && !avatarBase64.isEmpty()) {
                         Bitmap avatar = ImageUtil.convert(avatarBase64);
                         btnProfile.setImageBitmap(avatar);
                     }

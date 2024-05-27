@@ -36,19 +36,37 @@
         android:layout_marginBottom="15dp"
         android:orientation="horizontal">
 
-      <EditText
-          android:id="@+id/etMessage"
-          android:layout_width="match_parent"
-          android:layout_height="50dp"
-          android:layout_marginRight="15dp"
-          android:layout_weight="1"
-          android:background="@drawable/edit_text_background"
-          android:ems="10"
-          android:fontFamily="@font/inter"
-          android:hint="Enter message..."
-          android:inputType="textFilter|textMultiLine"
-          android:paddingLeft="15dp"
-          android:textSize="16sp" />
+<!--      https://www.flaticon.com/free-icons/mic - Mic icons created by Dave Gandy - Flaticon-->
+
+        <ImageButton
+            android:id="@+id/btnMicrophone"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="#00FFFFFF"
+            android:padding="10dp"
+            android:scaleType="fitCenter"
+            app:srcCompat="@drawable/microphone_off" />
+
+        <com.example.langchat.AudioMessageWaveformView
+            android:id="@+id/audioMessageWaveformView"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            tools:visibility="gone" />
+
+        <EditText
+            android:id="@+id/etMessage"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginRight="15dp"
+            android:layout_weight="1"
+            android:background="@drawable/edit_text_background"
+            android:ems="10"
+            android:fontFamily="@font/inter"
+            android:hint="Enter message..."
+            android:inputType="textFilter|textMultiLine"
+            android:paddingLeft="15dp"
+            android:textSize="16sp" />
 
       <ImageButton
           android:id="@+id/btnSend"
