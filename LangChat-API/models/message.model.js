@@ -25,6 +25,10 @@ module.exports = (sequelize, Sequelize) => {
         message: {
             type: DataTypes.STRING(255),
         },
+        isTranscribed:{
+            type: DataTypes.BOOLEAN,
+            defaultValue: false
+        }
     });
 
 

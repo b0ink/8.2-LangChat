@@ -171,7 +171,7 @@ module.exports.SendSystemMessage = async (conversation_id, message) => {
     }, 1000);
 };
 
-module.exports.SendMessage = async (sender_id, conversation_id, message) => {
+module.exports.SendMessage = async (sender_id, conversation_id, message, isTranscribed=false) => {
     const user = await User.findByPk(sender_id);
 
     if (!user) {
@@ -190,6 +190,7 @@ module.exports.SendMessage = async (sender_id, conversation_id, message) => {
         conversation_id,
         sender_id,
         message,
+        isTranscribed
     });
 
     const conversation = await Conversation.findByPk(conversation_id);
@@ -208,6 +209,7 @@ module.exports.SendMessage = async (sender_id, conversation_id, message) => {
         user: {
             username: user.username,
         },
+        isTranscribed
     };
     console.log(messageData);
     // console.log(messageData.toJSON());

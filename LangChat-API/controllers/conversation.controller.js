@@ -440,7 +440,7 @@ exports.sendAudioMessage = async (req, res) => {
         if(transcription){
             console.log(transcription);
 
-            const newMessage = await Utility.SendMessage(user.id, conversationId, transcription);
+            const newMessage = await Utility.SendMessage(user.id, conversationId, transcription, true);
             TranslationService(user, conversationId, newMessage);
             
             return res.status(200).json(newMessage)
