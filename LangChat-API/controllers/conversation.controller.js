@@ -275,7 +275,7 @@ exports.addParticipant = async (req, res) => {
         });
 
         if (newParticipant) {
-            Utility.SendSystemMessage(conversationId, `${user.username} added ${userToAdd.username} to the conversation.`);
+            Utility.SendSystemMessage(newConversation.id, `${user.username} added ${userToAdd.username} to the conversation.`);
             return res.status(200).json({
                 conversationId: newConversation.id,
                 message: "Added user to conversation"
