@@ -35,6 +35,7 @@ import com.rabbitmq.client.DeliverCallback;
 
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.IOException;
 import java.security.Timestamp;
 import java.util.ArrayList;
@@ -42,6 +43,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -83,6 +87,9 @@ public class MessageActivity extends AppCompatActivity {
     private final String[] permissions = {android.Manifest.permission.RECORD_AUDIO, android.Manifest.permission.WRITE_EXTERNAL_STORAGE};
     private Runnable updateVisualizer;
     private String audioMessageFilename;
+    int conversationId = -1;
+
+    private boolean sendingAudioMessage = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,7 +121,7 @@ public class MessageActivity extends AppCompatActivity {
 
 
         Intent intent = getIntent();
-        int conversationId = intent.getIntExtra(EXTRA_CONVERSATION_ID, -1);
+        conversationId = intent.getIntExtra(EXTRA_CONVERSATION_ID, -1);
         if (intent == null || !intent.hasExtra(EXTRA_CONVERSATION_ID) || conversationId == -1) {
             Intent homeActivity = new Intent(this, MainActivity.class);
             startActivity(homeActivity);
@@ -187,6 +194,13 @@ public class MessageActivity extends AppCompatActivity {
         messageThread.start();
 
         btnSend.setOnClickListener(view -> {
+            if (!audioMessageFilename.isEmpty()) {
+                sendAudioMessage();
+                //TODO: loading spinner
+                return;
+            }
+
+
             String message = etMessage.getText().toString();
             if (message.isEmpty()) {
                 return;
@@ -231,16 +245,12 @@ public class MessageActivity extends AppCompatActivity {
             stopRecording();
             stopVisualizer();
         });
+
         audioMessageWaveform.setOnClickListener(view -> {
             //TODO: message that says "tap to delete" above/under the waveform
-            voiceRecording = false;
-            stopRecording();
-            stopVisualizer();
-            audioMessageWaveform.reset();
-            etMessage.setVisibility(View.VISIBLE);
-            audioMessageWaveform.setVisibility(View.GONE);
-            btnMicrophone.setImageResource(R.drawable.microphone_off);
+            resetAudioMessageRecording();
         });
+
         updateVisualizer = new Runnable() {
             @Override
             public void run() {
@@ -250,6 +260,17 @@ public class MessageActivity extends AppCompatActivity {
                 voiceMessageHandler.postDelayed(this, 100);
             }
         };
+    }
+
+    private void resetAudioMessageRecording(){
+        voiceRecording = false;
+        stopRecording();
+        stopVisualizer();
+        audioMessageWaveform.reset();
+        etMessage.setVisibility(View.VISIBLE);
+        audioMessageWaveform.setVisibility(View.GONE);
+        btnMicrophone.setImageResource(R.drawable.microphone_off);
+        audioMessageFilename = "";
     }
 
     @Override
@@ -280,6 +301,44 @@ public class MessageActivity extends AppCompatActivity {
                 && grantResults[0] == PackageManager.PERMISSION_GRANTED;
     }
 
+    private void sendAudioMessage() {
+        if(audioMessageFilename.isEmpty()){
+            return;
+        }
+        File audio = new File(audioMessageFilename);
+        if(!audio.exists() || !audio.isFile()){
+            audioMessageFilename = "";
+            return;
+        }
+
+        RequestBody requestFile = RequestBody.create(MediaType.parse("audio/3gp"), audio);
+        MultipartBody.Part body = MultipartBody.Part.createFormData("audio", audioMessageFilename, requestFile);
+
+        Call<Message> call = RetrofitClient.getInstance()
+                .getAPI().sendAudioMessage(authManager.getToken(), conversationId, body);
+
+        sendingAudioMessage = true;
+        call.enqueue(new Callback<Message>() {
+            @Override
+            public void onResponse(Call<Message> call, Response<Message> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    Log.d("Upload", "Success");
+                    insertNewMessage(response.body());
+                } else {
+                    Log.e("Upload", "Error: " + response.message());
+                }
+
+                sendingAudioMessage = false;
+
+            }
+
+            @Override
+            public void onFailure(Call<Message> call, Throwable t) {
+                Log.e("Upload", "Failure: " + t.getMessage());
+                sendingAudioMessage = false;
+            }
+        });
+    }
 
     private boolean startRecording(String fileName) {
         if (fileName.isEmpty()) {
@@ -444,21 +503,22 @@ public class MessageActivity extends AppCompatActivity {
                 if (!response.isSuccessful()) {
                     return;
                 }
-                //TODO: insert the new message in an "undelivered" state, then rabbitMQ will update the state as delivered
-//                Toast.makeText(MessageActivity.this, "New message id :" + response.body().getId(), Toast.LENGTH_SHORT).show();
-                messages.add(response.body());
-                databaseHelper.saveLastReadMessage(conversationId, response.body().getId());
-                runOnUiThread(() -> {
-                    adapter.notifyItemInserted(messages.size() - 1);
-                    recycler.scrollToPosition(messages.size() - 1);
-                });
-
+                insertNewMessage(response.body());
             }
 
             @Override
             public void onFailure(Call<Message> newMsgCall, Throwable throwable) {
 
             }
+        });
+    }
+
+    private void insertNewMessage(Message msg){
+        messages.add(msg);
+        databaseHelper.saveLastReadMessage(conversationId,msg.getId());
+        runOnUiThread(() -> {
+            adapter.notifyItemInserted(messages.size() - 1);
+            recycler.scrollToPosition(messages.size() - 1);
         });
     }
 }

@@ -151,12 +151,7 @@ public interface API {
             @Field("removingUserId") int removingUserId
     );
 
-//    @Multipart
-//    @POST("users/save-avatar")
-//    Call<String> uploadAvatar(
-//            @Header("Authorization") String token,
-//            @Part MultipartBody.Part file
-//    );
+
 
     @FormUrlEncoded
     @POST("users/save-avatar")
@@ -169,6 +164,15 @@ public interface API {
     Call<String> getAvatar(
             @Header("Authorization") String token
     );
+
+    @Multipart
+    @POST("conversation/{conversationId}/send-audio-message")
+    Call<Message> sendAudioMessage(
+            @Header("Authorization") String token,
+            @Path("conversationId") int conversationId,
+            @Part MultipartBody.Part audio
+    );
+
 
 //    @Multipart
 //    @POST("users/get-avatar")
