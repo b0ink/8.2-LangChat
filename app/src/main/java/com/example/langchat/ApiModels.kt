@@ -33,7 +33,7 @@ data class Message(
     val createdAt: String,
     val updatedAt: String,
     val user: User,
-    val translations: List<Translation>
+    val translations: List<Translation>?
 )
 
 data class ConversationResponse(
