@@ -298,13 +298,15 @@ public class MessageActivity extends AppCompatActivity {
     }
 
     private void resetAudioMessageRecording(){
-        if(sendingAudioMessage){
-            return;
-        }
         voiceRecording = false;
-        stopRecording();
-        stopVisualizer();
-        audioMessageWaveform.reset();
+        try{
+            stopRecording();
+            stopVisualizer();
+            audioMessageWaveform.reset();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
         etMessage.setVisibility(View.VISIBLE);
         audioMessageWaveform.setVisibility(View.GONE);
         btnMicrophone.setImageResource(R.drawable.microphone_off);
@@ -367,6 +369,7 @@ public class MessageActivity extends AppCompatActivity {
                     insertNewMessage(response.body());
                 } else {
                     Log.e("Upload", "Error: " + response.message());
+                    Toast.makeText(MessageActivity.this, "Unable to send audio message.", Toast.LENGTH_SHORT).show();
                 }
 
                 sendingAudioMessage = false;
@@ -376,7 +379,9 @@ public class MessageActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<Message> call, Throwable t) {
                 Log.e("Upload", "Failure: " + t.getMessage());
+                resetAudioMessageRecording();
                 sendingAudioMessage = false;
+                Toast.makeText(MessageActivity.this, "Unable to send audio message.", Toast.LENGTH_SHORT).show();
             }
         });
     }

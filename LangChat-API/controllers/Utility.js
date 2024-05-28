@@ -284,17 +284,15 @@ module.exports.TranscribeAudio = async (file) => {
     console.log("getting transcription", transcriptionId);
 
     const transcription = await fetchTranscription(transcriptionId);
-    console.log("done!:");
 
-    console.log(transcription);
 
     if (transcription.status == "succeeded") {
         if (transcription.result && transcription.result.text) {
+            console.log("done!:");
             return transcription.result.text;
         }
     }
-
-    console.log(transcription);
+    console.log("failed transcription")
     return null;
 };
 

@@ -428,10 +428,10 @@ exports.sendAudioMessage = async (req, res) => {
 
             return res.status(200).json(newMessage);
         }
-        return res.status(500);
+        return res.status(200).json(null);
     } catch (error) {
         console.log(error);
-        res.status(500).send({ message: "Failed to send audio message", error: error.message });
+        return res.status(400).send({ message: "Failed to send audio message", error: error.message });
     }
 
     return res.status(200);
