@@ -88,6 +88,7 @@ public class ParticipantAdapter extends RecyclerView.Adapter<ParticipantAdapter.
 
             //TODO: if logged in user is admin of current converation, display remove user button
             btnRemoveUser.setVisibility(View.GONE);
+            imgProfilePicture.setImageResource(R.drawable.pfp_placeholder);
 
             String imageBase64 = user.getAvatar();
             if(imageBase64 != null){

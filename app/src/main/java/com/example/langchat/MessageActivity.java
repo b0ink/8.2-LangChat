@@ -128,6 +128,8 @@ public class MessageActivity extends AppCompatActivity {
 
         imgGroupAvatar1 = findViewById(R.id.imgGroupAvatar1);
         imgGroupAvatar2 = findViewById(R.id.imgGroupAvatar2);
+        imgGroupAvatar1.setImageResource(R.drawable.pfp_placeholder);
+        imgGroupAvatar2.setImageResource(R.drawable.pfp_placeholder);
 
         btnGoBack = findViewById(R.id.btnGoBack);
         btnGoBack.setOnClickListener(view -> {

@@ -95,8 +95,12 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
             List<Participant> participantList = conversation.getParticipants();
             imgNewMessageIcon.setVisibility(View.GONE);
 
+            imgProfilePicture.setVisibility(View.VISIBLE);
             imgGroupAvatar1.setVisibility(View.GONE);
             imgGroupAvatar2.setVisibility(View.GONE);
+
+            imgGroupAvatar1.setImageResource(R.drawable.pfp_placeholder);
+            imgGroupAvatar2.setImageResource(R.drawable.pfp_placeholder);
 
             //TODO: put into static util class
             if(!conversation.isGroupChat()){
