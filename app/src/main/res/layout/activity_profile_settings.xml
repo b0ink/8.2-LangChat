@@ -107,7 +107,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/inter_medium"
-                android:text="Select the default language you'd like to receive messages in for this conversation. The language you set here will be used as the preferred language when starting a new conversation with someone. You can change the language for each converesation afterwards."
+                android:text="Select the default language you'd like to receive messages for future conversations. The language you set here will be used as the preferred language when starting a new conversation with someone. You can change the language for each converesation afterwards."
                 android:textColor="#000000"
                 android:textSize="14sp" />
 
