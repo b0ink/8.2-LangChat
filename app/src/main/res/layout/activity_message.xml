@@ -8,200 +8,200 @@
     android:background="@drawable/background_gradient"
     tools:context=".MessageActivity">
 
-  <RelativeLayout
-      android:id="@+id/relativeLayout"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:padding="15dp"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toBottomOf="@id/banner">
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
+    <RelativeLayout
+        android:id="@+id/relativeLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/llMessageInputLayout"
-        android:layout_marginTop="100dp"
-        android:paddingBottom="10dp"
-        app:reverseLayout="true"
-        tools:itemCount="25"
-        tools:listitem="@layout/fragment_message" />
+        android:layout_height="match_parent"
+        android:padding="15dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/banner">
 
-    <LinearLayout
-        android:id="@+id/llMessageInputLayout"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/llMessageInputLayout"
+            android:layout_marginTop="100dp"
+            android:paddingBottom="10dp"
+            app:reverseLayout="true"
+            tools:itemCount="25"
+            tools:listitem="@layout/fragment_message" />
+
+        <LinearLayout
+            android:id="@+id/llMessageInputLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="15dp"
+            android:orientation="horizontal">
+
+            <!--      https://www.flaticon.com/free-icons/mic - Mic icons created by Dave Gandy - Flaticon-->
+
+            <ImageButton
+                android:id="@+id/btnMicrophone"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="#00FFFFFF"
+                android:padding="10dp"
+                android:scaleType="fitCenter"
+                app:srcCompat="@drawable/microphone_off" />
+
+            <com.example.langchat.AudioMessageWaveformView
+                android:id="@+id/audioMessageWaveformView"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                tools:visibility="gone" />
+
+            <EditText
+                android:id="@+id/etMessage"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginRight="15dp"
+                android:layout_weight="1"
+                android:background="@drawable/edit_text_background"
+                android:ems="10"
+                android:fontFamily="@font/inter"
+                android:hint="Enter message..."
+                android:inputType="textFilter|textMultiLine"
+                android:paddingLeft="15dp"
+                android:textSize="16sp" />
+
+            <ImageButton
+                android:id="@+id/btnSend"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center_vertical"
+                android:backgroundTint="#00FFFFFF"
+                android:scaleType="center"
+                app:srcCompat="@drawable/send_icon" />
+
+            <pl.droidsonroids.gif.GifImageView
+                android:id="@+id/gifSpinner"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center_vertical"
+                android:backgroundTintMode="multiply"
+                android:scaleType="fitCenter"
+                android:src="@drawable/spinner2"
+                tools:visibility="visible" />
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/banner"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="15dp"
-        android:orientation="horizontal">
-
-<!--      https://www.flaticon.com/free-icons/mic - Mic icons created by Dave Gandy - Flaticon-->
+        android:layout_height="100dp"
+        android:layout_marginTop="15dp"
+        android:background="#00EA92B4"
+        android:clipToPadding="false"
+        android:padding="15dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <ImageButton
-            android:id="@+id/btnMicrophone"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:background="#00FFFFFF"
-            android:padding="10dp"
-            android:scaleType="fitCenter"
-            app:srcCompat="@drawable/microphone_off" />
-
-        <com.example.langchat.AudioMessageWaveformView
-            android:id="@+id/audioMessageWaveformView"
+            android:id="@+id/btnGoBack"
             android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            android:layout_weight="1"
-            tools:visibility="gone" />
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="false"
+            android:layout_alignParentBottom="true"
+            android:layout_marginStart="15dp"
+            android:background="@android:color/transparent"
+            android:scaleType="centerInside"
+            app:srcCompat="@android:drawable/ic_menu_revert" />
 
-        <EditText
-            android:id="@+id/etMessage"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
+        <RelativeLayout
+            android:id="@+id/rlAvatarGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignStart="@+id/linearLayout2"
+            android:layout_alignEnd="@+id/linearLayout2"
+            android:layout_alignParentTop="true"
+            android:gravity="center">
+
+            <androidx.constraintlayout.utils.widget.ImageFilterView
+                android:id="@+id/imgGroupAvatar2"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/circle_shape"
+                android:scaleType="fitCenter"
+                android:src="@drawable/pfp_placeholder"
+                app:roundPercent="1"
+                tools:visibility="visible" />
+
+            <androidx.constraintlayout.utils.widget.ImageFilterView
+                android:id="@+id/imgGroupAvatar1"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:background="@drawable/circle_shape"
+                android:scaleType="fitCenter"
+                android:src="@drawable/pfp_placeholder"
+                app:roundPercent="1"
+                tools:visibility="visible" />
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/linearLayout2"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
+            android:gravity="center"
+            android:orientation="vertical">
+
+
+            <androidx.constraintlayout.utils.widget.ImageFilterView
+                android:id="@+id/btnProfile"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_alignParentLeft="true"
+                android:layout_gravity="center"
+                android:background="@drawable/circle_shape"
+                android:scaleType="fitCenter"
+                android:src="@drawable/pfp_placeholder"
+                app:roundPercent="1"
+                tools:visibility="invisible" />
+
+            <!--      <ImageButton-->
+            <!--          android:id="@+id/btnProfile"-->
+            <!--          android:background="@android:color/transparent"-->
+            <!--          android:padding="5dp"-->
+            <!--          android:scaleType="centerInside"-->
+            <!--          app:srcCompat="@drawable/pfp_placeholder" />-->
+
+            <TextView
+                android:id="@+id/tvUsername"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:fontFamily="@font/inter_bold"
+                android:gravity="center_horizontal"
+                android:text="USERNAME"
+                android:textAlignment="center"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/btnSettings"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
             android:layout_marginRight="15dp"
-            android:layout_weight="1"
-            android:background="@drawable/edit_text_background"
-            android:ems="10"
-            android:fontFamily="@font/inter"
-            android:hint="Enter message..."
-            android:inputType="textFilter|textMultiLine"
-            android:paddingLeft="15dp"
-            android:textSize="16sp" />
-
-      <ImageButton
-          android:id="@+id/btnSend"
-          android:layout_width="50dp"
-          android:layout_height="50dp"
-          android:layout_gravity="center_vertical"
-          android:backgroundTint="#00FFFFFF"
-          android:scaleType="center"
-          app:srcCompat="@drawable/send_icon" />
-
-        <pl.droidsonroids.gif.GifImageView
-            android:id="@+id/gifSpinner"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_gravity="center_vertical"
-            android:backgroundTintMode="multiply"
-            android:scaleType="fitCenter"
-            android:src="@drawable/spinner2"
-            tools:visibility="visible" />
-    </LinearLayout>
-
-  </RelativeLayout>
-
-  <RelativeLayout
-      android:id="@+id/banner"
-      android:layout_width="match_parent"
-      android:layout_height="100dp"
-      android:background="#00EA92B4"
-      android:clipToPadding="false"
-      android:padding="15dp"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toTopOf="parent">
-
-      <ImageButton
-        android:id="@+id/btnGoBack"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="false"
-        android:layout_alignParentBottom="true"
-        android:layout_marginStart="15dp"
-        android:background="@android:color/transparent"
-        android:scaleType="centerInside"
-        app:srcCompat="@android:drawable/ic_menu_revert" />
-
-      <RelativeLayout
-          android:id="@+id/rlAvatarGroup"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:layout_alignStart="@+id/linearLayout2"
-          android:layout_alignEnd="@+id/linearLayout2"
-          android:layout_alignParentTop="true"
-          android:gravity="center">
-
-          <androidx.constraintlayout.utils.widget.ImageFilterView
-              android:id="@+id/imgGroupAvatar2"
-              android:layout_width="35dp"
-              android:layout_height="35dp"
-              android:layout_marginLeft="20dp"
-              android:layout_marginTop="15dp"
-              android:background="@drawable/circle_shape"
-              android:scaleType="fitCenter"
-              android:src="@drawable/pfp_placeholder"
-              app:roundPercent="1"
-              tools:visibility="visible" />
-
-          <androidx.constraintlayout.utils.widget.ImageFilterView
-              android:id="@+id/imgGroupAvatar1"
-              android:layout_width="35dp"
-              android:layout_height="35dp"
-              android:background="@drawable/circle_shape"
-              android:scaleType="fitCenter"
-              android:src="@drawable/pfp_placeholder"
-              app:roundPercent="1"
-              tools:visibility="visible" />
-      </RelativeLayout>
-
-      <LinearLayout
-          android:id="@+id/linearLayout2"
-          android:layout_width="wrap_content"
-          android:layout_height="match_parent"
-          android:layout_alignParentStart="true"
-          android:layout_alignParentEnd="true"
-          android:gravity="center"
-          android:orientation="vertical">
-
-
-          <androidx.constraintlayout.utils.widget.ImageFilterView
-              android:id="@+id/btnProfile"
-              android:layout_width="50dp"
-              android:layout_height="50dp"
-              android:layout_alignParentLeft="true"
-              android:layout_gravity="center"
-              android:background="@drawable/circle_shape"
-              android:padding="5dp"
-              android:scaleType="fitCenter"
-              android:src="@drawable/pfp_placeholder"
-              app:roundPercent="1"
-              tools:visibility="invisible" />
-
-          <!--      <ImageButton-->
-          <!--          android:id="@+id/btnProfile"-->
-          <!--          android:background="@android:color/transparent"-->
-          <!--          android:padding="5dp"-->
-          <!--          android:scaleType="centerInside"-->
-          <!--          app:srcCompat="@drawable/pfp_placeholder" />-->
-
-          <TextView
-              android:id="@+id/tvUsername"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
-              android:layout_gravity="center_horizontal"
-              android:fontFamily="@font/inter_bold"
-              android:gravity="center_horizontal"
-              android:text="USERNAME"
-              android:textAlignment="center"
-              android:textColor="#FFFFFF"
-              android:textSize="16sp"
-              android:textStyle="bold" />
-
-      </LinearLayout>
-
-    <ImageButton
-        android:id="@+id/btnSettings"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginRight="15dp"
-        android:background="@android:color/transparent"
-        android:scaleType="centerInside"
-        app:srcCompat="@android:drawable/ic_dialog_info" />
-  </RelativeLayout>
+            android:background="@android:color/transparent"
+            android:scaleType="centerInside"
+            app:srcCompat="@android:drawable/ic_dialog_info" />
+    </RelativeLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
