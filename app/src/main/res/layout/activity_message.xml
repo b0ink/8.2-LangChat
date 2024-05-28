@@ -101,7 +101,7 @@
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toTopOf="parent">
 
-    <ImageButton
+      <ImageButton
         android:id="@+id/btnGoBack"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -114,48 +114,82 @@
         android:scaleType="centerInside"
         app:srcCompat="@android:drawable/ic_menu_revert" />
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
-        android:gravity="center"
-        android:orientation="vertical">
-
-
-      <androidx.constraintlayout.utils.widget.ImageFilterView
-          android:id="@+id/btnProfile"
-          android:layout_width="50dp"
-          android:layout_height="50dp"
-          android:background="@drawable/circle_shape"
-          android:layout_gravity="center"
-          android:scaleType="fitCenter"
-          android:src="@drawable/pfp_placeholder"
-          android:padding="5dp"
-          android:layout_alignParentLeft="true"
-          app:roundPercent="1" />
-
-<!--      <ImageButton-->
-<!--          android:id="@+id/btnProfile"-->
-<!--          android:background="@android:color/transparent"-->
-<!--          android:padding="5dp"-->
-<!--          android:scaleType="centerInside"-->
-<!--          app:srcCompat="@drawable/pfp_placeholder" />-->
-
-      <TextView
-          android:id="@+id/tvUsername"
+      <RelativeLayout
+          android:id="@+id/rlAvatarGroup"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:layout_gravity="center_horizontal"
-          android:fontFamily="@font/inter_bold"
-          android:gravity="center_horizontal"
-          android:text="USERNAME"
-          android:textAlignment="center"
-          android:textColor="#FFFFFF"
-          android:textSize="16sp"
-          android:textStyle="bold" />
+          android:layout_alignStart="@+id/linearLayout2"
+          android:layout_alignEnd="@+id/linearLayout2"
+          android:layout_alignParentTop="true"
+          android:gravity="center">
 
-    </LinearLayout>
+          <androidx.constraintlayout.utils.widget.ImageFilterView
+              android:id="@+id/imgGroupAvatar2"
+              android:layout_width="35dp"
+              android:layout_height="35dp"
+              android:layout_marginLeft="20dp"
+              android:layout_marginTop="15dp"
+              android:background="@drawable/circle_shape"
+              android:scaleType="fitCenter"
+              android:src="@drawable/pfp_placeholder"
+              app:roundPercent="1"
+              tools:visibility="visible" />
+
+          <androidx.constraintlayout.utils.widget.ImageFilterView
+              android:id="@+id/imgGroupAvatar1"
+              android:layout_width="35dp"
+              android:layout_height="35dp"
+              android:background="@drawable/circle_shape"
+              android:scaleType="fitCenter"
+              android:src="@drawable/pfp_placeholder"
+              app:roundPercent="1"
+              tools:visibility="visible" />
+      </RelativeLayout>
+
+      <LinearLayout
+          android:id="@+id/linearLayout2"
+          android:layout_width="wrap_content"
+          android:layout_height="match_parent"
+          android:layout_alignParentStart="true"
+          android:layout_alignParentEnd="true"
+          android:gravity="center"
+          android:orientation="vertical">
+
+
+          <androidx.constraintlayout.utils.widget.ImageFilterView
+              android:id="@+id/btnProfile"
+              android:layout_width="50dp"
+              android:layout_height="50dp"
+              android:layout_alignParentLeft="true"
+              android:layout_gravity="center"
+              android:background="@drawable/circle_shape"
+              android:padding="5dp"
+              android:scaleType="fitCenter"
+              android:src="@drawable/pfp_placeholder"
+              app:roundPercent="1"
+              tools:visibility="invisible" />
+
+          <!--      <ImageButton-->
+          <!--          android:id="@+id/btnProfile"-->
+          <!--          android:background="@android:color/transparent"-->
+          <!--          android:padding="5dp"-->
+          <!--          android:scaleType="centerInside"-->
+          <!--          app:srcCompat="@drawable/pfp_placeholder" />-->
+
+          <TextView
+              android:id="@+id/tvUsername"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_gravity="center_horizontal"
+              android:fontFamily="@font/inter_bold"
+              android:gravity="center_horizontal"
+              android:text="USERNAME"
+              android:textAlignment="center"
+              android:textColor="#FFFFFF"
+              android:textSize="16sp"
+              android:textStyle="bold" />
+
+      </LinearLayout>
 
     <ImageButton
         android:id="@+id/btnSettings"

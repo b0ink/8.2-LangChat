@@ -14,6 +14,7 @@ import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -76,6 +77,11 @@ public class MessageActivity extends AppCompatActivity {
     private Channel channel;
     private Connection connection;
 
+    private RelativeLayout rlAvatarGroup;
+    private ImageFilterView imgGroupAvatar1;
+    private ImageFilterView imgGroupAvatar2;
+
+
 
     private MediaRecorder mediaRecorder;
     //    private String fileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/recording.3gp";
@@ -115,6 +121,13 @@ public class MessageActivity extends AppCompatActivity {
         etMessage = findViewById(R.id.etMessage);
         btnSend = findViewById(R.id.btnSend);
         btnProfile = findViewById(R.id.btnProfile);
+
+        rlAvatarGroup = findViewById(R.id.rlAvatarGroup);
+        rlAvatarGroup.setVisibility(View.GONE);
+        btnProfile.setVisibility(View.VISIBLE);
+
+        imgGroupAvatar1 = findViewById(R.id.imgGroupAvatar1);
+        imgGroupAvatar2 = findViewById(R.id.imgGroupAvatar2);
 
         btnGoBack = findViewById(R.id.btnGoBack);
         btnGoBack.setOnClickListener(view -> {
@@ -442,7 +455,22 @@ public class MessageActivity extends AppCompatActivity {
                     }
                 } else {
                     ArrayList<String> usernames = new ArrayList<>();
+                    rlAvatarGroup.setVisibility(View.VISIBLE);
+                    btnProfile.setVisibility(View.INVISIBLE);
+                    int count = 0;
                     for (User p : participantList) {
+                        count++;
+                        String avatarBase64 = p.getAvatar();
+                        if(avatarBase64 != null && !avatarBase64.isEmpty()){
+                            Bitmap avatar = ImageUtil.convert(avatarBase64);
+                            if(count == 1){
+                                imgGroupAvatar1.setImageBitmap(avatar);
+                            }else if(count == 2){
+                                imgGroupAvatar2.setImageBitmap(avatar);
+                            }
+                        }
+
+
                         usernames.add(p.getUsername());
                     }
                     if (usernames.size() <= 2) {
