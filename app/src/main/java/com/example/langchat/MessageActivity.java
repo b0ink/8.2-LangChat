@@ -376,7 +376,9 @@ public class MessageActivity extends AppCompatActivity {
             mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
             mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
             mediaRecorder.setOutputFile(audioMessageFilename);
-            mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+            mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+            mediaRecorder.setAudioEncodingBitRate(320000);
+            mediaRecorder.setAudioSamplingRate(48000);
             mediaRecorder.prepare();
         } catch (IOException | IllegalStateException e) {
             e.printStackTrace();
