@@ -63,6 +63,10 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
         private TextView tvLastMessageTime;
         private TextView tvRecentMessage;
         private ImageFilterView imgProfilePicture;
+
+        private ImageFilterView imgGroupAvatar1;
+        private ImageFilterView imgGroupAvatar2;
+
         private ImageView imgNewMessageIcon;
 
         private RelativeLayout rlConversationContainer;
@@ -79,6 +83,8 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
             imgProfilePicture = itemView.findViewById(R.id.imgProfilePicture);
             rlConversationContainer = itemView.findViewById(R.id.rlConversationContainer);
             imgNewMessageIcon = itemView.findViewById(R.id.imgNewMessageIcon);
+            imgGroupAvatar1 = itemView.findViewById(R.id.imgGroupAvatar1);
+            imgGroupAvatar2 = itemView.findViewById(R.id.imgGroupAvatar2);
 
             this.context = context;
             this.selectedInterests = selectedInterests;
@@ -89,7 +95,8 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
             List<Participant> participantList = conversation.getParticipants();
             imgNewMessageIcon.setVisibility(View.GONE);
 
-
+            imgGroupAvatar1.setVisibility(View.GONE);
+            imgGroupAvatar2.setVisibility(View.GONE);
 
             //TODO: put into static util class
             if(!conversation.isGroupChat()){
@@ -102,7 +109,21 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
                 }
             }else{
                 ArrayList<String> usernames = new ArrayList<>();
+                imgGroupAvatar1.setVisibility(View.VISIBLE);
+                imgGroupAvatar2.setVisibility(View.VISIBLE);
+                int count = 0;
                 for(Participant p : participantList){
+                    count++;
+
+                    String avatarBase64 = p.getUser().getAvatar();
+                    if(avatarBase64 != null && !avatarBase64.isEmpty()) {
+                        Bitmap avatar = ImageUtil.convert(avatarBase64);
+                        if(count == 1){
+                            imgGroupAvatar1.setImageBitmap(avatar);
+                        }else if (count == 2){
+                            imgGroupAvatar2.setImageBitmap(avatar);
+                        }
+                    }
                     usernames.add(p.getUser().getUsername());
                 }
                 if(usernames.size() <= 2){
@@ -112,6 +133,11 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
                     username = usernames.get(0) + ", " + usernames.get(1) + " +" + otherUserCount + " more";
                 }
                 imgProfilePicture.setImageResource(R.drawable.pfp_group_placeholder);
+                imgProfilePicture.setVisibility(View.INVISIBLE);
+
+
+
+
             }
 
             tvLastMessageTime.setText(conversation.getLastUpdatedDisplay());
