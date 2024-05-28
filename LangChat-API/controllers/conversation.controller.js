@@ -20,69 +20,64 @@ exports.removeUser = async (req, res) => {
 
     const usersConversations = await Utility.GetUsersConversations(user.id);
     if (!usersConversations.includes(conversationId)) {
-        console.log(usersConversations)
-        console.log(conversationId)
-        console.log("admin is not in conversation")
+        console.log(usersConversations);
+        console.log(conversationId);
+        console.log("admin is not in conversation");
         return res.status(401);
     }
 
     const removingUser = await User.findByPk(removingUserId);
-    if(!removingUser){
-        console.log("removing user doenst exist")
+    if (!removingUser) {
+        console.log("removing user doenst exist");
         return res.status(404);
     }
-
 
     const participants = await Utility.GetConversationParticipants(conversationId);
 
     const removingUserParticipant = await Participant.findOne({
         where: {
             conversation_id: conversationId,
-            user_id: removingUser.id
-        }
+            user_id: removingUser.id,
+        },
     });
 
-
-
-    if(!removingUserParticipant){
-        console.log("removing user is not part of this conversation")
+    if (!removingUserParticipant) {
+        console.log("removing user is not part of this conversation");
         return res.status(400);
     }
 
-
     let userIsAdmin = false;
     let conversationIsGroupChat = false;
-    for(let p of participants){
-        if(p.isAdmin){
+    for (let p of participants) {
+        if (p.isAdmin) {
             conversationIsGroupChat = true;
-            if(p.user.id===user.id){
+            if (p.user.id === user.id) {
                 userIsAdmin = true;
             }
         }
     }
 
-
-    if(user.id===removingUser.id){
-        if(!conversationIsGroupChat){
-            console.log("cant leave DMs")
+    if (user.id === removingUser.id) {
+        if (!conversationIsGroupChat) {
+            console.log("cant leave DMs");
             return res.status(401).json("You cannot leave DMs");
         }
 
         Utility.SendSystemMessage(conversationId, `${removingUser.username} has left the conversation.`);
-        await removingUserParticipant.destroy();        
-        if(userIsAdmin){
+        await removingUserParticipant.destroy();
+        if (userIsAdmin) {
             // admin left, assigning new admin
             //TODO: check if there already is one? (assuming admins can assign more admins)
             const nextParticipant = await Participant.findOne({
                 where: {
-                    conversation_id: conversationId
-                }
+                    conversation_id: conversationId,
+                },
             });
 
-            if(nextParticipant){
+            if (nextParticipant) {
                 nextParticipant.isAdmin = true;
                 await nextParticipant.save();
-            }else{
+            } else {
                 //! User is the last participant to leave the conversation
                 //TODO: truncate messages/translations?
             }
@@ -90,31 +85,29 @@ exports.removeUser = async (req, res) => {
         return res.status(203).json("You have left the chat");
     }
 
-
-    if(!userIsAdmin){
-        console.log('calling user is not an admin');
+    if (!userIsAdmin) {
+        console.log("calling user is not an admin");
         return res.status(401);
     }
 
     //TODO: prevent admins kicking other admins?
     Utility.SendSystemMessage(conversationId, `${user.username} removed ${removingUser.username} from the conversation.`);
 
-    await removingUserParticipant.destroy()
+    await removingUserParticipant.destroy();
     return res.status(200).json("Removed");
-
-}
+};
 
 exports.createConversation = async (req, res) => {
     const userData = req.user;
     const recipientsUsername = req.body.recipientsUsername;
 
-    console.log(userData, recipientsUsername)
+    console.log(userData, recipientsUsername);
 
     const user = await User.findByPk(userData.id);
-    if(!user){
+    if (!user) {
         return res.status(401).json({
             conversationId: -1,
-            message: "Invalid user"
+            message: "Invalid user",
         });
     }
 
@@ -124,54 +117,50 @@ exports.createConversation = async (req, res) => {
     const recipientUser = await User.findOne({
         // TODO: case sensitivity?
         where: {
-            username: recipientsUsername
-        }
+            username: recipientsUsername,
+        },
     });
 
-    if(!recipientUser){
-        console.log('invalid recipient')
+    if (!recipientUser) {
+        console.log("invalid recipient");
         return res.status(404).json({
             conversationId: -1,
-            message: "Invalid user"
+            message: "Invalid user",
         });
         // return res.status(404).json("User does not exist");
     }
 
-    if(recipientUser.id === user.id){
-        console.log('recipient cant be same as user')
+    if (recipientUser.id === user.id) {
+        console.log("recipient cant be same as user");
         return res.status(401).json({
             conversationId: -1,
-            message: "You can't add yourself to the conversation"
+            message: "You can't add yourself to the conversation",
         });
     }
 
     // Check if such a (DMs only - not a group chat) conversation exists between user and recipient
     const existingConversation = await Participant.findOne({
-        attributes: ['conversation_id'],
+        attributes: ["conversation_id"],
         where: {
             user_id: {
-                [db.Sequelize.Op.in]: [user.id, recipientUser.id]
-            }
+                [db.Sequelize.Op.in]: [user.id, recipientUser.id],
+            },
         },
-        group: ['conversation_id'],
-        having: db.sequelize.where(
-            db.sequelize.fn('COUNT', db.sequelize.col('user_id')),
-            2
-        ),
-        raw: true
+        group: ["conversation_id"],
+        having: db.sequelize.where(db.sequelize.fn("COUNT", db.sequelize.col("user_id")), 2),
+        raw: true,
     });
 
     console.log(existingConversation);
 
     // Conversation between user and recipient already exists, return id
-    if(!!existingConversation){
-        console.log("returning existing conversation", existingConversation.conversation_id)
+    if (!!existingConversation) {
+        console.log("returning existing conversation", existingConversation.conversation_id);
         return res.status(202).json({
             conversationId: existingConversation.conversation_id,
-            message: "Conversation with user already exists!"
-        })
+            message: "Conversation with user already exists!",
+        });
     }
-    
 
     // const newConversation = await Conversation.create();
 
@@ -196,10 +185,9 @@ exports.createConversation = async (req, res) => {
 
     return res.status(200).json({
         conversationId: newConversation.id,
-        message: "Success"
+        message: "Success",
     });
-
-}
+};
 
 exports.addParticipant = async (req, res) => {
     const user = req.user;
@@ -230,42 +218,41 @@ exports.addParticipant = async (req, res) => {
 
     const participants = await Participant.findAll({
         where: {
-            conversation_id: conversationId
+            conversation_id: conversationId,
         },
         include: [
             {
                 model: User,
                 as: "user",
-                attributes: ["id","username", "defaultPreferredLanguage"],
+                attributes: ["id", "username", "defaultPreferredLanguage"],
             },
-        ]
+        ],
     });
 
-    console.log(participants)
-
+    console.log(participants);
 
     //TODO: check if new user has maxed out conversations they participate in
     let isGroupChat = false;
-    for(let p of participants){
-        if(p.isAdmin){
+    for (let p of participants) {
+        if (p.isAdmin) {
             isGroupChat = true;
         }
     }
 
-    if(!isGroupChat){
+    if (!isGroupChat) {
         // attempting to add user to a DM, creating new conversation
         console.log("adding third participant, creating new conversation");
         let groupChatAdmin = null;
         let user2 = null;
 
-        for(let u of participants){
-            if(u.user.id===user.id){
+        for (let u of participants) {
+            if (u.user.id === user.id) {
                 groupChatAdmin = u.user;
                 continue;
             }
             user2 = u.user;
         }
-        
+
         const newConversation = await Utility.CreateConversation(groupChatAdmin, user2, true);
 
         const newParticipant = await Participant.create({
@@ -278,11 +265,10 @@ exports.addParticipant = async (req, res) => {
             Utility.SendSystemMessage(newConversation.id, `${user.username} added ${userToAdd.username} to the conversation.`);
             return res.status(200).json({
                 conversationId: newConversation.id,
-                message: "Added user to conversation"
+                message: "Added user to conversation",
             });
         }
-
-    }else{
+    } else {
         const newParticipant = await Participant.create({
             conversation_id: conversationId,
             user_id: userToAdd.id,
@@ -293,11 +279,10 @@ exports.addParticipant = async (req, res) => {
             Utility.SendSystemMessage(conversationId, `${user.username} added ${userToAdd.username} to the conversation.`);
             return res.status(200).json({
                 conversationId: conversationId,
-                message: "Added user to conversation"
+                message: "Added user to conversation",
             });
         }
     }
-
 };
 
 exports.findParticipants = async (req, res) => {
@@ -322,8 +307,8 @@ exports.findParticipants = async (req, res) => {
     for (let u of Participants) {
         if (u.user.username === user.username) {
             Users[0]["preferredLanguage"] = u.preferredLanguage;
-            Users[0]['isAdmin'] = u.isAdmin?true:false;
-            Users[0]['avatar'] = u.user.avatar
+            Users[0]["isAdmin"] = u.isAdmin ? true : false;
+            Users[0]["avatar"] = u.user.avatar;
             continue;
         }
 
@@ -331,7 +316,7 @@ exports.findParticipants = async (req, res) => {
             id: u.user.id,
             username: u.user.username,
             isAdmin: u.isAdmin,
-            avatar: u.user.avatar
+            avatar: u.user.avatar,
         });
     }
 
@@ -404,7 +389,6 @@ exports.sendMessage = async (req, res) => {
 
     try {
         const newMessage = await Utility.SendMessage(user.id, conversationId, message);
-        
 
         TranslationService(user, conversationId, newMessage);
 
@@ -415,12 +399,11 @@ exports.sendMessage = async (req, res) => {
     }
 };
 
-
 exports.sendAudioMessage = async (req, res) => {
     const conversationId = parseInt(req.params.conversationId);
     const userId = req.user.id;
     const user = await db.users.findByPk(userId);
-    if(!user){
+    if (!user) {
         return res.status(401);
     }
 
@@ -431,35 +414,31 @@ exports.sendAudioMessage = async (req, res) => {
 
         if (!file) {
             console.log(file);
-            return res.status(400).send({ message: 'Please upload a file.' });
+            return res.status(400).send({ message: "Please upload a file." });
         }
 
-        console.log(file.originalname)
-        console.log(file.buffer)
+        console.log(file.originalname);
+        console.log(file.buffer);
         const transcription = await Utility.TranscribeAudio(file);
-        if(transcription){
+        if (transcription) {
             console.log(transcription);
 
             const newMessage = await Utility.SendMessage(user.id, conversationId, transcription, true);
             TranslationService(user, conversationId, newMessage);
-            
-            return res.status(200).json(newMessage)
+
+            return res.status(200).json(newMessage);
         }
         return res.status(500);
-        
-
     } catch (error) {
-        console.log(error)
-        res.status(500).send({ message: 'Failed to send audio message', error: error.message });
+        console.log(error);
+        res.status(500).send({ message: "Failed to send audio message", error: error.message });
     }
-    
 
-    return res.status(200)
-
+    return res.status(200);
 
     // try {
     //     const newMessage = await Utility.SendMessage(user.id, conversationId, message);
-        
+
     //     const conversation = await Conversation.findByPk(conversationId);
     //     if(conversation && newMessage){
     //         conversation.changed('updatedAt', true);
@@ -482,12 +461,11 @@ async function TranslationService(user, conversationId, newMessage) {
     const conversationParticipants = await Utility.GetConversationParticipants(conversationId);
 
     let possibleSourceLanguage = null;
-    for(let participant of conversationParticipants){
-        if(participant.user_id === user.id){
+    for (let participant of conversationParticipants) {
+        if (participant.user_id === user.id) {
             possibleSourceLanguage = participant.preferredLanguage;
         }
     }
-
 
     for (let participant of conversationParticipants) {
         if (participant.user_id === user.id) {
@@ -497,7 +475,7 @@ async function TranslationService(user, conversationId, newMessage) {
 
         const usersLanguage = participant.preferredLanguage;
         const translatedMessage = await Utility.TranslateMessage(newMessage.message, usersLanguage, possibleSourceLanguage);
-        if(!!translatedMessage){
+        if (!!translatedMessage) {
             const translation = await Translation.create({
                 message_id: newMessage.id,
                 language: usersLanguage,
@@ -505,11 +483,9 @@ async function TranslationService(user, conversationId, newMessage) {
             });
         }
 
-
-        setTimeout(()=>{
+        setTimeout(() => {
             const response = Utility.NotifyNewMessage(`messages_${conversationId}_${participant.user_id}`);
         }, 1000);
-        
     }
 
     // let translatedMesage = {...newMessage};

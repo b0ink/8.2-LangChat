@@ -15,11 +15,9 @@ module.exports = (app, API_VERSION) => {
     router.get("/get-language", authenticateToken, users.getLanguage);
     router.post("/save-language", authenticateToken, users.saveLanguage);
 
-
     // router.post("/save-avatar", authenticateToken, upload.single('image'), users.saveAvatar);
     router.post("/save-avatar", authenticateToken, users.saveAvatar);
     router.get("/get-avatar", authenticateToken, users.getAvatar);
 
-    
     app.use(`/api/${API_VERSION}/users`, router);
 };

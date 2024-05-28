@@ -171,7 +171,7 @@ module.exports.SendSystemMessage = async (conversation_id, message) => {
     }, 1000);
 };
 
-module.exports.SendMessage = async (sender_id, conversation_id, message, isTranscribed=false) => {
+module.exports.SendMessage = async (sender_id, conversation_id, message, isTranscribed = false) => {
     const user = await User.findByPk(sender_id);
 
     if (!user) {
@@ -190,7 +190,7 @@ module.exports.SendMessage = async (sender_id, conversation_id, message, isTrans
         conversation_id,
         sender_id,
         message,
-        isTranscribed
+        isTranscribed,
     });
 
     const conversation = await Conversation.findByPk(conversation_id);
@@ -209,7 +209,7 @@ module.exports.SendMessage = async (sender_id, conversation_id, message, isTrans
         user: {
             username: user.username,
         },
-        isTranscribed
+        isTranscribed,
     };
     console.log(messageData);
     // console.log(messageData.toJSON());
@@ -238,8 +238,6 @@ module.exports.NotifyNewMessage = (queue, payload) => {
             });
     });
 };
-
-
 
 module.exports.TranscribeAudio = async (file) => {
     const authorization = "Bearer " + accessToken;
@@ -281,7 +279,7 @@ module.exports.TranscribeAudio = async (file) => {
         body: JSON.stringify({ fileId: audioFileId }),
     });
     const transcriptJobResponse = await createAudioTranscript.json();
-    console.log(transcriptJobResponse)
+    console.log(transcriptJobResponse);
     const transcriptionId = transcriptJobResponse.transcriptionId;
     console.log("getting transcription", transcriptionId);
 
@@ -309,7 +307,7 @@ async function fetchTranscription(transcriptionId) {
                 headers: {
                     accept: "application/json",
                     "x-gradient-workspace-id": workspaceId,
-                    authorization: 'Bearer ' + accessToken,
+                    authorization: "Bearer " + accessToken,
                 },
             });
 
@@ -410,7 +408,7 @@ function parseTranslationReponse(text) {
             console.log("found note");
         }
     }
-    if(translation === "<null>"){
+    if (translation === "<null>") {
         translation = null;
     }
     return {

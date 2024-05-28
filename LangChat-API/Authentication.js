@@ -17,4 +17,4 @@ module.exports.authenticateToken = (req, res, next) => {
         req.user = user;
         next();
     });
-}
+};

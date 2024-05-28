@@ -24,12 +24,12 @@ module.exports = (sequelize, Sequelize) => {
             defaultPreferredLanguage: {
                 type: DataTypes.STRING(32),
                 allowNull: false,
-                defaultValue: "English"
+                defaultValue: "English",
             },
             avatar: {
-                type: DataTypes.TEXT('long'),
-                allowNull: true
-            }
+                type: DataTypes.TEXT("long"),
+                allowNull: true,
+            },
         },
         {
             timestamps: false,

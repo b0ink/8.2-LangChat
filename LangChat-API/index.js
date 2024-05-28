@@ -23,27 +23,26 @@ require("./routes/language.routes")(app, API_VERSION);
 // testLanguage("whats the whether like today?", "korean");
 // testLanguage("My name is john", "spanish");
 
-const upload = require('./upload');
+const upload = require("./upload");
 
 const amqp = require("amqplib/callback_api");
 
 const db = require("./models/index");
 
-const Languages = ["English", "Spanish", "French", "German", "Italian", "Portugese", "Dutch", "Russian", "Chinese", "Japanese", "Korean"]
+const Languages = ["English", "Spanish", "French", "German", "Italian", "Portugese", "Dutch", "Russian", "Chinese", "Japanese", "Korean"];
 
-async function SeedLanguages(){
+async function SeedLanguages() {
     let langs = [];
-    
-    for(let l of await db.languages.findAll({plain: false, raw: true})){
-        langs.push(l.name)
+
+    for (let l of await db.languages.findAll({ plain: false, raw: true })) {
+        langs.push(l.name);
     }
 
-    for(let l of Languages){
-        if(!langs.includes(l)){
-            await db.languages.create({name: l})
+    for (let l of Languages) {
+        if (!langs.includes(l)) {
+            await db.languages.create({ name: l });
         }
     }
-
 }
 
 SeedLanguages();

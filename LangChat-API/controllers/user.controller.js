@@ -13,7 +13,6 @@ const saltRounds = 10;
 
 const Utility = require("./Utility");
 
-
 // Create and Save a new User
 exports.create = async (req, res) => {
     const user = { ...req.body };
@@ -74,8 +73,8 @@ exports.findOne = async (req, res) => {
         console.log("no user!");
         return res.status(400).json({ message: "Invalid username/password" });
     }
-    
-    if(user.id <= 0){
+
+    if (user.id <= 0) {
         return res.status(401);
     }
 
@@ -95,16 +94,16 @@ exports.getLanguage = async (req, res) => {
     const userId = req.user.id;
     const user = await User.findByPk(userId);
 
-    if(!user){
+    if (!user) {
         return res.status(404).json("Invalid authentication");
     }
 
     const defaultLanguage = user.defaultPreferredLanguage;
-    if(defaultLanguage){
+    if (defaultLanguage) {
         return res.json(defaultLanguage);
     }
     return res.json("English");
-}
+};
 
 // exports.saveAvatar = async (req, res) => {
 //     try {
@@ -127,16 +126,15 @@ exports.getLanguage = async (req, res) => {
 //     } catch (error) {
 //         res.status(500).send({ message: 'Failed to upload avatar', error: error.message });
 //     }
-    
+
 // }
 
 exports.saveAvatar = async (req, res) => {
-
     const userId = req.user.id;
     const imageBase64 = req.body.imageBase64;
 
     const user = await User.findByPk(userId);
-    if(!user){
+    if (!user) {
         return res.status(401);
     }
 
@@ -144,37 +142,34 @@ exports.saveAvatar = async (req, res) => {
     await user.save();
 
     return res.status(200).json("Success");
-    
-}
-
+};
 
 exports.getAvatar = async (req, res) => {
     const userId = req.user.id;
 
     const user = await User.findByPk(userId);
-    if(!user){
+    if (!user) {
         return res.status(401);
     }
 
-    return res.status(200).json(user.avatar?user.avatar:'');
-}
+    return res.status(200).json(user.avatar ? user.avatar : "");
+};
 
 exports.saveLanguage = async (req, res) => {
     const userId = req.user.id;
     const user = await User.findByPk(userId);
 
-    if(!user){
+    if (!user) {
         return res.status(404).json(false);
     }
 
     const language = req.body.language;
-    
+
     user.defaultPreferredLanguage = language;
     await user.save();
 
     return res.status(200).json(true);
-}
-
+};
 
 exports.findConversations = async (req, res) => {
     const user = req.user;
@@ -209,44 +204,44 @@ exports.findConversations = async (req, res) => {
 
     let Conversations = [];
 
-    for(let conv_id of conversationIds){
+    for (let conv_id of conversationIds) {
         const conversationData = await Conversation.findOne({
             where: {
-                id: conv_id
-            }
+                id: conv_id,
+            },
         });
 
         const participants = await Utility.GetConversationParticipants(conv_id);
         const lastMessage = await Utility.GetMostRecentConversationMessage(user.id, conv_id);
-        
+
         const timeSince = moment(conversationData.updatedAt).fromNow();
 
         //TODO: swap to using DD/MM/YYYY / "Yesterday" labels for older dates?
         // const daysSince = Math.abs(moment(conversationData.updatedAt).diff(moment(), 'days'));
-        
+
         // let lastUpdatedDisplay;
         // if(daysSince < 1){
         //     lastUpdatedDisplay = timeSince;
         // }
 
         const lastUpdatedDisplay = timeSince;
-    
+
         let isGroupChat = false;
-        for(let p of participants){
-            if(p.isAdmin){
-                isGroupChat = true
+        for (let p of participants) {
+            if (p.isAdmin) {
+                isGroupChat = true;
             }
         }
         Conversations.push({
             id: conv_id,
             // Dont include requesting user as the participant
             // Will be used to display the "name" of the conversation (more than 1 participant will be a group chat)
-            participants: [...participants.filter(p=>p.user.username!==user.username)],
+            participants: [...participants.filter((p) => p.user.username !== user.username)],
             // participants: [...participants],
-            lastMessage:lastMessage,
+            lastMessage: lastMessage,
             updatedAt: conversationData.updatedAt,
             lastUpdatedDisplay,
-            isGroupChat
+            isGroupChat,
         });
     }
 
@@ -254,7 +249,7 @@ exports.findConversations = async (req, res) => {
     //     // Convert createdAt strings to Date objects for comparison
     //     const dateA = new Date(a.lastMessage.createdAt);
     //     const dateB = new Date(b.lastMessage.createdAt);
-    
+
     //     // Compare dates in descending order
     //     return dateB - dateA;
     // });
@@ -266,8 +261,8 @@ exports.findConversations = async (req, res) => {
         const dateA = new Date(a.updatedAt);
         const dateB = new Date(b.updatedAt);
 
-        console.log(dateA, dateB)
-    
+        console.log(dateA, dateB);
+
         // Compare dates in descending order
         return dateB - dateA;
     });
