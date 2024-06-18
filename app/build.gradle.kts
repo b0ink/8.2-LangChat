@@ -37,10 +37,7 @@ android {
 
 dependencies {
     implementation("com.rabbitmq:amqp-client:5.21.0")
-//    implementation("pl.droidsonroids.gif:android-gif-drawable:1.2.28")
-//    implementation("com.google.android.flexbox:flexbox:3.0.0")
     implementation("pl.droidsonroids.gif:android-gif-drawable:1.2.28")
-
     implementation("com.github.pedroSG94.RootEncoder:library:2.4.3")
     implementation("com.github.yalantis:ucrop:2.2.8")
     implementation("com.auth0.android:jwtdecode:2.0.2")
