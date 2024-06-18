@@ -78,7 +78,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
             tvMessageText.setVisibility(View.VISIBLE);
             tvMessageText.setText(chatMessage.getMessage());
 
-            if(chatMessage.isTranscribed()){
+            if (chatMessage.isTranscribed()) {
                 tvMessageText.setText("\uD83C\uDFA4 " + chatMessage.getMessage());
             }
 
@@ -90,7 +90,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
                 List<Translation> translations = chatMessage.getTranslations();
                 if (!translations.isEmpty()) {
                     tvMessageText.setText(translations.get(0).getMessage());
-                    if(chatMessage.isTranscribed()){
+                    if (chatMessage.isTranscribed()) {
                         tvMessageText.setText("\uD83C\uDFA4 " + translations.get(0).getMessage());
                     }
                 }
@@ -98,12 +98,11 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
 
             System.out.println("username: " + chatMessage.getUser().getUsername());
             tvMessageText.setTextColor(Color.parseColor("#E6000000"));
-            //TODO: check if authed user matches this username
             if (chatMessage.getUser().getUsername().equals(authManager.getJwtProperty("username"))) {
                 llMessageContainer.setGravity(Gravity.RIGHT);
 
                 LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) tvMessageText.getLayoutParams();
-                params.gravity = Gravity.RIGHT; // or any other gravity
+                params.gravity = Gravity.RIGHT;
                 tvMessageText.setLayoutParams(params);
 
                 tvMessageText.setBackgroundResource(R.drawable.text_view_background_user);
@@ -114,7 +113,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
                 // SYSTEM message, eg. announcing users added to or have left the chat
                 llMessageContainer.setGravity(Gravity.CENTER);
                 LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) tvMessageText.getLayoutParams();
-                params.gravity = Gravity.CENTER; // or any other gravity
+                params.gravity = Gravity.CENTER;
                 tvMessageText.setLayoutParams(params);
                 tvSenderUsername.setVisibility(View.GONE);
                 tvMessageText.setBackgroundResource(0);
@@ -124,7 +123,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
                 llMessageContainer.setGravity(Gravity.LEFT);
 //                tvMessageText.setGravity(Gravity.LEFT);
                 LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) tvMessageText.getLayoutParams();
-                params.gravity = Gravity.LEFT; // or any other gravity
+                params.gravity = Gravity.LEFT;
                 tvMessageText.setLayoutParams(params);
 
 

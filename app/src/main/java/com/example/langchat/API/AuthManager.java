@@ -33,14 +33,6 @@ public class AuthManager {
         sharedPreferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
     }
 
-
-
-    public void saveInterests(ArrayList<String> topics) {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("interests", topics.toString());
-        editor.apply();
-    }
-
     public void saveToken(String token) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(JWT_TOKEN_KEY, token);
@@ -67,8 +59,6 @@ public class AuthManager {
 
     public void logout() {
         resetToken();
-        // TEMP DEBUG: clears any saved interests, forcing new ones to be selected on next login
-//        saveInterests(new ArrayList<>());
     }
 
     public Boolean isTokenValid() {

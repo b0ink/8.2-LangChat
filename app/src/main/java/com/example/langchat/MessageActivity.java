@@ -84,7 +84,6 @@ public class MessageActivity extends AppCompatActivity {
 
 
     private MediaRecorder mediaRecorder;
-    //    private String fileName = Environment.getExternalStorageDirectory().getAbsolutePath() + "/recording.3gp";
     private Handler voiceMessageHandler = new Handler();
     private ImageButton btnMicrophone;
     public Boolean voiceRecording = false;
@@ -104,6 +103,7 @@ public class MessageActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // TODO: re-request permissions when clicking the microphone, if denied the first time
         ActivityCompat.requestPermissions(this, permissions, REQUEST_RECORD_AUDIO_PERMISSION);
 
         EdgeToEdge.enable(this);
@@ -183,9 +183,7 @@ public class MessageActivity extends AppCompatActivity {
                 connection = factory.newConnection();
                 channel = connection.createChannel();
                 String QueueName = "messages_" + conversationId + "_" + authManager.getJwtProperty("id");
-                System.out.println("Queeue name: " + QueueName);
                 channel.queueDeclare(QueueName, false, false, false, null);
-                Log.d("ADF", "Waiting for messages. To exit press CTRL+C");
 
                 DeliverCallback deliverCallback = (consumerTag, delivery) -> {
                     String message = new String(delivery.getBody(), "UTF-8");
@@ -248,9 +246,9 @@ public class MessageActivity extends AppCompatActivity {
             }
 
             if (!audioMessageFilename.isEmpty()) {
-                //TODO: check to see if the file exists
+                //TODO: check to see if the file exists?
                 if (!voiceRecording) {
-                    //TODO: delete the file
+                    //TODO: delete the file?
                     audioMessageWaveform.reset();
                 }
             }
@@ -515,19 +513,14 @@ public class MessageActivity extends AppCompatActivity {
                     System.out.println("Invalid response from getAllMessages");
                     return;
                 }
-                System.out.println("Received all messages: ");
 
                 for (Message msg : response.body()) {
                     if (!containsMessage(messages, msg)) {
-                        System.out.println("new msg received: " + msg);
                         messages.add(msg);
                         runOnUiThread(() -> {
-//                            Toast.makeText(MessageActivity.this, msg.getMessage(), Toast.LENGTH_SHORT).show();
                             adapter.notifyItemInserted(messages.size() - 1);
                             recycler.scrollToPosition(messages.size() - 1);
                         });
-                    } else {
-                        System.out.println("ignoring old msg received: " + msg.getMessage());
                     }
                 }
 

@@ -103,43 +103,41 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
             imgGroupAvatar2.setImageResource(R.drawable.pfp_placeholder);
 
             //TODO: put into static util class
-            if(!conversation.isGroupChat()){
+            if (!conversation.isGroupChat()) {
                 username = participantList.get(0).getUser().getUsername();
                 imgProfilePicture.setImageResource(R.drawable.pfp_placeholder);
                 String avatarBase64 = participantList.get(0).getUser().getAvatar();
-                if(avatarBase64 != null && !avatarBase64.isEmpty()){
+                if (avatarBase64 != null && !avatarBase64.isEmpty()) {
                     Bitmap avatar = ImageUtil.convert(avatarBase64);
                     imgProfilePicture.setImageBitmap(avatar);
                 }
-            }else{
+            } else {
                 ArrayList<String> usernames = new ArrayList<>();
                 imgGroupAvatar1.setVisibility(View.VISIBLE);
                 imgGroupAvatar2.setVisibility(View.VISIBLE);
                 int count = 0;
-                for(Participant p : participantList){
+                for (Participant p : participantList) {
                     count++;
 
                     String avatarBase64 = p.getUser().getAvatar();
-                    if(avatarBase64 != null && !avatarBase64.isEmpty()) {
+                    if (avatarBase64 != null && !avatarBase64.isEmpty()) {
                         Bitmap avatar = ImageUtil.convert(avatarBase64);
-                        if(count == 1){
+                        if (count == 1) {
                             imgGroupAvatar1.setImageBitmap(avatar);
-                        }else if (count == 2){
+                        } else if (count == 2) {
                             imgGroupAvatar2.setImageBitmap(avatar);
                         }
                     }
                     usernames.add(p.getUser().getUsername());
                 }
-                if(usernames.size() <= 2){
+                if (usernames.size() <= 2) {
                     username = String.join(", ", usernames);
-                }else{
-                    int otherUserCount = usernames.size()-2;
+                } else {
+                    int otherUserCount = usernames.size() - 2;
                     username = usernames.get(0) + ", " + usernames.get(1) + " +" + otherUserCount + " more";
                 }
                 imgProfilePicture.setImageResource(R.drawable.pfp_group_placeholder);
                 imgProfilePicture.setVisibility(View.INVISIBLE);
-
-
 
 
             }
@@ -148,36 +146,34 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
 
             tvUsername.setText(username);
             Message lastMsg = conversation.getLastMessage();
-            if(lastMsg == null){
+            if (lastMsg == null) {
                 tvRecentMessage.setText("Tap to send a message...");
                 imgNewMessageIcon.setVisibility(View.VISIBLE);
-            }else{
+            } else {
 
                 List<Translation> translations = lastMsg.getTranslations();
                 tvRecentMessage.setText(lastMsg.getMessage());
-                if(translations != null && translations.size() > 0){
+                if (translations != null && translations.size() > 0) {
                     tvRecentMessage.setText(translations.get(0).getMessage());
                 }
 
-                System.out.println(conversation.toString());
                 // Check if message has been opened yet (notification)
                 int recentMessageId = conversation.getLastMessage().getId();
                 int lastReadMessageId = LocalDatabaseHelper.getInstance(context).getLastReadMessage(conversation.getId());
-                System.out.println("Recent msg: " + recentMessageId + " lastsaveid: " + lastReadMessageId);
 
-                if(recentMessageId > lastReadMessageId){
+                if (recentMessageId > lastReadMessageId) {
                     imgNewMessageIcon.setVisibility(View.VISIBLE);
                 }
             }
 
 
             final String usernameDisplay = username;
-            rlConversationContainer.setOnClickListener(view ->{
+            rlConversationContainer.setOnClickListener(view -> {
                 Intent intent = new Intent(context, MessageActivity.class);
                 intent.putExtra(MessageActivity.EXTRA_CONVERSATION_ID, conversation.getId());
                 intent.putExtra(MessageActivity.EXTRA_USERNAME_DISPLAY, usernameDisplay);
                 context.startActivity(intent);
-                ((Activity)context).finish();
+                ((Activity) context).finish();
             });
         }
 

@@ -81,17 +81,12 @@ public class LoginActivity extends AppCompatActivity {
                 public void onResponse(Call<ResponsePost> call, Response<ResponsePost> response) {
                     try {
                         if (!response.isSuccessful()) {
-                            // response was not 2xx
-                            // TODO: respond accordingly
-                            // TODO: custom 4xx codes for each error
-                            // TODO: 409: conflict (existing user/email?)
                             Toast.makeText(LoginActivity.this, "Invalid username/password", Toast.LENGTH_SHORT).show();
                             return;
                         }
 
                         String token = response.headers().get("Authorization");
                         authManager.saveToken(token);
-                        System.out.println(token);
                         Toast.makeText(LoginActivity.this, "Logged in!", Toast.LENGTH_SHORT).show();
 
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);

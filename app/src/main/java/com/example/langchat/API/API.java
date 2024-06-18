@@ -43,15 +43,6 @@ public interface API {
             @Field("confirmPassword") String confirmPassword
     );
 
-//    @FormUrlEncoded
-//    @POST("conversation/messages")
-//    Call<List<Message>> getMessages(
-//            @Header("Authorization") String token,
-//            @Field("conversation_id") int conversation_id
-//    );
-
-
-    // TODO: format to @GET("conversation/{conversationId}/messages") instead?
 
     // Get messages for conversation
     @GET("conversation/{conversationId}/messages/{lastMessageId}")
@@ -73,19 +64,8 @@ public interface API {
     @POST("conversation/{conversationId}/send-message")
     Call<Message> sendMessage(
             @Header("Authorization") String token,
-//            @Field("sender_id") int sender_id, // temporary
             @Path("conversationId") int conversationId,
             @Field("message") String message
-    );
-
-
-    // Translate a message
-    @FormUrlEncoded
-    @POST("conversation/translate")
-    Call<Message> translateMessage(
-            @Header("Authorization") String token,
-            @Field("messageId") int messageId,
-            @Field("usersLanguage") String usersLanguage
     );
 
     // Get all languages
@@ -151,8 +131,6 @@ public interface API {
             @Field("removingUserId") int removingUserId
     );
 
-
-
     @FormUrlEncoded
     @POST("users/save-avatar")
     Call<String> uploadAvatar(
@@ -172,13 +150,5 @@ public interface API {
             @Path("conversationId") int conversationId,
             @Part MultipartBody.Part audio
     );
-
-
-//    @Multipart
-//    @POST("users/get-avatar")
-//    Call<String> uploadAvatar(
-//            @Header("Authorization") String token,
-//            @Part MultipartBody.Part file
-//    );
 
 }

@@ -107,7 +107,6 @@ public class RegisterActivity extends AppCompatActivity {
 
                     try {
                         String message = response.body().message;
-                        System.out.println(message);
                         Toast.makeText(RegisterActivity.this, message, Toast.LENGTH_LONG).show();
                         Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
                         startActivity(intent);

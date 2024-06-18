@@ -85,13 +85,11 @@ public class ParticipantAdapter extends RecyclerView.Adapter<ParticipantAdapter.
         }
 
         public void bind(User user) {
-
-            //TODO: if logged in user is admin of current converation, display remove user button
             btnRemoveUser.setVisibility(View.GONE);
             imgProfilePicture.setImageResource(R.drawable.pfp_placeholder);
 
             String imageBase64 = user.getAvatar();
-            if(imageBase64 != null){
+            if (imageBase64 != null) {
                 Bitmap avatar = ImageUtil.convert(imageBase64);
                 imgProfilePicture.setImageBitmap(avatar);
             }
@@ -147,7 +145,6 @@ public class ParticipantAdapter extends RecyclerView.Adapter<ParticipantAdapter.
                 @Override
                 public void onResponse(Call<String> call, Response<String> response) {
                     if (!response.isSuccessful() || response.body() == null) {
-                        System.out.println("Invalid response from removeUser");
                         Toast.makeText(context, "Unable to remove user.", Toast.LENGTH_SHORT).show();
                         return;
                     }

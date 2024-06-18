@@ -94,69 +94,6 @@ public class MainActivity extends AppCompatActivity {
             showAddUserDialog("Enter a username to start a conversation!");
         });
 
-        // Run the message receiving logic on a background thread
-//        new Thread(() -> {
-//            try {
-//                ConnectionFactory factory = new ConnectionFactory();
-//                factory.setHost("10.0.2.2");
-//                factory.setPort(5672);
-//                Connection connection = factory.newConnection();
-//                Channel channel = connection.createChannel();
-//
-//                channel.queueDeclare("my_messages", false, false, false, null);
-//                Log.d("ADF", "Waiting for messages. To exit press CTRL+C");
-//
-//                DeliverCallback deliverCallback = (consumerTag, delivery) -> {
-//                    String message = new String(delivery.getBody(), "UTF-8");
-//                    Log.d("ADF", "Received message: " + message);
-//                    try {
-//                        JSONObject object = new JSONObject(message);
-//                        String newMessage = object.getString("message");
-//                        int convId = object.getInt("conversation_id");
-//                        int sender_id = object.getInt("sender_id");
-//
-//                        runOnUiThread(() -> {
-////                            retrieveConversations(1);
-//
-//                            int index = 0;
-//                            for (ConversationResponse convo : conversations) {
-//                                System.out.println("checking" + convo.getId() + " with " + convId);
-//                                //TODO: if no conversation exists, create a new one
-//                                if (convo.getId() == convId) {
-//                                    ConversationResponse item = conversations.remove(index);
-//                                    conversations.add(0, item);
-////                                    adapter.notifyItemChanged(index);
-////                                    conversations.add(0, convo);
-////                                    conversations.remove(index);
-//                                    adapter.notifyItemMoved(index, 0);
-//                                    item.getLastMessage().setMessage(newMessage);
-//                                    adapter.notifyItemChanged(0);
-//
-////                                    conversations.
-//                                    break;
-//                                }
-//                                index++;
-//                            }
-//                        });
-//
-//                    } catch (Exception e) {
-//                        e.printStackTrace();
-//                    }
-//
-//                };
-//                channel.basicConsume("my_messages", true, deliverCallback, consumerTag -> {
-//                });
-//            } catch (IOException | TimeoutException e) {
-//                e.printStackTrace();
-//            }
-//        }).start();
-
-
-        if (false) {
-            startActivity(new Intent(this, MessageActivity.class));
-            finish();
-            return;
-        }
 
         conversations = new ArrayList<>();
 
@@ -185,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(handler != null){
+        if (handler != null) {
             handler.removeCallbacks(runnable);
         }
     }
@@ -211,11 +148,7 @@ public class MainActivity extends AppCompatActivity {
 
             // Work with the username (e.g., display a toast or save it)
             if (!username.isEmpty()) {
-                // Example: Display the username using a Toast
-//                Toast.makeText(this, "Username: " + username, Toast.LENGTH_SHORT).show();
                 startNewConversation(username);
-
-                // TODO: Add your code here to handle the username (e.g., save to a database)
             } else {
                 Toast.makeText(this, "Username cannot be empty", Toast.LENGTH_SHORT).show();
             }
@@ -273,7 +206,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void getAvatar(){
+    private void getAvatar() {
         Call<String> call = RetrofitClient.getInstance()
                 .getAPI().getAvatar(authManager.getToken());
 
@@ -284,7 +217,7 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 }
 
-                if(response.body() == null || response.body().isEmpty()){
+                if (response.body() == null || response.body().isEmpty()) {
                     return;
                 }
 
@@ -312,20 +245,6 @@ public class MainActivity extends AppCompatActivity {
                 conversations.clear();
                 conversations.addAll(response.body());
                 adapter.notifyDataSetChanged();
-
-                for (ConversationResponse convo : conversations) {
-                    System.out.println("---- CONVO -----");
-                    for (Participant user : convo.getParticipants()) {
-                        System.out.println("Participants: " + user.getUser().getUsername());
-                    }
-                    Message lastMessage = convo.getLastMessage();
-                    if (lastMessage != null) {
-                        // TODO; check local cache for lastMessage.getID() and the translation
-                        System.out.println("Last message: " + lastMessage.getMessage());
-                    } else {
-                        System.out.println("NULL LAST MESAGES");
-                    }
-                }
             }
 
             @Override

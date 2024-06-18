@@ -146,7 +146,7 @@ public class ProfileSettings extends AppCompatActivity {
         getAvatar();
     }
 
-    private void getAvatar(){
+    private void getAvatar() {
         Call<String> call = RetrofitClient.getInstance()
                 .getAPI().getAvatar(authManager.getToken());
 
@@ -157,7 +157,7 @@ public class ProfileSettings extends AppCompatActivity {
                     return;
                 }
 
-                if(response.body() == null || response.body().isEmpty()){
+                if (response.body() == null || response.body().isEmpty()) {
                     return;
                 }
 
@@ -173,7 +173,7 @@ public class ProfileSettings extends AppCompatActivity {
 
     }
 
-    private void uploadAvatar(Bitmap avatar){
+    private void uploadAvatar(Bitmap avatar) {
         String encoded = ImageUtil.convert(avatar);
 
         Call<String> call = RetrofitClient.getInstance()
@@ -195,30 +195,6 @@ public class ProfileSettings extends AppCompatActivity {
             }
         });
 
-//        File image = new File(getCacheDir(), "avatar_"+authManager.getJwtProperty("username")+".jpg");
-//
-//        RequestBody requestFile = RequestBody.create(MediaType.parse("image/jpeg"), image);
-//        MultipartBody.Part body = MultipartBody.Part.createFormData("image", image.getName(), requestFile);
-//
-//        Call<String> call = RetrofitClient.getInstance()
-//                .getAPI().uploadAvatar(authManager.getToken(), body);
-//
-//        call.enqueue(new Callback<String>() {
-//            @Override
-//            public void onResponse(Call<String> call, Response<String> response) {
-//                if (response.isSuccessful()) {
-//                    Log.d("Upload", "Success");
-//                } else {
-//                    Log.e("Upload", "Error: " + response.message());
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<String> call, Throwable t) {
-//                Log.e("Upload", "Failure: " + t.getMessage());
-//            }
-//        });
-
 
     }
 
@@ -233,7 +209,6 @@ public class ProfileSettings extends AppCompatActivity {
                     System.out.println("Invalid response from getUsersDefaultLanguage");
                     return;
                 }
-                System.out.println(response.body());
 
                 String language = response.body();
                 spnLanguage.setSelection(availableLanguages.indexOf(language), false);
@@ -260,7 +235,6 @@ public class ProfileSettings extends AppCompatActivity {
                     System.out.println("Invalid response from getAvailableLanguages");
                     return;
                 }
-                System.out.println(response.body());
                 availableLanguages.addAll(response.body());
                 languageAdapter.notifyDataSetChanged();
 
@@ -289,7 +263,7 @@ public class ProfileSettings extends AppCompatActivity {
                 UCrop.Options options = new UCrop.Options();
                 options.setCircleDimmedLayer(true);  // Enable circle crop
 
-                UCrop.of(imageUri, Uri.fromFile(new File(getCacheDir(), "avatar_"+authManager.getJwtProperty("username")+".jpg")))
+                UCrop.of(imageUri, Uri.fromFile(new File(getCacheDir(), "avatar_" + authManager.getJwtProperty("username") + ".jpg")))
                         .withOptions(options)
                         .withAspectRatio(1, 1)
                         .withMaxResultSize(100, 100)
@@ -336,7 +310,6 @@ public class ProfileSettings extends AppCompatActivity {
                     System.out.println("Invalid response from saveGlobalLanguage" + response.toString());
                     return;
                 }
-                System.out.println("Success save lang?: " + response.body());
 
                 if (response.body() == true) {
                     Toast.makeText(ProfileSettings.this, "Successfully saved language to: " + language, Toast.LENGTH_SHORT).show();

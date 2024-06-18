@@ -35,7 +35,6 @@ import retrofit2.Response;
 public class ConversationSettings extends AppCompatActivity {
 
     public static final String EXTRA_CONVERSATION_ID = "extra_conversation_id";
-//    public final String EXTRA = "extra_conversation_id";
 
     private Spinner spnLanguage;
 
@@ -205,11 +204,7 @@ public class ConversationSettings extends AppCompatActivity {
 
             // Work with the username (e.g., display a toast or save it)
             if (!username.isEmpty()) {
-                // Example: Display the username using a Toast
-//                Toast.makeText(this, "Username: " + username, Toast.LENGTH_SHORT).show();
                 addUserToConversation(username);
-
-                // TODO: Add your code here to handle the username (e.g., save to a database)
             } else {
                 Toast.makeText(this, "Username cannot be empty", Toast.LENGTH_SHORT).show();
             }
@@ -282,7 +277,6 @@ public class ConversationSettings extends AppCompatActivity {
                     System.out.println("Invalid response from getParticipants");
                     return;
                 }
-                System.out.println("participants" + response.body());
 
                 participants.addAll(response.body());
 
@@ -298,8 +292,6 @@ public class ConversationSettings extends AppCompatActivity {
                     participantAdapter.viewAdminControls = true;
                 }
                 participantAdapter.notifyDataSetChanged();
-
-//                participants.add(new User("Add user to conversation", null));
 
             }
 
@@ -322,7 +314,6 @@ public class ConversationSettings extends AppCompatActivity {
                     System.out.println("Invalid response from getAvailableLanguages");
                     return;
                 }
-                System.out.println(response.body());
                 availableLanguages.addAll(response.body());
                 languageAdapter.notifyDataSetChanged();
 
@@ -348,7 +339,6 @@ public class ConversationSettings extends AppCompatActivity {
                     System.out.println("Invalid response from saveLanguage");
                     return;
                 }
-                System.out.println("Success save lang?: " + response.body());
 
                 if (response.body() == true) {
                     Toast.makeText(ConversationSettings.this, "Successfully saved language to: " + language, Toast.LENGTH_SHORT).show();
